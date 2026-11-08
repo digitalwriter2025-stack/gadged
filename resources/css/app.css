@@ -1,0 +1,205 @@
+@import 'tailwindcss';
+@import 'swiper/css' layer(components);
+@import 'swiper/css/effect-fade' layer(components);
+@import 'lenis/dist/lenis.css' layer(components);
+@import './animations.css';
+@import './enhancements.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Poppins', 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-topbar: #df0100;
+    --color-surface: #f3f4f6;
+    --color-hero: #f2f2f2;
+    --color-accent: #df0100;
+    --color-accent-dark: #b30000;
+    --color-price: #df0100;
+    --color-savings: #0b6b3a;
+    --color-highlight: #7b8a10;
+    --color-footer: #121212;
+    --color-footer-link: #ff5a52;
+    --color-whatsapp: #22c35e;
+    --color-builder: #1f1f1f;
+    --container-store: 66.5rem;
+    --container-header: 59rem;
+    --container-hero: 79rem;
+
+    --text-section-title: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --animate-fade-up: fade-up 0.6s var(--ease-out-expo) both;
+    --animate-marquee: marquee 24s linear infinite;
+    --animate-shimmer: shimmer 1.6s linear infinite;
+    --animate-pulse-ring: pulse-ring 2s ease-out infinite;
+    --animate-bolt: bolt 2.8s ease-in-out infinite;
+    --animate-wiggle: wiggle 0.5s ease-in-out;
+    --animate-shake: shake 0.5s ease-in-out;
+
+    @keyframes fade-up {
+        from {
+            opacity: 0;
+            translate: 0 12px;
+        }
+    }
+
+    @keyframes marquee {
+        to {
+            translate: -50% 0;
+        }
+    }
+
+    @keyframes shimmer {
+        from {
+            background-position: 200% 0;
+        }
+        to {
+            background-position: -200% 0;
+        }
+    }
+
+    @keyframes pulse-ring {
+        from {
+            opacity: 0.6;
+            scale: 1;
+        }
+        to {
+            opacity: 0;
+            scale: 1.6;
+        }
+    }
+
+    @keyframes bolt {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.45;
+        }
+    }
+
+    @keyframes wiggle {
+        0%,
+        100% {
+            rotate: 0deg;
+        }
+        25% {
+            rotate: -8deg;
+        }
+        75% {
+            rotate: 8deg;
+        }
+    }
+
+    @keyframes shake {
+        0%,
+        100% {
+            translate: 0 0;
+        }
+        20%,
+        60% {
+            translate: -2px 0;
+        }
+        40%,
+        80% {
+            translate: 2px 0;
+        }
+    }
+}
+
+@layer components {
+    /* Rich text written in the admin editor (product descriptions) */
+    .rich-text {
+        @apply text-[13px] leading-6 text-gray-700;
+
+        & h2 {
+            @apply mt-5 mb-2 text-base font-semibold text-gray-900 first:mt-0;
+        }
+
+        & h3,
+        & h4 {
+            @apply mt-4 mb-1.5 text-sm font-semibold text-gray-900 first:mt-0;
+        }
+
+        & p {
+            @apply mb-3;
+        }
+
+        & ul,
+        & ol {
+            @apply mb-3 space-y-1 pl-5;
+        }
+
+        & ul {
+            @apply list-disc;
+        }
+
+        & ol {
+            @apply list-decimal;
+        }
+
+        & a {
+            @apply text-accent underline underline-offset-2 hover:text-accent-dark;
+        }
+
+        & strong {
+            @apply font-semibold text-gray-900;
+        }
+    }
+}
+
+@layer components {
+    /* Listing filters: a slide-in drawer below lg, a plain sidebar from lg up */
+    .filter-panel {
+        @apply max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:z-50 max-lg:w-[min(20rem,88vw)] max-lg:-translate-x-full max-lg:shadow-2xl max-lg:transition-transform max-lg:duration-300 max-lg:ease-out-expo;
+
+        &[data-open] {
+            @apply max-lg:translate-x-0;
+        }
+    }
+
+    .filter-backdrop {
+        @apply pointer-events-none fixed inset-0 z-40 bg-black/40 opacity-0 transition-opacity duration-300;
+    }
+
+    .filter-panel[data-open] ~ .filter-backdrop {
+        @apply pointer-events-auto opacity-100;
+    }
+}
+
+@layer utilities {
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-gray-300) transparent;
+    }
+
+    .scrollbar-none {
+        scrollbar-width: none;
+    }
+
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* Rich text from the admin editor (CMS pages). */
+@layer components {
+    .cms-content {
+        & :where(h2) { @apply mt-6 mb-2 text-lg font-semibold text-gray-900; }
+        & :where(h3) { @apply mt-5 mb-2 text-base font-semibold text-gray-900; }
+        & :where(p, ul, ol, blockquote, table) { @apply my-3; }
+        & :where(ul) { @apply list-disc pl-5; }
+        & :where(ol) { @apply list-decimal pl-5; }
+        & :where(a) { @apply text-accent underline underline-offset-2; }
+        & :where(blockquote) { @apply border-l-4 border-gray-200 pl-4 italic; }
+        & :where(img) { @apply h-auto max-w-full rounded-md; }
+        & :where(table) { @apply w-full border-collapse text-left; }
+        & :where(th, td) { @apply border border-gray-200 px-3 py-2; }
+    }
+}

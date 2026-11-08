@@ -1,0 +1,36 @@
+import { loadEnhancements } from './enhance';
+import { initCart, initCheckout } from './modules/cart';
+import { initCategoryPage } from './modules/category-page';
+import { initClickFeedback } from './modules/click-feedback';
+import { initCountdowns } from './modules/countdown';
+import { initDrawers, initModals } from './modules/drawer';
+import { initFooterAccordions, initImageFade, initRipples, initWishlistToggles } from './modules/effects';
+import { initHeader } from './modules/header';
+import { initInstantPreload } from './modules/instant-preload';
+import { initPageLoader } from './modules/page-loader';
+import { initProductGrids } from './modules/product-grid';
+import { initPcBuilder } from './modules/pc-builder';
+import { initProductPage } from './modules/product-page';
+import { initMegaMenu, initSearch } from './modules/search';
+
+initPageLoader();
+initInstantPreload();
+initClickFeedback();
+initHeader();
+initSearch();
+initMegaMenu();
+initProductGrids();
+initProductPage();
+initCategoryPage();
+initPcBuilder();
+initCart();
+initCheckout();
+initDrawers();
+initModals();
+initImageFade();
+initRipples();
+initWishlistToggles();
+initFooterAccordions();
+initCountdowns();
+loadEnhancements();
+

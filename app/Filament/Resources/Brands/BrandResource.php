@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Resources\Brands;
+
+use App\Filament\Resources\Brands\Pages\CreateBrand;
+use App\Filament\Resources\Brands\Pages\EditBrand;
+use App\Filament\Resources\Brands\Pages\ListBrands;
+use App\Filament\Resources\Brands\Schemas\BrandForm;
+use App\Filament\Resources\Brands\Tables\BrandsTable;
+use App\Models\Brand;
+use BackedEnum;
+use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+
+class BrandResource extends Resource
+{
+    protected static ?string $model = Brand::class;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
+
+    protected static ?string $navigationLabel = 'Brands';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
+
+    public static function form(Schema $schema): Schema
+    {
+        return BrandForm::configure($schema);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return BrandsTable::configure($table);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['media']);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => ListBrands::route('/'),
+            'create' => CreateBrand::route('/create'),
+            'edit' => EditBrand::route('/{record}/edit'),
+        ];
+    }
+}

@@ -1,0 +1,328 @@
+/*
+ * Storefront motion system.
+ * Only transform/opacity are animated. Anything hidden before JS runs is gated
+ * behind `.js`, so the page stays fully visible without JavaScript.
+ */
+
+@layer components {
+    /* Scroll reveal */
+    .js [data-reveal] {
+        opacity: 0;
+        translate: 0 24px;
+        transition:
+            opacity 0.7s var(--ease-out-expo),
+            translate 0.7s var(--ease-out-expo);
+        transition-delay: calc(var(--reveal-index, 0) * 70ms);
+    }
+
+    .js [data-reveal].is-visible {
+        opacity: 1;
+        translate: 0 0;
+    }
+
+    /* Section heading accent bar */
+    .heading-bar {
+        transform-origin: left;
+        transition: scale 0.8s var(--ease-out-expo) 0.2s;
+    }
+
+    .js [data-reveal]:not(.is-visible) .heading-bar {
+        scale: 0 1;
+    }
+
+    /* Header: stronger shadow once scrolled, hides on scroll-down below lg */
+    .site-header {
+        transition:
+            translate 0.35s var(--ease-out-expo),
+            box-shadow 0.3s ease;
+    }
+
+    .site-header.is-scrolled {
+        box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+    }
+
+    @media (max-width: 1023.98px) {
+        .site-header.is-hidden {
+            translate: 0 -100%;
+        }
+    }
+
+    /* Nav link underline */
+    .nav-underline {
+        position: relative;
+    }
+
+    .nav-underline::after {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        bottom: -3px;
+        height: 2px;
+        border-radius: 9999px;
+        background: var(--color-accent);
+        scale: 0 1;
+        transform-origin: right;
+        transition: scale 0.3s var(--ease-out-expo);
+    }
+
+    @media (hover: hover) {
+        .nav-underline:hover::after {
+            scale: 1 1;
+            transform-origin: left;
+        }
+    }
+
+    /* Hero slider */
+    .hero-slide img {
+        scale: 1.08;
+        transition: scale 6s var(--ease-out-expo);
+    }
+
+    .hero-slide.is-active img {
+        scale: 1;
+    }
+
+    .hero-dot-fill {
+        scale: 0 1;
+        transform-origin: left;
+    }
+
+    .is-playing .hero-dot.is-active .hero-dot-fill {
+        animation: hero-dot-fill 5s linear forwards;
+    }
+
+    [data-hero-slider]:not(.is-playing) .hero-dot.is-active .hero-dot-fill {
+        scale: 1 1;
+    }
+
+    .is-paused .hero-dot-fill {
+        animation-play-state: paused !important;
+    }
+
+    @keyframes hero-dot-fill {
+        to {
+            scale: 1 1;
+        }
+    }
+
+    /* Glossy sweep on badges and cards */
+    .shine {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .shine::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%);
+        translate: -100% 0;
+        animation: shine-sweep 3.5s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes shine-sweep {
+        60%,
+        100% {
+            translate: 100% 0;
+        }
+    }
+
+    /* Image skeleton + fade-in */
+    .js .skeleton {
+        background: linear-gradient(90deg, #eef0f3 25%, #f8f9fb 50%, #eef0f3 75%) 0 0 / 200% 100%;
+        animation: var(--animate-shimmer);
+        border-radius: 0.375rem;
+    }
+
+    .js img[data-fade] {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .js img[data-fade].is-loaded {
+        opacity: 1;
+    }
+
+    /* Flash-sale countdown */
+    .countdown.is-urgent {
+        border-color: var(--color-price);
+        background-color: rgb(223 1 0 / 0.06);
+    }
+
+    .countdown.is-urgent [data-unit] {
+        color: var(--color-price);
+    }
+
+    .countdown [data-unit] {
+        display: inline-block;
+        min-width: 1.6ch;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.15;
+        will-change: transform, opacity;
+    }
+
+    .countdown-sec {
+        position: relative;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+    }
+
+    .countdown-sec.is-ticking {
+        animation: countdown-sec-pulse 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes countdown-sec-pulse {
+        0% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Click ripple */
+    .ripple {
+        position: absolute;
+        border-radius: 9999px;
+        background: rgb(255 255 255 / 0.4);
+        scale: 0;
+        animation: ripple 0.6s ease-out forwards;
+        pointer-events: none;
+    }
+
+    @keyframes ripple {
+        to {
+            scale: 1;
+            opacity: 0;
+        }
+    }
+
+    /* Floating back-to-top */
+    [data-scroll-top] {
+        transition:
+            opacity 0.3s ease,
+            translate 0.3s var(--ease-out-expo),
+            background-color 0.15s ease;
+    }
+
+    [data-scroll-top]:not(.is-visible) {
+        opacity: 0;
+        translate: 0 12px;
+        pointer-events: none;
+    }
+
+    /* Mobile drawer (native <dialog>) */
+    dialog.drawer {
+        margin: 0;
+        width: min(86vw, 22rem);
+        max-width: none;
+        height: 100dvh;
+        max-height: none;
+        translate: -100% 0;
+        transition:
+            translate 0.4s var(--ease-out-expo),
+            overlay 0.4s allow-discrete,
+            display 0.4s allow-discrete;
+    }
+
+    dialog.drawer[open] {
+        translate: 0 0;
+    }
+
+    dialog.drawer::backdrop {
+        background: rgb(0 0 0 / 0);
+        backdrop-filter: blur(0);
+        transition:
+            background-color 0.4s ease,
+            backdrop-filter 0.4s ease,
+            overlay 0.4s allow-discrete,
+            display 0.4s allow-discrete;
+    }
+
+    dialog.drawer[open]::backdrop {
+        background: rgb(0 0 0 / 0.55);
+        backdrop-filter: blur(3px);
+    }
+
+    @starting-style {
+        dialog.drawer[open] {
+            translate: -100% 0;
+        }
+
+        dialog.drawer[open]::backdrop {
+            background: rgb(0 0 0 / 0);
+            backdrop-filter: blur(0);
+        }
+    }
+
+    dialog.drawer[open] [data-drawer-item] {
+        animation: var(--animate-fade-up);
+        animation-delay: calc(var(--i, 0) * 25ms + 120ms);
+    }
+
+    html:has(dialog.drawer[open]) {
+        overflow: hidden;
+    }
+
+    /* Footer accordion */
+    .footer-accordion {
+        interpolate-size: allow-keywords;
+    }
+
+    .footer-accordion::details-content {
+        block-size: 0;
+        overflow: hidden;
+        transition:
+            block-size 0.35s var(--ease-out-expo),
+            content-visibility 0.35s allow-discrete;
+    }
+
+    .footer-accordion[open]::details-content {
+        block-size: auto;
+    }
+
+    .footer-accordion summary::-webkit-details-marker {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+        navigation: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .js [data-reveal] {
+        opacity: 1;
+        translate: none;
+    }
+
+    .shine::after {
+        display: none;
+    }
+
+    .hero-slide img {
+        scale: 1;
+    }
+
+    [data-marquee] {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: auto;
+    }
+
+    [data-marquee] > [aria-hidden='true'] {
+        display: none;
+    }
+}
