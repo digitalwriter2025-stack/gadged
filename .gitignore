@@ -32,5 +32,6 @@ Thumbs.db
 # Local archives & database dumps (may contain secrets)
 *.zip
 *.sql
+!/database/dump/*.sql
 /Database Final 26/
 /storage/media-library
