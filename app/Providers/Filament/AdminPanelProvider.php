@@ -2,10 +2,12 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\EditProfile;
 use App\Filament\Auth\Login;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\ManageCache;
 use App\Services\SettingsService;
+use App\Support\Filament\AdminGlobalSearchProvider;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\Pages\PasswordReset\RequestPasswordReset;
 use Filament\Auth\Pages\PasswordReset\ResetPassword;
@@ -38,12 +40,13 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->passwordReset()
-            ->profile()
+            ->profile(EditProfile::class)
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Cache Clean')
                     ->url(fn (): string => ManageCache::getUrl())
-                    ->icon('heroicon-o-arrow-path'),
+                    ->icon('heroicon-o-arrow-path')
+                    ->visible(fn (): bool => ManageCache::canAccess()),
             ])
             // Panel-wide theme (sidebar, cards, tables, dashboard banner) as plain CSS, so no Vite build is needed.
             ->renderHook(
@@ -63,7 +66,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::USER_MENU_BEFORE,
-                fn (): View => view('filament.hooks.topbar-cache-clean')
+                fn (): string => ManageCache::canAccess() ? view('filament.hooks.topbar-cache-clean')->render() : '',
             )
             // Staff can enrol an authenticator app from their profile; enforcement can be switched on later.
             ->multiFactorAuthentication([
@@ -78,11 +81,16 @@ class AdminPanelProvider extends PanelProvider
             ->maxContentWidth(Width::ScreenTwoExtraLarge)
             // SPA-style navigation: page changes are swapped in without full reloads.
             ->spa()
+            // Topbar search also finds admin pages and individual settings, not only records.
+            ->globalSearch(AdminGlobalSearchProvider::class)
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->globalSearchFieldKeyBindingSuffix()
             ->unsavedChangesAlerts()
             ->databaseTransactions()
             ->sidebarCollapsibleOnDesktop()
             ->navigationGroups([
                 NavigationGroup::make('Sales'),
+                NavigationGroup::make('Accounts'),
                 NavigationGroup::make('Catalog'),
                 NavigationGroup::make('Inventory'),
                 NavigationGroup::make('Marketing'),

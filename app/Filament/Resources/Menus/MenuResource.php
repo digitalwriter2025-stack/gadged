@@ -27,6 +27,8 @@ class MenuResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-bars-3';
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function form(Schema $schema): Schema
     {
         return MenuForm::configure($schema);
@@ -35,6 +37,14 @@ class MenuResource extends Resource
     public static function table(Table $table): Table
     {
         return MenusTable::configure($table);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'name_bn'];
     }
 
     public static function getPages(): array

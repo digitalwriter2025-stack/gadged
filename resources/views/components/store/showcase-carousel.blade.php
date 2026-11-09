@@ -3,7 +3,7 @@
     'products',
     'theme' => 'aurora',
     'eyebrow' => null,
-    'ctaLabel' => 'Shop now',
+    'ctaLabel' => null,
     'ctaUrl' => '#',
     'images' => [],
 ])
@@ -17,7 +17,8 @@
     $hasEyebrow = filled($eyebrow);
     $collage = array_slice($images, 0, 2);
     $hasCollage = filled($collage);
-    $headline = preg_replace('/(৳[\d,]+)/u', '<span class="'.($isMidnight ? 'text-[#ff5a52]' : 'text-yellow-300').'">$1</span>', e($title));
+    $ctaLabel ??= __('Shop now');
+    $headline = preg_replace('/(৳[\d০-৯,]+)/u', '<span class="'.($isMidnight ? 'text-[#ff5a52]' : 'text-yellow-300').'">$1</span>', e($title));
 @endphp
 
 <section {{ $attributes->merge(['class' => 'bg-surface']) }}>
@@ -83,10 +84,10 @@
                         </ul>
                     </div>
 
-                    <button type="button" data-carousel-prev class="absolute top-1/2 left-2 z-20 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white text-gray-900 shadow-[0_6px_20px_rgba(0,0,0,0.35)] ring-1 ring-black/5 transition hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 sm:grid lg:left-0 lg:size-12 lg:-translate-x-1/2" aria-label="Previous {{ $title }}">
+                    <button type="button" data-carousel-prev class="absolute top-1/2 left-2 z-20 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white text-gray-900 shadow-[0_6px_20px_rgba(0,0,0,0.35)] ring-1 ring-black/5 transition hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 sm:grid lg:left-0 lg:size-12 lg:-translate-x-1/2" aria-label="{{ __('Previous: :title', ['title' => $title]) }}">
                         <x-store.icon name="chevron-left" class="size-5" />
                     </button>
-                    <button type="button" data-carousel-next class="absolute top-1/2 right-2 z-20 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white text-gray-900 shadow-[0_6px_20px_rgba(0,0,0,0.35)] ring-1 ring-black/5 transition hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 sm:grid lg:right-0 lg:size-12 lg:translate-x-1/2" aria-label="Next {{ $title }}">
+                    <button type="button" data-carousel-next class="absolute top-1/2 right-2 z-20 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white text-gray-900 shadow-[0_6px_20px_rgba(0,0,0,0.35)] ring-1 ring-black/5 transition hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 sm:grid lg:right-0 lg:size-12 lg:translate-x-1/2" aria-label="{{ __('Next: :title', ['title' => $title]) }}">
                         <x-store.icon name="chevron-right" class="size-5" />
                     </button>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Observers\CatalogCacheObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -12,10 +13,12 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Static CMS page (About, Privacy Policy, Warranty Policy, ...).
  */
-#[Fillable(['title', 'slug', 'content', 'is_active', 'seo_title', 'seo_description'])]
+#[Fillable(['title', 'slug', 'content', 'is_active', 'seo_title', 'seo_description', 'title_bn', 'content_bn', 'seo_title_bn', 'seo_description_bn'])]
 #[ObservedBy(CatalogCacheObserver::class)]
 class Page extends Model
 {
+    use HasTranslations;
+
     /**
      * @return array<string, string>
      */

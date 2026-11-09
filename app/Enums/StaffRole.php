@@ -81,6 +81,14 @@ enum StaffRole: string implements HasLabel
         return array_column(self::cases(), 'value');
     }
 
+    /**
+     * Human label for any role name, built-in or custom.
+     */
+    public static function labelFor(string $roleName): string
+    {
+        return self::tryFrom($roleName)?->getLabel() ?? $roleName;
+    }
+
     public function getLabel(): string
     {
         return match ($this) {

@@ -96,7 +96,24 @@ class CartService
     public function lines(): Collection
     {
         $quantities = $this->quantities();
+        $lines = $this->linesFor($quantities);
 
+        if ($lines->count() !== count($quantities)) {
+            $this->store($lines->mapWithKeys(fn (CartLine $line): array => [$line->variant->id => $line->quantity])->all());
+        }
+
+        return $lines;
+    }
+
+    /**
+     * Prices the given variant quantities from the catalog, dropping variants that
+     * can no longer be bought. Used for the session cart and for manual admin orders.
+     *
+     * @param  array<int, int>  $quantities  variant id => quantity
+     * @return Collection<int, CartLine>
+     */
+    public function linesFor(array $quantities): Collection
+    {
         if ($quantities === []) {
             return collect();
         }
@@ -110,7 +127,7 @@ class CartService
 
         $flashSaleItems = $this->runningFlashSaleItems($variants->pluck('product_id')->unique()->all());
 
-        $lines = collect($quantities)
+        return collect($quantities)
             ->map(function (int $quantity, int $variantId) use ($variants, $flashSaleItems): ?CartLine {
                 $variant = $variants->get($variantId);
 
@@ -118,12 +135,6 @@ class CartService
             })
             ->filter()
             ->values();
-
-        if ($lines->count() !== count($quantities)) {
-            $this->store($lines->mapWithKeys(fn (CartLine $line): array => [$line->variant->id => $line->quantity])->all());
-        }
-
-        return $lines;
     }
 
     /**

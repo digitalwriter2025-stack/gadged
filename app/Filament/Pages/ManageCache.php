@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages;
 
+use App\Enums\Permission;
 use App\Services\CatalogCache;
 use App\Services\SettingsService;
 use Filament\Notifications\Notification;
@@ -24,6 +25,56 @@ class ManageCache extends Page
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     protected string $view = 'filament.pages.manage-cache';
+
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->can(Permission::SettingsManage->value);
+    }
+
+    /**
+     * @return list<array{title: string, tag: string, tone: string, icon: string, description: string, action: string, label: string}>
+     */
+    public function getCacheTargets(): array
+    {
+        return [
+            [
+                'title' => 'Storefront Catalog Cache',
+                'tag' => 'CatalogCache',
+                'tone' => 'info',
+                'icon' => 'heroicon-o-squares-2x2',
+                'description' => 'Clears cached homepage sections, banners, category trees, product cards, and header mega-menus.',
+                'action' => 'flushCatalogCache',
+                'label' => 'Clear Catalog Cache',
+            ],
+            [
+                'title' => 'Store Settings Cache',
+                'tag' => 'SettingsService',
+                'tone' => 'success',
+                'icon' => 'heroicon-o-cog-6-tooth',
+                'description' => 'Clears cached site identity, logos, contact numbers, social media links, SEO meta tags, and footer information.',
+                'action' => 'flushSettingsCache',
+                'label' => 'Clear Settings Cache',
+            ],
+            [
+                'title' => 'Compiled Blade Templates',
+                'tag' => 'view:clear',
+                'tone' => 'warning',
+                'icon' => 'heroicon-o-code-bracket',
+                'description' => 'Flushes all compiled Blade templates. Use when layout or icon changes aren\'t appearing immediately.',
+                'action' => 'clearViewCache',
+                'label' => 'Clear View Cache',
+            ],
+            [
+                'title' => 'Route & Config Caches',
+                'tag' => 'route & config',
+                'tone' => 'primary',
+                'icon' => 'heroicon-o-map',
+                'description' => 'Clears cached application configuration and registered URL routes. Useful after updating environment or routes.',
+                'action' => 'clearRouteConfigCache',
+                'label' => 'Clear Route & Config Cache',
+            ],
+        ];
+    }
 
     public function flushCatalogCache(): void
     {

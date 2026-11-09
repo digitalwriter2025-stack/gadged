@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SetStoreLocale;
 use Laravel\Fortify\Features;
 
 return [
@@ -101,7 +102,8 @@ return [
     |
     */
 
-    'middleware' => ['web'],
+    // Customer login and register pages follow the storefront language.
+    'middleware' => ['web', SetStoreLocale::class],
 
     /*
     |--------------------------------------------------------------------------

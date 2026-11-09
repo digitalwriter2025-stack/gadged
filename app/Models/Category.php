@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasImageConversions;
+use App\Models\Concerns\HasTranslations;
 use App\Observers\CategoryObserver;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -26,12 +27,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 #[Fillable([
     'parent_id', 'name', 'name_bn', 'slug', 'description', 'icon', 'sort_order',
     'is_active', 'is_featured', 'show_in_menu', 'seo_title', 'seo_description',
+    'description_bn', 'seo_title_bn', 'seo_description_bn',
 ])]
 #[ObservedBy(CategoryObserver::class)]
 class Category extends Model implements HasMedia
 {
     /** @use HasFactory<CategoryFactory> */
-    use HasFactory, HasImageConversions, SoftDeletes;
+    use HasFactory, HasImageConversions, HasTranslations, SoftDeletes;
 
     /**
      * @return array<string, string>

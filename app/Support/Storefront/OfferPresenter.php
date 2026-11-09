@@ -3,6 +3,7 @@
 namespace App\Support\Storefront;
 
 use App\Models\Offer;
+use App\Support\Localization;
 
 /**
  * Shapes offers for the Offers / Mobile Deal listing cards and the offer detail page.
@@ -26,12 +27,9 @@ class OfferPresenter
      */
     private const FALLBACK_ILLUSTRATIONS = [
         'mobile-deal' => 'images/products/samsung-mobile-galaxy-s26-ultra.webp',
-        'triple-desktop-offer' => 'images/products/amd-gaming-pc-amd-ryzen-7-7700.jpg',
         'smartwatch-earbuds-deal' => 'images/products/apple-smart-watch-series-11.webp',
-        'monitor-mega-deal' => 'images/products/lg-monitor-34u640b-b.jpg',
-        'air-conditioner-deal' => 'images/products/haier-air-conditioner-hsu-19gravity-inv-pro-x6.jpg',
-        'tv-deal' => 'images/products/samsung-television-55u8510.webp',
-        'camera-deal' => 'images/products/canon-camera-eos.jpg',
+        'power-bank-charger-deal' => 'images/products/power-bank-graphite-laptop-30000mah.webp',
+        'speaker-headphone-deal' => 'images/products/jbl-bluetooth-speaker-partybox-720.jpg',
     ];
 
     /**
@@ -45,15 +43,15 @@ class OfferPresenter
 
         return [
             'id' => $offer->id,
-            'title' => $offer->title,
-            'summary' => $offer->summary,
+            'title' => $offer->translated('title'),
+            'summary' => $offer->translated('summary'),
             'url' => route('store.offers.show', $offer->slug),
             'image' => $poster?->getAvailableUrl(['card']) ?? $illustration,
             'image_large' => $poster?->getAvailableUrl(['large', 'card']) ?? $illustration,
             'image_fit' => $poster !== null ? 'object-cover' : 'object-contain p-4',
             'gradient' => "linear-gradient(135deg, {$from}, {$to})",
-            'availability' => $offer->availability,
-            'period' => $offer->starts_at->format('d M Y').' - '.$offer->ends_at->format('d M Y'),
+            'availability' => __($offer->availability),
+            'period' => Localization::date($offer->starts_at, 'd M Y').' - '.Localization::date($offer->ends_at, 'd M Y'),
             'ends_at_iso' => $offer->ends_at->toIso8601String(),
         ];
     }

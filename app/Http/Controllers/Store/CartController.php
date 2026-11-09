@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Store;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Services\CartService;
+use App\Services\GoogleTag;
 use App\Services\MetaPixel;
 use App\Support\CartLine;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +17,7 @@ class CartController extends Controller
     /**
      * Put a product in the cart and continue straight to the order page.
      */
-    public function store(Request $request, CartService $cart, MetaPixel $metaPixel): RedirectResponse
+    public function store(Request $request, CartService $cart, MetaPixel $metaPixel, GoogleTag $googleTag): RedirectResponse
     {
         $validated = $request->validate([
             'product_id' => ['required', 'integer', Rule::exists('products', 'id')],
@@ -27,14 +28,15 @@ class CartController extends Controller
         $quantity = (int) ($validated['quantity'] ?? 1);
 
         if (! $cart->add($product, $quantity)) {
-            return back()->withErrors(['product_id' => "{$product->name} can't be ordered right now."]);
+            return back()->withErrors(['product_id' => __(":name can't be ordered right now.", ['name' => $product->translated('name')])]);
         }
 
-        if ($metaPixel->enabled()) {
+        if ($metaPixel->enabled() || $googleTag->enabled()) {
             $line = $cart->lines()->first(fn (CartLine $line): bool => $line->product->is($product));
 
             if ($line !== null) {
                 $metaPixel->addToCart($line, $quantity);
+                $googleTag->addToCart($line, $quantity);
             }
         }
 

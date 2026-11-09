@@ -1,5 +1,5 @@
 <x-store.product-carousel
-    :title="$section['title'] ?? 'Flash Sale'"
+    :title="$section['title'] ?? __('Flash Sale')"
     :subtitle="$section['subtitle']"
     :products="$section['products']"
     :flash-sale="true"

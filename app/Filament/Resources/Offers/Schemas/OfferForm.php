@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Offers\Schemas;
 
 use App\Models\Offer;
+use App\Support\Filament\TranslatableTabs;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -24,27 +25,34 @@ class OfferForm
             ->components([
                 Section::make('Campaign Basics')
                     ->schema([
-                        Group::make([
-                            TextInput::make('title')
-                                ->label('Campaign Title')
-                                ->required()
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(function (string $operation, ?string $state, callable $set): void {
-                                    if ($operation === 'create' && filled($state)) {
-                                        $set('slug', Str::slug($state));
-                                    }
-                                }),
+                        TranslatableTabs::make('campaign', fn (string $suffix, bool $isEnglish): array => [
+                            TextInput::make("title{$suffix}")
+                                ->label($isEnglish ? 'Campaign Title' : 'ক্যাম্পেইনের নাম (Campaign Title)')
+                                ->helperText(TranslatableTabs::fallbackHint($isEnglish))
+                                ->required($isEnglish)
+                                ->maxLength(150)
+                                ->when($isEnglish, fn (TextInput $field): TextInput => $field
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (string $operation, ?string $state, callable $set): void {
+                                        if ($operation === 'create' && filled($state)) {
+                                            $set('slug', Str::slug($state));
+                                        }
+                                    })),
 
+                            TextInput::make("summary{$suffix}")
+                                ->label($isEnglish ? 'Short Promo Summary' : 'সংক্ষিপ্ত অফার (Short Promo Summary)')
+                                ->maxLength(255)
+                                ->placeholder($isEnglish ? 'e.g. Get up to 40% discount on selected gadgets' : 'যেমন: নির্বাচিত গ্যাজেটে ৪০% পর্যন্ত ছাড়'),
+
+                            RichEditor::make("description{$suffix}")
+                                ->label($isEnglish ? 'Full Campaign Terms & Details' : 'শর্তাবলি ও বিস্তারিত (Campaign Terms & Details)'),
+                        ]),
+
+                        Group::make([
                             TextInput::make('slug')
                                 ->label('URL Slug')
                                 ->required()
                                 ->unique(Offer::class, 'slug', ignoreRecord: true),
-                        ])->columns(2),
-
-                        Group::make([
-                            TextInput::make('summary')
-                                ->label('Short Promo Summary')
-                                ->placeholder('e.g. Get up to 40% discount on selected gadgets'),
 
                             Select::make('availability')
                                 ->options([
@@ -56,14 +64,12 @@ class OfferForm
                         ])->columns(2),
 
                         FileUpload::make('poster_upload')
-                            ->label('Offer Poster / Artwork (Square ~480x480)')
+                            ->label('Campaign Poster / Artwork (Square ~480x480)')
                             ->disk('public')
                             ->directory('offers')
                             ->image()
-                            ->imageEditor(),
-
-                        RichEditor::make('description')
-                            ->label('Full Campaign Terms & Details'),
+                            ->imageEditor()
+                            ->dehydrated(false),
                     ]),
 
                 Section::make('Associated Products & Placement')
@@ -76,11 +82,6 @@ class OfferForm
                             ->label('Included Products'),
 
                         Group::make([
-                            Toggle::make('is_mobile_deal')
-                                ->label('Show in "Mobile Deals" Page (/mobile-deals)')
-                                ->helperText('When enabled, this offer also appears on the dedicated mobile deals page.')
-                                ->default(false),
-
                             Toggle::make('is_active')
                                 ->label('Active')
                                 ->default(true),

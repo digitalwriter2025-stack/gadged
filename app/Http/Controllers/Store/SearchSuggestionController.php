@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Services\ProductFilterService;
 use App\Support\Storefront\ProductCardPresenter;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,28 +30,38 @@ class SearchSuggestionController extends Controller
 
         $productQuery = $filterService->searchQuery($term);
 
-        $products = (clone $productQuery)
-            ->forCard()
+        $products = $filterService->orderByRelevance((clone $productQuery)->forCard(), $term)
             ->orderByDesc('products.is_featured')
             ->limit(self::LIMIT)
             ->get();
 
+        $pattern = '%'.addcslashes(mb_substr($term, 0, 100), '\%_').'%';
+
         $categories = Category::query()
             ->active()
-            ->where('name', 'like', '%'.addcslashes(mb_substr($term, 0, 100), '\%_').'%')
+            ->where(fn (Builder $query) => $query->where('name', 'like', $pattern)->orWhere('name_bn', 'like', $pattern))
             ->ordered()
             ->limit(self::CATEGORY_LIMIT)
-            ->get(['id', 'name', 'slug']);
+            ->get(['id', 'name', 'name_bn', 'slug']);
 
         return response()->json([
-            'data' => $products->map(fn (Product $product): array => [
-                'name' => $product->name,
-                'url' => route('store.products.show', $product->slug),
-                'image' => $cards->image($product, 'thumb'),
-                'price' => $cards->present($product)['price'],
-            ])->values(),
+            'data' => $products->map(function (Product $product) use ($cards): array {
+                $card = $cards->present($product);
+
+                return [
+                    'name' => $card['name'],
+                    'url' => $card['url'],
+                    'image' => $cards->image($product, 'thumb'),
+                    'brand' => $product->brand?->name,
+                    'price' => $card['price'],
+                    'regular_price' => $card['regular_price'],
+                    'discount_percent' => $card['regular_price'] !== null && $product->discount_percent > 0 ? $product->discount_percent : null,
+                    'in_stock' => $card['purchasable'],
+                    'stock_label' => $card['stock_label'],
+                ];
+            })->values(),
             'categories' => $categories->map(fn (Category $category): array => [
-                'name' => $category->name,
+                'name' => $category->translated('name'),
                 'url' => route('store.categories.show', $category->slug),
             ])->values(),
             'meta' => [

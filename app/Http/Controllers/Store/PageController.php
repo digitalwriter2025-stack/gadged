@@ -18,8 +18,8 @@ class PageController extends Controller
         return view('store.page', [
             'page' => $page,
             'breadcrumbs' => [
-                ['label' => 'Home', 'url' => route('store.home')],
-                ['label' => $page->title, 'url' => null],
+                ['label' => __('Home'), 'url' => route('store.home')],
+                ['label' => $page->translated('title'), 'url' => null],
             ],
         ]);
     }

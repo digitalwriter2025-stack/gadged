@@ -9,18 +9,18 @@
         <div class="mx-auto max-w-[58rem] px-3 sm:px-4">
             <div class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-gray-200 bg-white px-4 py-3">
                 <div>
-                    <h1 class="text-base font-bold text-gray-900 lg:text-lg">Choose {{ $part['label'] }}</h1>
-                    <p class="text-xs text-gray-500">{{ number_format($products->total()) }} {{ str('product')->plural($products->total()) }} available</p>
+                    <h1 class="text-base font-bold text-gray-900 lg:text-lg">{{ __('Choose :component', ['component' => $part['label']]) }}</h1>
+                    <p class="text-xs text-gray-500">{{ trans_choice(':count product available|:count products available', $products->total(), ['count' => \App\Support\Localization::digits(number_format($products->total()))]) }}</p>
                 </div>
 
                 <form method="GET" class="flex items-center gap-2 text-xs text-gray-600">
-                    <label for="pc-sort">Sort By:</label>
+                    <label for="pc-sort">{{ __('Sort By:') }}</label>
                     <select id="pc-sort" name="sort" data-autosubmit class="h-9 rounded-md border border-gray-300 bg-white px-2 text-xs text-gray-900">
                         @foreach ($sorts as $value => $label)
                             <option value="{{ $value }}" @selected($sort === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
-                    <noscript><button type="submit" class="h-9 rounded-md bg-builder px-3 text-white">Apply</button></noscript>
+                    <noscript><button type="submit" class="h-9 rounded-md bg-button px-3 text-button-text hover:bg-button-hover">{{ __('Apply') }}</button></noscript>
                 </form>
             </div>
 
@@ -30,8 +30,8 @@
 
             @if ($products->isEmpty())
                 <div class="mt-3 rounded-md border border-gray-200 bg-white px-4 py-12 text-center">
-                    <p class="text-sm font-medium text-gray-900">No {{ $part['label'] }} products are available right now.</p>
-                    <a href="{{ route('store.pc-builder.show') }}" class="mt-3 inline-block text-xs font-semibold text-builder hover:underline">Back to PC Builder</a>
+                    <p class="text-sm font-medium text-gray-900">{{ __('No :component products are available right now.', ['component' => $part['label']]) }}</p>
+                    <a href="{{ route('store.pc-builder.show') }}" class="mt-3 inline-block text-xs font-semibold text-builder hover:underline">{{ __('Back to PC Builder') }}</a>
                 </div>
             @else
                 <ul class="mt-3 space-y-3">
@@ -61,13 +61,13 @@
 
                                 @if ($selectedId === $product['id'])
                                     <span class="inline-flex items-center gap-1 rounded bg-green-50 px-4 py-2 text-xs font-semibold text-savings">
-                                        <x-store.icon name="check" class="size-4" /> Selected
+                                        <x-store.icon name="check" class="size-4" /> {{ __('Selected') }}
                                     </span>
                                 @elseif ($product['purchasable'])
                                     <form method="POST" action="{{ route('store.pc-builder.store', $part['key']) }}">
                                         @csrf
                                         <input type="hidden" name="product_id" value="{{ $product['id'] }}">
-                                        <button type="submit" class="cursor-pointer rounded bg-builder px-5 py-2 text-xs font-semibold text-white transition hover:brightness-110">Add</button>
+                                        <button type="submit" class="cursor-pointer rounded bg-button px-5 py-2 text-xs font-semibold text-button-text transition hover:bg-button-hover">{{ __('Add') }}</button>
                                     </form>
                                 @else
                                     <span class="rounded bg-gray-100 px-3 py-2 text-xs font-medium text-gray-500">{{ $product['stock_label'] }}</span>

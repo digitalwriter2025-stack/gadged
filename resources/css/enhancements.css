@@ -61,8 +61,8 @@
     cursor: grabbing;
 }
 
-/* GSAP owns scroll reveals: drop the CSS-transition version */
-html.reveal-gsap [data-reveal] {
+/* GSAP owns this scroll reveal: drop the CSS-transition version */
+.js [data-reveal].reveal-gsap {
     opacity: 1;
     translate: none;
     transition: none;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Store\ProductListingRequest;
+use App\Services\GoogleTag;
 use App\Services\MetaPixel;
 use App\Support\Storefront\SearchPagePresenter;
 use Illuminate\Contracts\View\View;
@@ -14,7 +15,7 @@ class SearchController extends Controller
     /**
      * Show catalog-wide product search results with filters.
      */
-    public function __invoke(ProductListingRequest $request, SearchPagePresenter $presenter, MetaPixel $metaPixel): View|RedirectResponse
+    public function __invoke(ProductListingRequest $request, SearchPagePresenter $presenter, MetaPixel $metaPixel, GoogleTag $googleTag): View|RedirectResponse
     {
         $filters = $request->filters();
 
@@ -25,6 +26,7 @@ class SearchController extends Controller
         // Paging through the same results is not a new search.
         if ((int) $request->query('page', '1') <= 1) {
             $metaPixel->search($filters['q']);
+            $googleTag->search($filters['q']);
         }
 
         return view('store.category', $presenter->present($filters['q'], $filters));

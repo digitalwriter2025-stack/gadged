@@ -60,14 +60,14 @@ class PcBuilderPresenter
             'remove_url' => route('store.pc-builder.remove', $component),
             'product' => ($product = $selected->get($component->value)) === null ? null : [
                 'id' => $product->id,
-                'name' => $product->name,
+                'name' => $product->translated('name'),
                 'url' => route('store.products.show', $product->slug),
                 'image' => $this->cards->image($product, 'thumb'),
                 'price' => Money::format($product->min_price),
             ],
         ]);
 
-        $title = 'PC Builder - Build Your Own Computer - '.config('app.name');
+        $title = __('PC Builder - Build Your Own Computer - :store', ['store' => config('app.name')]);
 
         return [
             'groups' => [
@@ -83,12 +83,12 @@ class PcBuilderPresenter
                 ->values()
                 ->all(),
             'breadcrumbs' => [
-                ['label' => 'Home', 'url' => route('store.home')],
-                ['label' => 'PC Builder', 'url' => null],
+                ['label' => __('Home'), 'url' => route('store.home')],
+                ['label' => __('PC Builder'), 'url' => null],
             ],
             'seo' => [
                 'title' => $title,
-                'description' => 'Pick a processor, motherboard, RAM, storage, graphics card and more, and see the total price of your custom PC at '.config('app.name').'.',
+                'description' => __('Pick a processor, motherboard, RAM, storage, graphics card and more, and see the total price of your custom PC at :store.', ['store' => config('app.name')]),
             ],
         ];
     }
@@ -124,15 +124,15 @@ class PcBuilderPresenter
             'products' => $products,
             'selectedId' => $this->builder->selections()[$component->value] ?? null,
             'sort' => $sort,
-            'sorts' => self::SORTS,
+            'sorts' => array_map(fn (string $label): string => __($label), self::SORTS),
             'breadcrumbs' => [
-                ['label' => 'Home', 'url' => route('store.home')],
-                ['label' => 'PC Builder', 'url' => route('store.pc-builder.show')],
-                ['label' => "Choose {$component->label()}", 'url' => null],
+                ['label' => __('Home'), 'url' => route('store.home')],
+                ['label' => __('PC Builder'), 'url' => route('store.pc-builder.show')],
+                ['label' => __('Choose :component', ['component' => $component->label()]), 'url' => null],
             ],
             'seo' => [
-                'title' => "Choose {$component->label()} - PC Builder",
-                'description' => "Choose a {$component->label()} for your custom PC build.",
+                'title' => __('Choose :component - PC Builder', ['component' => $component->label()]),
+                'description' => __('Choose a :component for your custom PC build.', ['component' => $component->label()]),
             ],
         ];
     }

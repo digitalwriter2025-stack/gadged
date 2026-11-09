@@ -25,6 +25,8 @@ class HomeSectionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-view-columns';
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     public static function form(Schema $schema): Schema
     {
         return HomeSectionForm::configure($schema);
@@ -40,6 +42,14 @@ class HomeSectionResource extends Resource
         return [
             //
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'title_bn'];
     }
 
     public static function getPages(): array

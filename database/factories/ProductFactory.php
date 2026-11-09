@@ -73,6 +73,16 @@ class ProductFactory extends Factory
         return $this->state(fn (array $attributes) => ['status' => ProductStatus::Draft]);
     }
 
+    public function trending(): static
+    {
+        return $this->state(fn (array $attributes) => ['is_trending' => true]);
+    }
+
+    public function combo(): static
+    {
+        return $this->state(fn (array $attributes) => ['is_combo' => true]);
+    }
+
     public function unmanagedStock(): static
     {
         return $this->state(fn (array $attributes) => ['manage_stock' => false]);

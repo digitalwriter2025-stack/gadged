@@ -8,8 +8,6 @@ use App\Models\Coupon;
 use App\Models\FlashSale;
 use App\Models\FlashSaleProduct;
 use App\Models\ShippingMethod;
-use App\Models\ShippingRate;
-use App\Models\ShippingZone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -83,17 +81,16 @@ class PromotionRulesTest extends TestCase
         $this->assertFalse($limited->fresh()->hasUsesLeft());
     }
 
-    public function test_shipping_rate_applies_free_shipping_threshold(): void
+    public function test_shipping_method_applies_free_shipping_threshold(): void
     {
-        $rate = ShippingRate::query()->create([
-            'shipping_zone_id' => ShippingZone::query()->create(['name' => 'Inside Dhaka', 'code' => 'inside'])->id,
-            'shipping_method_id' => ShippingMethod::query()->create(['name' => 'Standard', 'code' => 'std'])->id,
+        $method = ShippingMethod::query()->create([
+            'name' => 'Inside Dhaka',
             'charge' => '60',
             'free_shipping_threshold' => '5000',
         ]);
 
-        $this->assertSame('60.00', $rate->chargeFor('4999.99'));
-        $this->assertSame('0.00', $rate->chargeFor('5000'));
+        $this->assertSame('60.00', $method->chargeFor('4999.99'));
+        $this->assertSame('0.00', $method->chargeFor('5000'));
     }
 
     public function test_banner_visibility_respects_schedule(): void

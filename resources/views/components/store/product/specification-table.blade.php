@@ -1,7 +1,7 @@
 @props(['groups'])
 
 @if ($groups === [])
-    <p class="rounded-md bg-surface px-4 py-6 text-center text-sm text-gray-500">Specifications will be added soon.</p>
+    <p class="rounded-md bg-surface px-4 py-6 text-center text-sm text-gray-500">{{ __('Specifications will be added soon.') }}</p>
 @else
     <div class="overflow-hidden rounded-md border border-gray-200">
         <table class="w-full text-left text-xs sm:text-[13px]">

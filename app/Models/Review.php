@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\ReviewStatus;
+use App\Observers\ReviewObserver;
 use Database\Factories\ReviewFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,8 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Customer review. status / moderation columns are changed only by staff actions.
+ * Customer review. status / moderation columns are changed only through ReviewService.
  */
+#[ObservedBy(ReviewObserver::class)]
 #[Fillable(['product_id', 'user_id', 'order_item_id', 'rating', 'title', 'body', 'is_verified_purchase'])]
 class Review extends Model
 {

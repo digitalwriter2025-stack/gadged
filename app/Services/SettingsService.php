@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Support\Localization;
 use Illuminate\Container\Attributes\Scoped;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
@@ -24,6 +25,17 @@ class SettingsService
     public function get(string $key, mixed $default = null): mixed
     {
         return Arr::get($this->all(), $key, $default);
+    }
+
+    /**
+     * A text setting in the storefront language ("announcement.text_bn" for Bangla),
+     * falling back to the English value when no translation is saved.
+     */
+    public function translated(string $key, mixed $default = null): mixed
+    {
+        $translation = $this->get(Localization::column($key));
+
+        return filled($translation) ? $translation : $this->get($key, $default);
     }
 
     /**

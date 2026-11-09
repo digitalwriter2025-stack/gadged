@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Observers\CatalogCacheObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -13,10 +14,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 #[Fillable([
     'menu_id', 'parent_id', 'label', 'url', 'linkable_type', 'linkable_id',
     'open_in_new_tab', 'is_active', 'sort_order',
+    'label_bn',
 ])]
 #[ObservedBy(CatalogCacheObserver::class)]
 class MenuItem extends Model
 {
+    use HasTranslations;
+
     /**
      * @return array<string, string>
      */

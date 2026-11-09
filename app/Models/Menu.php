@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Observers\CatalogCacheObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -11,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Named link list rendered at a fixed location (header, footer_information, ...).
  */
-#[Fillable(['name', 'location'])]
+#[Fillable(['name', 'location', 'name_bn'])]
 #[ObservedBy(CatalogCacheObserver::class)]
 class Menu extends Model
 {
+    use HasTranslations;
+
     /**
      * @return HasMany<MenuItem, $this>
      */

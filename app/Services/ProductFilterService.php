@@ -10,6 +10,7 @@ use App\Models\SpecificationOption;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * Filtering, sorting and facet data for storefront product listings.
@@ -35,6 +36,16 @@ class ProductFilterService
     public const DEFAULT_SORT = 'default';
 
     /**
+     * Upper bound on Meilisearch hits per search (its default maxTotalHits).
+     */
+    public const MAX_SEARCH_HITS = 1000;
+
+    /**
+     * @var array<string, list<int>|null>
+     */
+    private array $searchIdCache = [];
+
+    /**
      * @var array<string, string>
      */
     public const SORTS = [
@@ -45,6 +56,16 @@ class ProductFilterService
         'popular' => 'Best Selling',
         'rating' => 'Top Rated',
     ];
+
+    /**
+     * SORTS with the labels in the storefront language, for the sort dropdown.
+     *
+     * @return array<string, string>
+     */
+    public static function sortOptions(): array
+    {
+        return array_map(fn (string $label): string => __($label), self::SORTS);
+    }
 
     /**
      * Published products listed in any of the given categories.
@@ -58,18 +79,76 @@ class ProductFilterService
     }
 
     /**
-     * Published products whose name, SKU or model contains the search term.
+     * Published products matching the search term. Uses Meilisearch (typo tolerant,
+     * also matches brand, category, Bangla name and keywords) when it is the Scout
+     * driver and reachable; otherwise a LIKE match on name, SKU and model.
      *
      * @return Builder<Product>
      */
     public function searchQuery(string $term): Builder
     {
+        $ids = $this->searchIds($term);
+
+        if ($ids !== null) {
+            return Product::query()->published()->whereIn('products.id', $ids);
+        }
+
         $pattern = '%'.addcslashes(mb_substr($term, 0, 100), '\\%_').'%';
 
         return Product::query()->published()->where(fn (Builder $query) => $query
             ->where('products.name', 'like', $pattern)
+            ->orWhere('products.name_bn', 'like', $pattern)
             ->orWhere('products.sku', 'like', $pattern)
             ->orWhere('products.model', 'like', $pattern));
+    }
+
+    /**
+     * Order a searchQuery() result by search-engine relevance, best match first.
+     * A no-op when the LIKE fallback is in use.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function orderByRelevance(Builder $query, string $term): Builder
+    {
+        $ids = $this->searchIds($term);
+
+        if ($ids === null || $ids === []) {
+            return $query;
+        }
+
+        return $query->orderByRaw('FIELD(products.id, '.implode(',', $ids).')');
+    }
+
+    /**
+     * Relevance-ordered product ids from Meilisearch, or null when it is not the
+     * Scout driver or cannot be reached. Memoised so one request queries it once per term.
+     *
+     * @return list<int>|null
+     */
+    private function searchIds(string $term): ?array
+    {
+        if (config('scout.driver') !== 'meilisearch') {
+            return null;
+        }
+
+        $term = mb_substr($term, 0, 100);
+
+        if (array_key_exists($term, $this->searchIdCache)) {
+            return $this->searchIdCache[$term];
+        }
+
+        try {
+            $ids = Product::search($term)->take(self::MAX_SEARCH_HITS)->keys()
+                ->map(fn (int|string $id): int => (int) $id)
+                ->values()
+                ->all();
+        } catch (Throwable $exception) {
+            report($exception);
+            $ids = null;
+        }
+
+        return $this->searchIdCache[$term] = $ids;
     }
 
     /**
@@ -89,6 +168,18 @@ class ProductFilterService
     public function searchFacets(string $term): array
     {
         return $this->facetsFor($this->searchQuery($term), []);
+    }
+
+    /**
+     * Facets for a cross-category collection such as trending products or combos.
+     * Specifications are mapped per category, so none are offered.
+     *
+     * @param  Builder<Product>  $base
+     * @return Facets
+     */
+    public function collectionFacets(Builder $base): array
+    {
+        return $this->facetsFor($base, []);
     }
 
     /**
@@ -120,7 +211,8 @@ class ProductFilterService
     public function apply(Builder $query, array $filters, array $facets): Builder
     {
         if ($filters['q'] !== null) {
-            $query->where('products.name', 'like', '%'.addcslashes($filters['q'], '\\%_').'%');
+            $pattern = '%'.addcslashes($filters['q'], '\\%_').'%';
+            $query->where(fn (Builder $query) => $query->where('products.name', 'like', $pattern)->orWhere('products.name_bn', 'like', $pattern));
         }
 
         if ($filters['stock'] !== []) {
@@ -246,7 +338,7 @@ class ProductFilterService
             ->whereKey($positions->keys()->all())
             ->where('is_filterable', true)
             ->whereIn('input_type', [SpecificationInputType::Select, SpecificationInputType::MultiSelect, SpecificationInputType::Number])
-            ->get(['id', 'name', 'slug', 'unit', 'input_type'])
+            ->get(['id', 'name', 'name_bn', 'slug', 'unit', 'input_type'])
             ->sortBy(fn (Specification $specification): array => [(int) $positions[$specification->id], $specification->id]);
 
         if ($specifications->isEmpty()) {
@@ -262,7 +354,7 @@ class ProductFilterService
 
         $options = SpecificationOption::query()
             ->whereKey($rows->flatten(1)->pluck('specification_option_id')->filter()->unique()->values()->all())
-            ->get(['id', 'value', 'slug', 'sort_order'])
+            ->get(['id', 'value', 'value_bn', 'slug', 'sort_order'])
             ->keyBy('id');
 
         return $specifications
@@ -276,7 +368,7 @@ class ProductFilterService
                         ->map(fn (object $row): array => [
                             'id' => (int) $row->specification_option_id,
                             'value' => $options[$row->specification_option_id]->slug,
-                            'label' => $options[$row->specification_option_id]->value,
+                            'label' => $options[$row->specification_option_id]->translated('value'),
                             'count' => (int) $row->aggregate,
                         ])
                     : $values->whereNotNull('value_numeric')
@@ -291,7 +383,7 @@ class ProductFilterService
                 return [
                     'id' => $specification->id,
                     'slug' => $specification->slug,
-                    'name' => $specification->name,
+                    'name' => $specification->translated('name'),
                     'by_option' => $byOption,
                     'options' => $facetOptions->values()->all(),
                 ];

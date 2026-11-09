@@ -32,11 +32,11 @@ class ProductSpecifications
             ])
             ->groupBy(fn (ProductSpecificationValue $value): int => $value->specification->specification_group_id)
             ->map(fn (Collection $values): array => [
-                'name' => $values->first()->specification->group->name,
+                'name' => $values->first()->specification->group->translated('name'),
                 'rows' => $values
                     ->groupBy('specification_id')
                     ->map(fn (Collection $specValues): array => [
-                        'label' => $specValues->first()->specification->name,
+                        'label' => $specValues->first()->specification->translated('name'),
                         'values' => $specValues->map(fn (ProductSpecificationValue $value): string => $this->value($value))
                             ->filter(fn (string $text): bool => $text !== '')
                             ->values()
@@ -70,17 +70,21 @@ class ProductSpecifications
 
     public function isWarranty(string $label): bool
     {
-        return Str::contains(Str::lower($label), 'warranty');
+        return Str::contains(Str::lower($label), ['warranty', 'ওয়ারেন্টি']);
     }
 
+    /**
+     * Option values carry their own Bangla; typed-in values go through the
+     * language file, which covers common words such as colours ("Black" → "কালো").
+     */
     private function value(ProductSpecificationValue $value): string
     {
         $text = trim($value->displayValue());
 
         if ($value->specification->input_type === SpecificationInputType::Boolean) {
-            return in_array(Str::lower($text), ['1', 'yes', 'true'], true) ? 'Yes' : 'No';
+            return in_array(Str::lower($text), ['1', 'yes', 'true'], true) ? __('Yes') : __('No');
         }
 
-        return $text;
+        return $value->option === null && $text !== '' ? __($text) : $text;
     }
 }

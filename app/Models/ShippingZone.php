@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -9,11 +10,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Delivery area such as "Inside Dhaka" or "Outside Dhaka".
+ * Delivery area such as "Inside Dhaka" or "Outside Dhaka" that groups districts.
  */
-#[Fillable(['name', 'code', 'description', 'is_active', 'sort_order'])]
+#[Fillable(['name', 'code', 'description', 'is_active', 'sort_order', 'name_bn'])]
 class ShippingZone extends Model
 {
+    use HasTranslations;
+
     /**
      * @return array<string, string>
      */
@@ -23,14 +26,6 @@ class ShippingZone extends Model
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
-    }
-
-    /**
-     * @return HasMany<ShippingRate, $this>
-     */
-    public function rates(): HasMany
-    {
-        return $this->hasMany(ShippingRate::class);
     }
 
     /**

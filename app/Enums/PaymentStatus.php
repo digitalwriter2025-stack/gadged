@@ -17,16 +17,19 @@ enum PaymentStatus: string implements HasColor, HasLabel
     case Refunded = 'refunded';
     case PartiallyRefunded = 'partially_refunded';
 
+    /**
+     * In the storefront language; the admin panel shows English.
+     */
     public function getLabel(): string
     {
-        return match ($this) {
+        return __(match ($this) {
             self::Unpaid => 'Unpaid',
             self::Pending => 'Pending',
             self::Paid => 'Paid',
             self::Failed => 'Failed',
             self::Refunded => 'Refunded',
             self::PartiallyRefunded => 'Partial Refund',
-        };
+        });
     }
 
     public function getColor(): string

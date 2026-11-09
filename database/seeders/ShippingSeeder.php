@@ -4,14 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\District;
 use App\Models\ShippingMethod;
-use App\Models\ShippingRate;
 use App\Models\ShippingZone;
 use Illuminate\Database\Seeder;
 
 /**
- * Default zones (Inside / Outside Dhaka), a standard delivery method, starting
- * charges and Bangladesh's 64 districts. Charges are starting values only and are
- * managed from the admin panel afterwards; existing rates are never overwritten.
+ * Default zones (Inside / Outside Dhaka), the delivery methods offered at
+ * checkout and Bangladesh's 64 districts. Charges are starting values only and
+ * are managed from the admin panel afterwards; existing methods are never overwritten.
  */
 class ShippingSeeder extends Seeder
 {
@@ -58,6 +57,28 @@ class ShippingSeeder extends Seeder
         ],
     ];
 
+    /**
+     * @var list<array{code: string, name: string, description: string, charge: string, free_shipping_threshold: ?string, delivery_estimate: string}>
+     */
+    private const METHODS = [
+        [
+            'code' => 'inside_dhaka',
+            'name' => 'Inside Dhaka',
+            'description' => 'Delivered by our courier partner within the city',
+            'charge' => '60.00',
+            'free_shipping_threshold' => null,
+            'delivery_estimate' => '1-2 working days',
+        ],
+        [
+            'code' => 'outside_dhaka',
+            'name' => 'Outside Dhaka',
+            'description' => 'Nationwide delivery anywhere in Bangladesh',
+            'charge' => '120.00',
+            'free_shipping_threshold' => null,
+            'delivery_estimate' => '2-5 working days',
+        ],
+    ];
+
     public function run(): void
     {
         $inside = ShippingZone::query()->firstOrCreate(
@@ -70,20 +91,9 @@ class ShippingSeeder extends Seeder
             ['name' => 'Outside Dhaka', 'description' => 'All other districts', 'sort_order' => 2],
         );
 
-        $standard = ShippingMethod::query()->firstOrCreate(
-            ['code' => 'standard'],
-            ['name' => 'Standard Delivery', 'sort_order' => 1],
-        );
-
-        ShippingRate::query()->firstOrCreate(
-            ['shipping_zone_id' => $inside->id, 'shipping_method_id' => $standard->id],
-            ['charge' => '60.00', 'min_delivery_days' => 1, 'max_delivery_days' => 2],
-        );
-
-        ShippingRate::query()->firstOrCreate(
-            ['shipping_zone_id' => $outside->id, 'shipping_method_id' => $standard->id],
-            ['charge' => '120.00', 'min_delivery_days' => 2, 'max_delivery_days' => 5],
-        );
+        foreach (self::METHODS as $position => $method) {
+            ShippingMethod::query()->firstOrCreate(['code' => $method['code']], [...$method, 'sort_order' => $position]);
+        }
 
         foreach (self::DISTRICTS as $division => $districts) {
             foreach ($districts as [$name, $nameBn]) {

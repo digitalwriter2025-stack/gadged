@@ -10,7 +10,6 @@ use App\Models\District;
 use App\Models\FlashSaleProduct;
 use App\Models\Order;
 use App\Models\ShippingMethod;
-use App\Models\ShippingRate;
 use App\Models\User;
 use App\Support\CartLine;
 use App\Support\Money;
@@ -51,34 +50,13 @@ class CheckoutService
     }
 
     /**
-     * The delivery method used at checkout: shipping.default_method, otherwise the first active one.
-     */
-    public function shippingMethod(): ?ShippingMethod
-    {
-        $code = (string) $this->settings->get('shipping.default_method', 'standard');
-
-        return ShippingMethod::query()->active()->where('code', $code)->first()
-            ?? ShippingMethod::query()->active()->first();
-    }
-
-    /**
-     * Active rates of the delivery method, keyed by shipping zone id.
+     * Active delivery methods the customer can pick at checkout, in display order.
      *
-     * @return Collection<int, ShippingRate>
+     * @return Collection<int, ShippingMethod>
      */
-    public function shippingRates(?ShippingMethod $method): Collection
+    public function shippingMethods(): Collection
     {
-        if ($method === null) {
-            return collect();
-        }
-
-        return ShippingRate::query()
-            ->where('shipping_method_id', $method->id)
-            ->where('is_active', true)
-            ->whereHas('zone', fn (Builder $query) => $query->where('is_active', true))
-            ->with('zone')
-            ->get()
-            ->keyBy('shipping_zone_id');
+        return ShippingMethod::query()->active()->get();
     }
 
     /**
@@ -90,7 +68,7 @@ class CheckoutService
     }
 
     /**
-     * @param  array{customer_name: string, customer_phone: string, customer_email: ?string, district_id: int, shipping_area: ?string, shipping_address: string, customer_note: ?string, payment_method: string}  $details
+     * @param  array{customer_name: string, customer_phone: string, customer_email: ?string, district_id: int, shipping_method_id: ?int, shipping_area: ?string, shipping_address: string, customer_note: ?string, payment_method: string}  $details
      *
      * @throws ValidationException when the cart is empty, below the minimum or out of stock
      */
@@ -99,44 +77,108 @@ class CheckoutService
         $lines = $this->cart->lines();
 
         if ($lines->isEmpty()) {
-            throw ValidationException::withMessages(['cart' => 'Your cart is empty.']);
+            throw ValidationException::withMessages(['cart' => __('Your cart is empty.')]);
         }
 
         $subtotal = $this->cart->subtotal($lines);
         $minimum = $this->minimumOrderAmount();
 
         if (Money::compare($subtotal, $minimum) < 0) {
-            throw ValidationException::withMessages(['cart' => 'The minimum order amount is '.Money::format($minimum).'.']);
+            throw ValidationException::withMessages(['cart' => __('The minimum order amount is :amount.', ['amount' => Money::format($minimum)])]);
         }
 
-        $district = District::query()->findOrFail($details['district_id']);
-        $method = $this->shippingMethod();
-        $rate = $district->shipping_zone_id === null ? null : $this->shippingRates($method)->get($district->shipping_zone_id);
-        $shippingTotal = $rate?->chargeFor($subtotal) ?? '0.00';
+        $order = $this->createOrder($lines, $details, OrderSource::Web, '0.00', $customer, null, $ipAddress, $userAgent);
+
+        $this->cart->clear();
+
+        return $order;
+    }
+
+    /**
+     * Order taken by staff over the phone or Facebook: the same catalog prices, stock
+     * and flash sale rules as the website, plus an optional flat discount.
+     *
+     * @param  array{customer_name: string, customer_phone: string, customer_email: ?string, district_id: ?int, shipping_method_id: ?int, shipping_area: ?string, shipping_address: string, customer_note: ?string, payment_method: string}  $details
+     * @param  array<int, int>  $quantities  variant id => quantity
+     *
+     * @throws ValidationException when no product can be ordered, the discount is too large or stock ran out
+     */
+    public function placeManualOrder(array $details, array $quantities, string $manualDiscount, User $staff): Order
+    {
+        $lines = $this->cart->linesFor($quantities);
+
+        if ($lines->isEmpty()) {
+            throw ValidationException::withMessages(['items' => 'Add at least one product.']);
+        }
+
+        if ($lines->count() !== count($quantities)) {
+            throw ValidationException::withMessages(['items' => 'A product is no longer available. Remove it from the list and try again.']);
+        }
+
+        $manualDiscount = Money::of($manualDiscount);
+
+        if (Money::compare($manualDiscount, $this->cart->subtotal($lines)) > 0) {
+            throw ValidationException::withMessages(['extraDiscount' => 'The discount cannot be more than the product total.']);
+        }
+
+        return $this->createOrder($lines, $details, OrderSource::Admin, $manualDiscount, null, $staff);
+    }
+
+    /**
+     * Saves the order, its items and the opening status entry, taking stock and
+     * flash sale quantities in the same transaction.
+     *
+     * @param  Collection<int, CartLine>  $lines
+     * @param  array{customer_name: string, customer_phone: string, customer_email: ?string, district_id: ?int, shipping_method_id: ?int, shipping_area: ?string, shipping_address: string, customer_note: ?string, payment_method: string}  $details
+     *
+     * @throws ValidationException when stock or a flash sale deal ran out
+     */
+    private function createOrder(
+        Collection $lines,
+        array $details,
+        OrderSource $source,
+        string $manualDiscount,
+        ?User $customer,
+        ?User $staff = null,
+        ?string $ipAddress = null,
+        ?string $userAgent = null,
+    ): Order {
+        $subtotal = $this->cart->subtotal($lines);
+        $district = $details['district_id'] === null
+            ? null
+            : District::query()->with('shippingZone')->findOrFail($details['district_id']);
+        $method = $details['shipping_method_id'] === null
+            ? null
+            : ShippingMethod::query()->active()->findOrFail($details['shipping_method_id']);
+        $shippingTotal = $method?->chargeFor($subtotal) ?? '0.00';
+        $actor = $staff ?? $customer;
 
         try {
-            $order = DB::transaction(function () use ($details, $customer, $ipAddress, $userAgent, $lines, $subtotal, $district, $method, $rate, $shippingTotal): Order {
+            return DB::transaction(function () use ($details, $source, $manualDiscount, $customer, $staff, $actor, $ipAddress, $userAgent, $lines, $subtotal, $district, $method, $shippingTotal): Order {
                 $order = Order::query()->create([
                     'order_number' => $this->orderNumbers->next(),
                     'user_id' => $customer?->id,
                     'payment_method' => $details['payment_method'],
-                    'source' => OrderSource::Web,
+                    'source' => $source,
                     'customer_name' => $details['customer_name'],
                     'customer_phone' => $details['customer_phone'],
                     'customer_email' => $details['customer_email'] ?? null,
                     'shipping_address' => $details['shipping_address'],
                     'shipping_area' => $details['shipping_area'] ?? null,
-                    'district_id' => $district->id,
-                    'shipping_district' => $district->name,
-                    'shipping_zone_id' => $rate?->shipping_zone_id,
-                    'shipping_zone_name' => $rate?->zone->name,
-                    'shipping_method_id' => $rate === null ? null : $method?->id,
-                    'shipping_method_name' => $rate === null ? null : $method?->name,
+                    'district_id' => $district?->id,
+                    'shipping_district' => $district?->name,
+                    'shipping_zone_id' => $district?->shipping_zone_id,
+                    'shipping_zone_name' => $district?->shippingZone?->name,
+                    'shipping_method_id' => $method?->id,
+                    'shipping_method_name' => $method?->name,
                     'customer_note' => $details['customer_note'] ?? null,
                     'subtotal' => $subtotal,
+                    'manual_discount' => $manualDiscount,
+                    'discount_total' => $manualDiscount,
                     'shipping_total' => $shippingTotal,
-                    'grand_total' => Money::add($subtotal, $shippingTotal),
+                    'grand_total' => Money::add(Money::sub($subtotal, $manualDiscount), $shippingTotal),
                     'currency' => config('shop.currency.code'),
+                    'created_by' => $staff?->id,
                     'ip_address' => $ipAddress,
                     'user_agent' => $userAgent === null ? null : Str::limit($userAgent, 497),
                 ]);
@@ -153,6 +195,7 @@ class CheckoutService
                     'regular_price' => $line->regularPrice,
                     'unit_price' => $line->unitPrice,
                     'unit_discount' => $line->unitDiscount(),
+                    'unit_cost' => $line->variant->cost_price,
                     'quantity' => $line->quantity,
                     'line_total' => $line->lineTotal(),
                 ])->all());
@@ -162,14 +205,14 @@ class CheckoutService
                 $this->inventory->deductForOrder(
                     $lines->mapWithKeys(fn (CartLine $line): array => [$line->variant->id => $line->quantity])->all(),
                     $order,
-                    $customer,
+                    $actor,
                 );
 
                 $order->statusHistories()->create([
                     'type' => 'status',
                     'to_status' => OrderStatus::Pending->value,
-                    'note' => 'Order placed on the website.',
-                    'user_id' => $customer?->id,
+                    'note' => $source === OrderSource::Admin ? 'Manual order created from the admin panel.' : 'Order placed on the website.',
+                    'user_id' => $actor?->id,
                 ]);
 
                 return $order;
@@ -183,10 +226,6 @@ class CheckoutService
                     : "{$line?->product->name} just went out of stock. Please remove it to continue.",
             ]);
         }
-
-        $this->cart->clear();
-
-        return $order;
     }
 
     /**

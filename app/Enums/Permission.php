@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Illuminate\Support\Str;
+
 /**
  * Every staff permission, named "<module>.<ability>". The source of truth for the
  * permissions table (see RolesAndPermissionsSeeder) and for policy checks.
@@ -43,6 +45,9 @@ enum Permission: string
     case PaymentsView = 'payments.view';
     case PaymentsManage = 'payments.manage';
 
+    case FinanceView = 'finance.view';
+    case FinanceManage = 'finance.manage';
+
     case CouponsView = 'coupons.view';
     case CouponsManage = 'coupons.manage';
 
@@ -68,5 +73,54 @@ enum Permission: string
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
+    }
+
+    /**
+     * The admin section this permission belongs to, e.g. "products".
+     */
+    public function section(): string
+    {
+        return Str::before($this->value, '.');
+    }
+
+    /**
+     * What the permission allows inside its section, e.g. "View Cost Price".
+     */
+    public function abilityLabel(): string
+    {
+        return Str::headline(Str::after($this->value, '.'));
+    }
+
+    public static function sectionLabel(string $section): string
+    {
+        return match ($section) {
+            'dashboard' => 'Dashboard',
+            'reports' => 'Reports',
+            'activity_log' => 'Activity Log',
+            'attributes' => 'Product Attributes',
+            'specifications' => 'Product Specifications',
+            'flash_sales' => 'Flash Sales',
+            'content' => 'Content (Banners, Campaigns, Pages, Menus)',
+            'settings' => 'Site Settings',
+            'staff' => 'Staff Accounts',
+            'roles' => 'Roles',
+            default => Str::headline($section),
+        };
+    }
+
+    /**
+     * Every permission grouped by section, in declaration order.
+     *
+     * @return array<string, array<string, string>> section => [permission value => ability label]
+     */
+    public static function sections(): array
+    {
+        $sections = [];
+
+        foreach (self::cases() as $permission) {
+            $sections[$permission->section()][$permission->value] = $permission->abilityLabel();
+        }
+
+        return $sections;
     }
 }

@@ -14,11 +14,11 @@
 
         @if (count($products) > $initialCount)
             <div class="mt-6 flex flex-col items-center gap-2">
-                <button type="button" data-product-grid-more class="group flex h-10 cursor-pointer items-center gap-1.5 rounded-full border border-gray-200 bg-white px-6 text-sm font-medium text-gray-800 transition hover:border-accent hover:bg-accent hover:text-white active:scale-95">
-                    View All <x-store.icon name="arrow-right" class="size-3.5 rotate-90" />
+                <button type="button" data-product-grid-more class="group flex h-10 cursor-pointer items-center gap-1.5 rounded-full border border-gray-200 bg-white px-6 text-sm font-medium text-gray-800 transition hover:border-button hover:bg-button hover:text-button-text active:scale-95">
+                    {{ __('View All') }} <x-store.icon name="arrow-right" class="size-3.5 rotate-90" />
                 </button>
                 <p class="text-[11px] text-gray-500" aria-live="polite">
-                    Showing <span data-product-grid-shown>{{ $initialCount }}</span> of {{ count($products) }} products
+                    {!! __('Showing :shown of :total products', ['shown' => '<span data-product-grid-shown>'.e(\App\Support\Localization::digits($initialCount)).'</span>', 'total' => e(\App\Support\Localization::digits(count($products)))]) !!}
                 </p>
             </div>
         @endif

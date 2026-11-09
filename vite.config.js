@@ -12,8 +12,12 @@ export default defineConfig({
                 bunny('Poppins', {
                     weights: [400, 500, 600, 700],
                 }),
+                // Bangla glyphs for the বাংলা storefront. Not preloaded: the browser fetches
+                // these files only when a page actually contains Bangla text.
                 bunny('Hind Siliguri', {
-                    weights: [500, 700],
+                    weights: [400, 500, 600, 700],
+                    subsets: ['bengali'],
+                    preload: false,
                 }),
             ],
         }),

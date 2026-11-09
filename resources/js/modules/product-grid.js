@@ -1,3 +1,4 @@
+import { digits } from './i18n';
 import { prefersReducedMotion } from './motion';
 
 /**
@@ -29,7 +30,7 @@ export function initProductGrids() {
                     trailingItem.dataset.autoHiddenMobile = 'true';
                     mobileAdjusted = true;
                     if (counter) {
-                        counter.textContent = String(items.filter((item) => !item.hidden).length);
+                        counter.textContent = digits(items.filter((item) => !item.hidden).length);
                     }
                 }
             } else if (!isMobile() && mobileAdjusted) {
@@ -39,7 +40,7 @@ export function initProductGrids() {
                     delete autoHidden.dataset.autoHiddenMobile;
                     mobileAdjusted = false;
                     if (counter) {
-                        counter.textContent = String(items.filter((item) => !item.hidden).length);
+                        counter.textContent = digits(items.filter((item) => !item.hidden).length);
                     }
                 }
             }
@@ -83,7 +84,7 @@ export function initProductGrids() {
             const remaining = items.filter((item) => item.hidden).length;
 
             if (counter) {
-                counter.textContent = String(items.length - remaining);
+                counter.textContent = digits(items.length - remaining);
             }
 
             if (remaining === 0) {

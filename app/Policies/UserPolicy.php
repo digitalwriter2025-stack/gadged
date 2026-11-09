@@ -7,7 +7,7 @@ use App\Models\User;
 
 /**
  * Customers are governed by customers.* permissions, staff accounts by staff.manage.
- * Only a Super Admin (Gate::before) can modify another Super Admin.
+ * Super Admin accounts are locked for everyone: never updated or deleted, only their password changes.
  */
 class UserPolicy
 {
@@ -42,6 +42,18 @@ class UserPolicy
         }
 
         return $this->can($user, $this->permissionFor($target, Permission::CustomersDelete));
+    }
+
+    /**
+     * A Super Admin account is locked; its password is the only thing that can change, and only by a Super Admin.
+     */
+    public function changePassword(User $user, User $target): bool
+    {
+        if ($target->isSuperAdmin()) {
+            return $user->isActive() && $user->isSuperAdmin();
+        }
+
+        return $this->update($user, $target);
     }
 
     public function restore(User $user, User $target): bool

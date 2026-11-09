@@ -8,24 +8,27 @@ use App\Models\Product;
 use App\Support\Storefront\OfferPresenter;
 use App\Support\Storefront\ProductCardPresenter;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 
 class OfferController extends Controller
 {
     /**
-     * Show every running offer.
+     * Show every running campaign.
      */
     public function index(OfferPresenter $presenter): View
     {
-        return $this->listing('Offers', 'Latest offers and discounts on gadgets, laptops, PC components and more.', Offer::query(), $presenter);
-    }
+        $offers = Offer::query()->running()->with('media')->get()
+            ->map(fn (Offer $offer): array => $presenter->present($offer))
+            ->all();
 
-    /**
-     * Show running offers flagged as mobile deals.
-     */
-    public function mobileDeals(OfferPresenter $presenter): View
-    {
-        return $this->listing('Mobile Deal', 'Special deals on smartphones, tablets and mobile accessories.', Offer::query()->mobileDeals(), $presenter);
+        return view('store.offers.index', [
+            'heading' => __('Campaigns'),
+            'intro' => __('Running campaigns and limited-time discounts on smartwatches, earbuds, speakers, power banks, chargers and smartphones.'),
+            'offers' => $offers,
+            'breadcrumbs' => [
+                ['label' => __('Home'), 'url' => route('store.home')],
+                ['label' => __('Campaigns'), 'url' => null],
+            ],
+        ]);
     }
 
     /**
@@ -45,32 +48,12 @@ class OfferController extends Controller
 
         return view('store.offers.show', [
             'offer' => $presenter->present($offer),
-            'description' => $offer->description,
+            'description' => $offer->translated('description'),
             'products' => $products,
             'breadcrumbs' => [
-                ['label' => 'Home', 'url' => route('store.home')],
-                ['label' => 'Offers', 'url' => route('store.offers.index')],
-                ['label' => $offer->title, 'url' => null],
-            ],
-        ]);
-    }
-
-    /**
-     * @param  Builder<Offer>  $query
-     */
-    private function listing(string $heading, string $intro, Builder $query, OfferPresenter $presenter): View
-    {
-        $offers = $query->running()->with('media')->get()
-            ->map(fn (Offer $offer): array => $presenter->present($offer))
-            ->all();
-
-        return view('store.offers.index', [
-            'heading' => $heading,
-            'intro' => $intro,
-            'offers' => $offers,
-            'breadcrumbs' => [
-                ['label' => 'Home', 'url' => route('store.home')],
-                ['label' => $heading, 'url' => null],
+                ['label' => __('Home'), 'url' => route('store.home')],
+                ['label' => __('Campaigns'), 'url' => route('store.offers.index')],
+                ['label' => $offer->translated('title'), 'url' => null],
             ],
         ]);
     }

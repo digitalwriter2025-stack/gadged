@@ -1,3 +1,4 @@
+import { trackWishlist } from './analytics';
 import { prefersReducedMotion } from './motion';
 
 /**
@@ -54,7 +55,13 @@ export function initWishlistToggles() {
             return;
         }
 
-        button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true'));
+        const pressed = button.getAttribute('aria-pressed') !== 'true';
+
+        button.setAttribute('aria-pressed', String(pressed));
+
+        if (pressed) {
+            trackWishlist(button);
+        }
     });
 }
 
@@ -82,4 +89,35 @@ export function initFooterAccordions() {
 
     query.addEventListener('change', sync);
     sync();
+}
+
+/**
+ * Forms marked `data-submit-once`: disable the submit button while the request
+ * is in flight so a double tap cannot send it twice. Restored on back/forward.
+ */
+export function initSubmitOnce() {
+    const forms = [...document.querySelectorAll('form[data-submit-once]')];
+    if (forms.length === 0) {
+        return;
+    }
+
+    forms.forEach((form) => {
+        form.addEventListener('submit', () => {
+            form.querySelectorAll('button[type="submit"]').forEach((button) => {
+                button.disabled = true;
+                button.classList.add('is-loading');
+            });
+        });
+    });
+
+    window.addEventListener('pageshow', (event) => {
+        if (!event.persisted) {
+            return;
+        }
+
+        forms.forEach((form) => form.querySelectorAll('button[type="submit"]').forEach((button) => {
+            button.disabled = false;
+            button.classList.remove('is-loading');
+        }));
+    });
 }

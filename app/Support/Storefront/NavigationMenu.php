@@ -40,7 +40,7 @@ class NavigationMenu
     private function build(): array
     {
         $categories = Category::query()
-            ->select(['id', 'parent_id', 'name', 'slug', 'depth', 'sort_order'])
+            ->select(['id', 'parent_id', 'name', 'name_bn', 'slug', 'depth', 'sort_order'])
             ->active()
             ->where('show_in_menu', true)
             ->where('depth', '<=', self::MAX_DEPTH)
@@ -59,7 +59,7 @@ class NavigationMenu
     {
         return $categories->get($parentId, collect())
             ->map(function (Category $category) use ($categories, $level): array {
-                $link = ['label' => $category->name, 'url' => route('store.categories.show', $category->slug)];
+                $link = ['label' => $category->translated('name'), 'url' => route('store.categories.show', $category->slug)];
 
                 return $level < self::MAX_DEPTH
                     ? [...$link, 'children' => $this->branch($categories, $category->id, $level + 1)]

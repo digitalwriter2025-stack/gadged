@@ -15,6 +15,7 @@ use App\Models\HomeSectionItem;
 use App\Models\Product;
 use App\Models\ServiceHighlight;
 use App\Services\CatalogCache;
+use App\Support\Localization;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -73,8 +74,11 @@ class HomePagePresenter
             ? new Collection
             : Product::query()->published()->forCard()->whereIn('products.id', $productIds)->get()->keyBy('id');
 
+        // The same product usually appears in several sections, so present each card once.
+        $cards = $products->map(fn (Product $product): array => $this->cards->present($product))->all();
+
         return collect($blueprints)
-            ->map(fn (array $blueprint): array => $this->hydrate($blueprint, $products, $flashSale))
+            ->map(fn (array $blueprint): array => $this->hydrate($blueprint, $products, $cards, $flashSale))
             ->reject(fn (array $section): bool => $this->isEmpty($section))
             ->values()
             ->all();
@@ -93,8 +97,8 @@ class HomePagePresenter
             ->get()
             ->map(fn (HomeSection $section): array => [
                 'type' => $section->type->value,
-                'title' => $section->title,
-                'subtitle' => $section->subtitle,
+                'title' => $section->translated('title'),
+                'subtitle' => $section->translated('subtitle'),
                 'product_ids' => [],
                 ...$this->content($section),
             ])
@@ -115,7 +119,14 @@ class HomePagePresenter
                 ],
             ],
             HomeSectionType::PromoBanners => ['banners' => $this->banners(BannerPlacement::Promo)],
-            HomeSectionType::ServiceHighlights => ['items' => ServiceHighlight::query()->active()->get(['icon', 'title', 'subtitle', 'url'])->toArray()],
+            HomeSectionType::ServiceHighlights => ['items' => ServiceHighlight::query()->active()->get(['icon', 'title', 'title_bn', 'subtitle', 'subtitle_bn', 'url'])
+                ->map(fn (ServiceHighlight $highlight): array => [
+                    'icon' => $highlight->icon,
+                    'title' => $highlight->translated('title'),
+                    'subtitle' => $highlight->translated('subtitle'),
+                    'url' => $highlight->url,
+                ])
+                ->all()],
             HomeSectionType::FeaturedCategories => ['categories' => $this->featuredCategories($this->limit($section, 16))],
             HomeSectionType::FeaturedBrands => ['brands' => $this->featuredBrands($this->limit($section, 12))],
             HomeSectionType::FlashSale => [
@@ -133,7 +144,8 @@ class HomePagePresenter
             HomeSectionType::Showcase => [
                 'product_ids' => $this->productIds($section, $category = $this->sourceCategory($section)),
                 'theme' => $section->setting('theme', 'aurora'),
-                'cta_label' => $section->setting('cta_label') ?: 'Shop now',
+                // An untranslated label such as the default "Shop now" still goes through the language file.
+                'cta_label' => $section->setting(Localization::column('cta_label')) ?: __($section->setting('cta_label') ?: 'Shop now'),
                 'cta_url' => $this->viewAllUrl($section, $category) ?? '#',
                 'images' => $section->getMedia('images')
                     ->map(fn (Media $media): string => $media->getAvailableUrl(['card']))
@@ -165,6 +177,8 @@ class HomePagePresenter
             ProductCollectionSource::Latest => $query->orderByDesc('is_latest')->latest('published_at')->latest('id'),
             ProductCollectionSource::BestSellers => $query->orderByDesc('is_best_seller')->orderByDesc('sales_count')->latest('id'),
             ProductCollectionSource::Featured => $query->featured()->latest('published_at')->latest('id'),
+            ProductCollectionSource::Trending => $query->trending()->latest('published_at')->latest('id'),
+            ProductCollectionSource::Combos => $query->combos()->latest('published_at')->latest('id'),
             ProductCollectionSource::Category => $category === null
                 ? $query->whereRaw('1 = 0')
                 : $query->inCategories($category->subtreeIds())->orderByDesc('is_featured')->latest('id'),
@@ -181,7 +195,8 @@ class HomePagePresenter
     }
 
     /**
-     * An explicit "view all" link wins; a category collection links to its category.
+     * An explicit "view all" link wins; a category collection links to its category,
+     * and trending / combo collections link to their listing pages.
      */
     private function viewAllUrl(HomeSection $section, ?Category $category): ?string
     {
@@ -193,7 +208,11 @@ class HomePagePresenter
             return route('store.categories.show', $category->slug);
         }
 
-        return null;
+        return match (ProductCollectionSource::tryFrom((string) $section->setting('source'))) {
+            ProductCollectionSource::Trending => route('store.trending'),
+            ProductCollectionSource::Combos => route('store.combos.index'),
+            default => null,
+        };
     }
 
     private function limit(HomeSection $section, int $default = self::DEFAULT_PRODUCT_LIMIT): int
@@ -211,10 +230,10 @@ class HomePagePresenter
             ->visible()
             ->with('media')
             ->get()
-            ->map(fn (Banner $banner): ?array => ($image = $banner->getFirstMedia('desktop')) === null ? null : [
+            ->map(fn (Banner $banner): ?array => ($image = $banner->imageFor('desktop')) === null ? null : [
                 'image' => $image->getAvailableUrl(['desktop']),
-                'mobile_image' => $banner->getFirstMedia('mobile')?->getAvailableUrl(['mobile']),
-                'alt' => $banner->alt_text ?: (string) $banner->title,
+                'mobile_image' => $banner->imageFor('mobile')?->getAvailableUrl(['mobile']),
+                'alt' => $banner->translated('alt_text') ?: (string) $banner->translated('title'),
                 'url' => $banner->url ?: '#',
                 'new_tab' => $banner->open_in_new_tab,
             ])
@@ -234,9 +253,9 @@ class HomePagePresenter
             ->ordered()
             ->with('media')
             ->limit($limit)
-            ->get(['id', 'name', 'slug'])
+            ->get(['id', 'name', 'name_bn', 'slug'])
             ->map(fn (Category $category): array => [
-                'name' => $category->name,
+                'name' => $category->translated('name'),
                 'url' => route('store.categories.show', $category->slug),
                 'image' => $category->getFirstMedia('image')?->getAvailableUrl(['thumb']),
             ])
@@ -275,9 +294,10 @@ class HomePagePresenter
     /**
      * @param  Blueprint  $blueprint
      * @param  Collection<int, Product>  $products
+     * @param  array<int, array<string, mixed>>  $cards  Presented cards keyed by product ID.
      * @return array<string, mixed>
      */
-    private function hydrate(array $blueprint, Collection $products, ?FlashSale $flashSale): array
+    private function hydrate(array $blueprint, Collection $products, array $cards, ?FlashSale $flashSale): array
     {
         if ($blueprint['type'] === HomeSectionType::FlashSale->value) {
             $blueprint['products'] = $flashSale === null ? [] : $flashSale->items
@@ -286,11 +306,11 @@ class HomePagePresenter
                 ->map(fn (FlashSaleProduct $item): array => $this->cards->presentFlashDeal($products->get($item->product_id), $item, $flashSale))
                 ->values()
                 ->all();
-            $blueprint['title'] ??= $flashSale?->title;
+            $blueprint['title'] ??= $flashSale?->translated('title');
         } elseif (in_array(HomeSectionType::from($blueprint['type']), self::PRODUCT_SECTIONS, true)) {
             $blueprint['products'] = collect($blueprint['product_ids'])
-                ->filter(fn (int $id): bool => $products->has($id))
-                ->map(fn (int $id): array => $this->cards->present($products->get($id)))
+                ->filter(fn (int $id): bool => isset($cards[$id]))
+                ->map(fn (int $id): array => $cards[$id])
                 ->values()
                 ->all();
         }

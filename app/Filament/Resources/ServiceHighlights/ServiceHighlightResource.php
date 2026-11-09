@@ -27,6 +27,8 @@ class ServiceHighlightResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     public static function form(Schema $schema): Schema
     {
         return ServiceHighlightForm::configure($schema);
@@ -35,6 +37,14 @@ class ServiceHighlightResource extends Resource
     public static function table(Table $table): Table
     {
         return ServiceHighlightsTable::configure($table);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'title_bn'];
     }
 
     public static function getPages(): array

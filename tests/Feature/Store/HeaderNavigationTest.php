@@ -2,9 +2,11 @@
 
 namespace Tests\Feature\Store;
 
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -57,9 +59,23 @@ class HeaderNavigationTest extends TestCase
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.name', 'Gigabyte RTX 5070 Ti Gaming OC')
-            ->assertJsonStructure(['data' => [['name', 'url', 'image', 'price']]])
+            ->assertJsonStructure(['data' => [['name', 'url', 'image', 'brand', 'price', 'regular_price', 'discount_percent', 'in_stock', 'stock_label']]])
             ->assertJsonPath('meta.total', 1)
             ->assertJsonPath('meta.search_url', route('store.search', ['q' => 'RTX']));
+    }
+
+    public function test_search_suggestions_include_brand_discount_and_stock(): void
+    {
+        $brand = Brand::factory()->create(['name' => 'Gigabyte']);
+        Product::factory()->priced('15000', '12000')->create(['name' => 'Gigabyte RTX 5060', 'brand_id' => $brand->id]);
+
+        $this->getJson(route('store.search.suggest', ['q' => 'RTX']))
+            ->assertOk()
+            ->assertJsonPath('data.0.brand', 'Gigabyte')
+            ->assertJsonPath('data.0.regular_price', Money::format('15000'))
+            ->assertJsonPath('data.0.price', Money::format('12000'))
+            ->assertJsonPath('data.0.discount_percent', 20)
+            ->assertJsonPath('data.0.in_stock', true);
     }
 
     public function test_search_suggestions_include_matching_active_categories(): void

@@ -60,7 +60,11 @@ export async function enhanceLottie(canvases) {
  */
 export async function enhanceConfetti() {
     const { default: confetti } = await import('canvas-confetti');
-    const colors = ['#df0100', '#ffffff', '#1f1f1f', '#ff5a52'];
+    // Follows the theme colours chosen in the admin.
+    const rootStyle = getComputedStyle(document.documentElement);
+    const colors = [['--color-accent', '#df0100'], ['--color-builder', '#1f1f1f'], ['--color-footer-link', '#ff5a52']]
+        .map(([variable, fallback]) => rootStyle.getPropertyValue(variable).trim() || fallback)
+        .concat('#ffffff');
 
     const burst = (origin = { x: 0.5, y: 0.6 }) => confetti({
         particleCount: 90,

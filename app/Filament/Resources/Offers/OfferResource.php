@@ -22,11 +22,15 @@ class OfferResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Marketing';
 
-    protected static ?string $navigationLabel = 'Offers & Deals';
+    protected static ?string $navigationLabel = 'Campaigns';
+
+    protected static ?string $modelLabel = 'Campaign';
 
     protected static ?int $navigationSort = 1;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-gift';
+
+    protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
     {
@@ -41,6 +45,14 @@ class OfferResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['media']);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'title_bn'];
     }
 
     public static function getPages(): array

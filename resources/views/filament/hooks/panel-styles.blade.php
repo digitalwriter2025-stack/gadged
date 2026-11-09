@@ -340,6 +340,320 @@
         border-radius: 0.5rem;
     }
 
+    /* Product thumbnails: contained on a white tile so transparent PNGs read cleanly. */
+    .fi-ta-image img.gx-thumb {
+        object-fit: contain;
+        padding: 0.25rem;
+        border-radius: 0.75rem;
+        background-color: #fff;
+        box-shadow: 0 0 0 1px var(--gx-card-ring);
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .fi-ta-row:hover img.gx-thumb {
+        transform: scale(1.06);
+    }
+
+    .gx-price-was {
+        color: var(--gray-400);
+        font-size: 0.75rem;
+    }
+
+    .gx-price-off {
+        display: inline-block;
+        margin-inline-start: 0.25rem;
+        padding: 0 0.375rem;
+        border-radius: 9999px;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        color: var(--success-700);
+        background: color-mix(in oklab, var(--success-500) 12%, transparent);
+    }
+
+    .dark .gx-price-off {
+        color: var(--success-400);
+    }
+
+    .gx-cell-title {
+        display: block;
+        font-weight: 600;
+    }
+
+    .gx-cell-meta {
+        display: block;
+        margin-top: 0.125rem;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    /* Service highlights: an icon tile beside the badge text, as in the storefront strip. */
+    .gx-hl-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-align: start;
+    }
+
+    .gx-hl-icon {
+        display: grid;
+        flex-shrink: 0;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.625rem;
+        color: var(--primary-600);
+        background: color-mix(in oklab, var(--primary-500) 10%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-500) 14%, transparent);
+    }
+
+    .dark .gx-hl-icon {
+        color: var(--primary-400);
+    }
+
+    .gx-hl-icon svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .gx-hl-preview-strip {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.875rem 1rem;
+        border-radius: 0.75rem;
+        background-color: #fff;
+        box-shadow: 0 0 0 1px var(--gx-card-ring), 0 1px 2px rgb(15 23 42 / 0.05);
+    }
+
+    .dark .gx-hl-preview-strip {
+        background-color: rgb(255 255 255 / 0.03);
+    }
+
+    .gx-hl-preview-note {
+        margin-top: 0.625rem;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    .gx-hl-warning {
+        display: inline-block;
+        margin-top: 0.375rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--warning-700);
+        background: color-mix(in oklab, var(--warning-500) 12%, transparent);
+    }
+
+    .dark .gx-hl-warning {
+        color: var(--warning-400);
+    }
+
+    /* Home sections list: a position chip, an icon tile tinted like the type badge, and hidden blocks faded. */
+    .gx-hs-position {
+        display: inline-grid;
+        place-items: center;
+        min-width: 2rem;
+        height: 2rem;
+        padding-inline: 0.375rem;
+        border-radius: 0.625rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: var(--gray-700);
+        background: var(--gray-100);
+        box-shadow: inset 0 0 0 1px var(--gx-card-ring);
+    }
+
+    .dark .gx-hs-position {
+        color: var(--gray-200);
+        background: rgb(255 255 255 / 0.06);
+    }
+
+    .gx-hs-block {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.875rem;
+        text-align: start;
+    }
+
+    .gx-hs-icon {
+        display: grid;
+        flex-shrink: 0;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 0.75rem;
+        color: var(--color-600);
+        background: color-mix(in oklab, var(--color-500) 12%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-500) 18%, transparent);
+    }
+
+    .dark .gx-hs-icon {
+        color: var(--color-400);
+    }
+
+    .gx-hs-icon svg {
+        width: 1.375rem;
+        height: 1.375rem;
+    }
+
+    .gx-hs-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.25rem 0.5rem;
+    }
+
+    .gx-hs-block .gx-cell-meta {
+        font-size: 0.8125rem;
+    }
+
+    .gx-hs-hidden-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.0625rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--gray-600);
+        background: var(--gray-100);
+        box-shadow: inset 0 0 0 1px var(--gx-card-ring);
+    }
+
+    .dark .gx-hs-hidden-tag {
+        color: var(--gray-300);
+        background: rgb(255 255 255 / 0.06);
+    }
+
+    .gx-hs-row-hidden .gx-hs-position,
+    .gx-hs-row-hidden .gx-hs-icon,
+    .gx-hs-row-hidden .fi-ta-text .fi-badge {
+        filter: grayscale(1);
+        opacity: 0.55;
+    }
+
+    .gx-hs-row-hidden .gx-cell-title,
+    .gx-hs-row-hidden .gx-cell-meta {
+        opacity: 0.6;
+    }
+
+    /* Move up / down: dark arrows that turn brand-red on hover; a spent direction fades out. */
+    .gx-hs-move .fi-icon {
+        color: var(--gray-600);
+        transition: color 0.15s;
+    }
+
+    .dark .gx-hs-move .fi-icon {
+        color: var(--gray-300);
+    }
+
+    .gx-hs-move:not(.fi-disabled):hover .fi-icon {
+        color: var(--primary-600);
+    }
+
+    .gx-hs-move.fi-disabled {
+        cursor: not-allowed;
+    }
+
+    .gx-hs-move.fi-disabled .fi-icon {
+        color: var(--gray-300);
+    }
+
+    .dark .gx-hs-move.fi-disabled .fi-icon {
+        color: var(--gray-600);
+    }
+
+    /* Orders list: until an order is booked, its courier cell is a "Send to courier" button. */
+    .gx-courier-send .fi-badge {
+        gap: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--success-700);
+        background-color: var(--gx-card-bg);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--success-600) 35%, transparent), 0 1px 2px rgb(15 23 42 / 0.06);
+        transition: background-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+
+    .gx-courier-send .fi-badge .fi-icon {
+        color: var(--success-600);
+        transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .dark .gx-courier-send .fi-badge {
+        color: var(--success-400);
+        background-color: color-mix(in oklab, var(--success-500) 8%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--success-500) 35%, transparent);
+    }
+
+    .dark .gx-courier-send .fi-badge .fi-icon {
+        color: var(--success-400);
+    }
+
+    .fi-ta-col:hover .gx-courier-send .fi-badge {
+        color: #fff;
+        background-color: var(--success-600);
+        box-shadow: inset 0 0 0 1px var(--success-600), 0 6px 14px -6px color-mix(in oklab, var(--success-600) 70%, transparent);
+    }
+
+    .fi-ta-col:hover .gx-courier-send .fi-badge .fi-icon {
+        color: #fff;
+        transform: translate(2px, -2px);
+    }
+
+    .fi-ta-col:active .gx-courier-send .fi-badge {
+        transform: scale(0.97);
+    }
+
+    .fi-ta-col:has(.gx-courier-send):focus-visible {
+        outline: none;
+    }
+
+    .fi-ta-col:focus-visible .gx-courier-send .fi-badge {
+        outline: 2px solid var(--success-500);
+        outline-offset: 2px;
+    }
+
+    /* List page tabs (Products / Orders): a pill bar on a card. */
+    .fi-resource-list-records-page .fi-tabs {
+        gap: 0.25rem;
+        padding: 0.375rem;
+        border-radius: var(--gx-radius-xl);
+        background-color: var(--gx-card-bg);
+        box-shadow: 0 0 0 1px var(--gx-card-ring), var(--gx-card-shadow);
+        scrollbar-width: none;
+    }
+
+    .fi-resource-list-records-page .fi-tabs-item {
+        flex-shrink: 0;
+        border-radius: 0.625rem;
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    .fi-resource-list-records-page .fi-tabs-item:hover {
+        background-color: color-mix(in oklab, var(--primary-500) 6%, transparent);
+    }
+
+    .fi-resource-list-records-page .fi-tabs-item.fi-active,
+    .dark .fi-resource-list-records-page .fi-tabs-item.fi-active {
+        background-color: color-mix(in oklab, var(--primary-500) 10%, transparent);
+    }
+
+    .fi-resource-list-records-page .fi-tabs-item.fi-active .fi-tabs-item-label,
+    .fi-resource-list-records-page .fi-tabs-item.fi-active .fi-icon {
+        color: var(--primary-600);
+        font-weight: 600;
+    }
+
+    .dark .fi-resource-list-records-page .fi-tabs-item.fi-active .fi-tabs-item-label,
+    .dark .fi-resource-list-records-page .fi-tabs-item.fi-active .fi-icon {
+        color: var(--primary-400);
+    }
+
     .fi-ta-empty-state-icon-bg {
         background: color-mix(in oklab, var(--primary-500) 12%, transparent);
     }
@@ -530,6 +844,783 @@
         }
     }
 
+    /* ---------- Cache manager page ---------- */
+    .gx-tone-info { --gx-tone: var(--info-500); }
+    .gx-tone-success { --gx-tone: var(--success-500); }
+    .gx-tone-warning { --gx-tone: var(--warning-500); }
+    .gx-tone-primary { --gx-tone: var(--primary-500); }
+    .gx-tone-gray { --gx-tone: var(--gray-500); }
+
+    .gx-cache {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .gx-cache-stats,
+    .gx-cache-targets {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+        gap: 1rem;
+    }
+
+    .gx-cache-targets {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    }
+
+    .gx-cache-stat,
+    .gx-cache-target {
+        border-radius: var(--gx-radius-lg);
+        background-color: var(--gx-card-bg);
+        box-shadow: 0 0 0 1px var(--gx-card-ring), var(--gx-card-shadow);
+    }
+
+    .gx-cache-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        padding: 1.125rem 1.25rem;
+    }
+
+    .gx-cache-stat-icon,
+    .gx-cache-target-icon {
+        display: grid;
+        flex-shrink: 0;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.625rem;
+        color: var(--gx-tone);
+        background: color-mix(in oklab, var(--gx-tone) 12%, transparent);
+    }
+
+    .gx-cache-stat-icon .fi-icon,
+    .gx-cache-target-icon .fi-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .gx-cache-stat-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--gray-500);
+    }
+
+    .gx-cache-stat-value {
+        font-size: 1.125rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--gray-950);
+    }
+
+    .gx-cache-stat-value-sm {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .gx-cache-stat-value-ok {
+        color: var(--success-600);
+    }
+
+    .dark .gx-cache-stat-value {
+        color: #fff;
+    }
+
+    .dark .gx-cache-stat-value-ok {
+        color: var(--success-400);
+    }
+
+    .gx-cache-hero {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-radius: var(--gx-radius-xl);
+        background: linear-gradient(90deg, color-mix(in oklab, var(--primary-500) 10%, var(--gx-card-bg)), var(--gx-card-bg) 75%);
+        box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary-500) 22%, transparent), var(--gx-card-shadow);
+    }
+
+    .gx-cache-hero-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--gray-950);
+    }
+
+    .gx-cache-hero-text {
+        margin-top: 0.25rem;
+        max-width: 42rem;
+        font-size: 0.875rem;
+        color: var(--gray-600);
+    }
+
+    .dark .gx-cache-hero-title {
+        color: #fff;
+    }
+
+    .dark .gx-cache-hero-text {
+        color: var(--gray-400);
+    }
+
+    .gx-cache-hero-button {
+        flex-shrink: 0;
+    }
+
+    .gx-cache-target {
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem;
+    }
+
+    .gx-cache-target-head {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .gx-cache-target-title {
+        flex: 1;
+        min-width: 0;
+        font-weight: 600;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-cache-target-title {
+        color: #fff;
+    }
+
+    .gx-cache-target-tag {
+        flex-shrink: 0;
+        padding: 0.125rem 0.5rem;
+        border-radius: 0.375rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.6875rem;
+        font-weight: 500;
+        color: var(--gx-tone);
+        background: color-mix(in oklab, var(--gx-tone) 12%, transparent);
+    }
+
+    .gx-cache-target-text {
+        flex: 1;
+        margin-top: 0.75rem;
+        font-size: 0.875rem;
+        color: var(--gray-500);
+    }
+
+    .dark .gx-cache-target-text {
+        color: var(--gray-400);
+    }
+
+    .gx-cache-target-footer {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--gx-card-ring);
+    }
+
+    .gx-cache-target-button {
+        width: 100%;
+    }
+
+    @media (min-width: 640px) {
+        .gx-cache-hero {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 1.75rem;
+        }
+    }
+
+    /* ---------- Settings page ---------- */
+    .gx-settings-tabs.fi-sc-tabs {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .gx-settings-tabs > .fi-tabs {
+        flex-direction: row;
+        gap: 0.25rem;
+        padding: 0.375rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+        border-radius: var(--gx-radius-xl);
+        background-color: var(--gx-card-bg);
+        box-shadow: 0 0 0 1px var(--gx-card-ring), var(--gx-card-shadow);
+    }
+
+    .gx-settings-tabs > .fi-sc-tabs-tab.fi-active {
+        margin: 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .gx-settings-tabs .fi-tabs-item {
+        position: relative;
+        flex-shrink: 0;
+        padding: 0.625rem 0.875rem;
+        border-radius: 0.625rem;
+        color: var(--gray-600);
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    .dark .gx-settings-tabs .fi-tabs-item {
+        color: var(--gray-400);
+    }
+
+    .gx-settings-tabs .fi-tabs-item .fi-icon {
+        color: var(--gray-400);
+        transition: color 0.15s;
+    }
+
+    .gx-settings-tabs .fi-tabs-item:hover .fi-icon {
+        color: var(--primary-500);
+    }
+
+    .gx-settings-tabs .fi-tabs-item.fi-active,
+    .dark .gx-settings-tabs .fi-tabs-item.fi-active {
+        background-color: color-mix(in oklab, var(--primary-500) 9%, transparent);
+    }
+
+    .gx-settings-tabs .fi-tabs-item.fi-active .fi-tabs-item-label,
+    .gx-settings-tabs .fi-tabs-item.fi-active .fi-icon {
+        color: var(--primary-600);
+        font-weight: 600;
+    }
+
+    .dark .gx-settings-tabs .fi-tabs-item.fi-active .fi-tabs-item-label,
+    .dark .gx-settings-tabs .fi-tabs-item.fi-active .fi-icon {
+        color: var(--primary-400);
+    }
+
+    @media (min-width: 1024px) {
+        .gx-settings-tabs.fi-sc-tabs {
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        .gx-settings-tabs > .fi-tabs {
+            position: sticky;
+            top: 5.5rem;
+            flex-direction: column;
+            flex-shrink: 0;
+            width: 15rem;
+            padding: 0.5rem;
+            overflow: visible;
+        }
+
+        .gx-settings-tabs .fi-tabs-item {
+            justify-content: flex-start;
+        }
+
+        .gx-settings-tabs .fi-tabs-item.fi-active::before {
+            content: '';
+            position: absolute;
+            inset: 0.5rem auto 0.5rem -0.5rem;
+            width: 3px;
+            border-radius: 0 3px 3px 0;
+            background: var(--primary-500);
+        }
+
+        .gx-settings-tabs > .fi-sc-tabs-tab.fi-active {
+            flex: 1;
+        }
+    }
+
+    .gx-settings .fi-section-header > .fi-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-top: 0;
+        padding: 0.5625rem;
+        border-radius: 0.75rem;
+        color: var(--primary-600);
+        background: color-mix(in oklab, var(--primary-500) 10%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-500) 16%, transparent);
+    }
+
+    .dark .gx-settings .fi-section-header > .fi-icon {
+        color: var(--primary-400);
+    }
+
+    .gx-settings .fi-section-header-description {
+        margin-top: 0.125rem;
+    }
+
+    /* Logo uploads: dashed drop zone, checkerboard behind transparent images. */
+    .gx-upload .filepond--root {
+        min-height: 9.5rem;
+        background-color: color-mix(in oklab, var(--gray-50) 70%, transparent);
+        box-shadow: none;
+        outline: 1.5px dashed color-mix(in oklab, var(--gray-400) 55%, transparent);
+        outline-offset: -1.5px;
+        transition: outline-color 0.15s, background-color 0.15s;
+    }
+
+    .dark .gx-upload .filepond--root {
+        background-color: rgb(255 255 255 / 0.03);
+        outline-color: rgb(255 255 255 / 0.18);
+    }
+
+    .gx-upload .filepond--root:hover,
+    .gx-upload .filepond--root[data-hopper-state='drag-over'] {
+        outline-color: var(--primary-500);
+        background-color: color-mix(in oklab, var(--primary-500) 5%, transparent);
+    }
+
+    .gx-upload .filepond--drop-label {
+        min-height: 9.5rem;
+    }
+
+    .gx-upload .filepond--drop-label label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.625rem;
+        font-size: 0.8125rem;
+        color: var(--gray-500);
+        cursor: pointer;
+    }
+
+    .gx-upload .filepond--drop-label label::before {
+        content: '';
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        background:
+            no-repeat center / 1.25rem
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.6' stroke='%23df0100'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5'/%3E%3C/svg%3E"),
+            color-mix(in oklab, var(--primary-500) 10%, transparent);
+    }
+
+    .gx-upload .filepond--label-action {
+        font-weight: 600;
+        color: var(--primary-600);
+        text-decoration: none;
+    }
+
+    .gx-upload .filepond--item-panel {
+        background-color: var(--gray-700);
+    }
+
+    .gx-upload .filepond--image-preview {
+        background-color: #fff;
+        background-image:
+            linear-gradient(45deg, var(--gray-100) 25%, transparent 25%),
+            linear-gradient(-45deg, var(--gray-100) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, var(--gray-100) 75%),
+            linear-gradient(-45deg, transparent 75%, var(--gray-100) 75%);
+        background-size: 16px 16px;
+        background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    }
+
+    .gx-upload-dark .filepond--image-preview {
+        background-color: #0f172a;
+        background-image: none;
+    }
+
+    .gx-upload .filepond--image-preview-overlay-idle {
+        color: rgb(15 23 42 / 0.55);
+    }
+
+    /* Sticky save bar */
+    .gx-settings-savebar {
+        position: sticky;
+        bottom: 1rem;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        padding: 0.75rem;
+        border-radius: var(--gx-radius-xl);
+        background-color: var(--gx-chrome-bg);
+        backdrop-filter: saturate(1.6) blur(14px);
+        -webkit-backdrop-filter: saturate(1.6) blur(14px);
+        box-shadow: 0 0 0 1px var(--gx-card-ring), 0 12px 32px -12px rgb(15 23 42 / 0.25);
+    }
+
+    .gx-settings-savebar-text {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: var(--gray-500);
+    }
+
+    .dark .gx-settings-savebar-text {
+        color: var(--gray-400);
+    }
+
+    .gx-settings-savebar-icon {
+        flex-shrink: 0;
+        width: 1.125rem;
+        height: 1.125rem;
+        color: var(--gray-400);
+    }
+
+    @media (min-width: 640px) {
+        .gx-settings-savebar {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .gx-settings-savebar {
+            margin-inline-start: 16.5rem;
+        }
+    }
+
+    /* ---------- Product editor ---------- */
+    .gx-product-form .gx-upload .filepond--root,
+    .gx-product-form .gx-upload .filepond--drop-label {
+        min-height: 11rem;
+    }
+
+    /* ---------- Banner editor ---------- */
+    .gx-banner-form .gx-upload .filepond--root,
+    .gx-banner-form .gx-upload .filepond--drop-label {
+        min-height: 13rem;
+    }
+
+    /* Banner artwork has no transparency to show, so preview it on a plain tile. */
+    .gx-banner-form .gx-upload .filepond--image-preview {
+        background-image: none;
+        background-color: var(--gray-100);
+    }
+
+    .dark .gx-banner-form .gx-upload .filepond--image-preview {
+        background-color: var(--gray-800);
+    }
+
+    /* Choice cards: radio options (home block type, product source, panel colour) as tappable cards. */
+    .fi-fo-radio.gx-choice-cards {
+        gap: 0.75rem;
+    }
+
+    .gx-choice-cards > .fi-fo-radio-label {
+        align-self: stretch;
+        padding: 0.875rem 1rem;
+        border-radius: var(--gx-radius-lg);
+        background-color: var(--gx-card-bg);
+        box-shadow: 0 0 0 1px var(--gx-card-ring), 0 1px 2px rgb(15 23 42 / 0.04);
+        cursor: pointer;
+        transition: box-shadow 0.15s, background-color 0.15s;
+    }
+
+    .gx-choice-cards > .fi-fo-radio-label:hover {
+        box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary-500) 45%, transparent), 0 6px 16px -10px rgb(15 23 42 / 0.25);
+    }
+
+    .gx-choice-cards > .fi-fo-radio-label:has(.fi-radio-input:checked) {
+        background-color: color-mix(in oklab, var(--primary-500) 6%, var(--gx-card-bg));
+        box-shadow: 0 0 0 2px var(--primary-500);
+    }
+
+    .gx-choice-cards > .fi-fo-radio-label > .fi-fo-radio-label-text {
+        align-content: start;
+        font-weight: 600;
+    }
+
+    .gx-choice-cards .fi-fo-radio-label-description {
+        margin-top: 0.125rem;
+        font-size: 0.8125rem;
+        line-height: 1.35;
+    }
+
+    /* Panel colour: a swatch of the storefront gradient on each card. */
+    .gx-theme-cards > .fi-fo-radio-label::after {
+        content: '';
+        flex-shrink: 0;
+        width: 3.5rem;
+        height: 2.5rem;
+        margin-left: auto;
+        border-radius: 0.5rem;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+    }
+
+    .gx-theme-cards > .fi-fo-radio-label:has(.fi-radio-input[value="aurora"])::after {
+        background: linear-gradient(135deg, #5c0000, #a30000 55%, #df0100);
+    }
+
+    .gx-theme-cards > .fi-fo-radio-label:has(.fi-radio-input[value="midnight"])::after {
+        background: radial-gradient(120% 120% at 0% 100%, rgb(234 88 12 / 0.85), rgb(67 20 7 / 0.4) 50%, transparent 75%), #000;
+    }
+
+    /* Product picker: the product photo beside its name, in the dropdown and on the picked row. */
+    .gx-product-option {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+
+    .gx-product-option > img {
+        flex-shrink: 0;
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0.125rem;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        background-color: #fff;
+        box-shadow: 0 0 0 1px var(--gx-card-ring);
+    }
+
+    .gx-product-option > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .fi-select-input-value-label .gx-product-option > img {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    /* Sticky Save / Cancel bar on create and edit pages, matching the settings save bar. */
+    .fi-sticky .fi-ac {
+        background-color: var(--gx-chrome-bg);
+        backdrop-filter: saturate(1.6) blur(14px);
+        -webkit-backdrop-filter: saturate(1.6) blur(14px);
+        border-radius: var(--gx-radius-xl);
+        box-shadow: 0 0 0 1px var(--gx-card-ring), 0 12px 32px -12px rgb(15 23 42 / 0.25);
+    }
+
+    /* ---------- Order detail ---------- */
+    .gx-order-totals {
+        margin-top: 1rem;
+        margin-inline-start: auto;
+        max-width: 22rem;
+        padding: 1rem 1.125rem;
+        border-radius: var(--gx-radius-lg);
+        background-color: color-mix(in oklab, var(--gray-50) 80%, transparent);
+        box-shadow: inset 0 0 0 1px var(--gx-card-ring);
+    }
+
+    .dark .gx-order-totals {
+        background-color: rgb(255 255 255 / 0.03);
+    }
+
+    .gx-order-totals .fi-in-text {
+        justify-content: flex-end;
+        text-align: end;
+    }
+
+    .gx-timeline {
+        position: relative;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .gx-timeline-item {
+        --gx-dot: var(--gray-400);
+        position: relative;
+        padding: 0 0 1.25rem 1.75rem;
+    }
+
+    .gx-timeline-item::before {
+        content: '';
+        position: absolute;
+        top: 1.25rem;
+        bottom: 0;
+        left: 0.4375rem;
+        width: 2px;
+        background: var(--gx-card-ring);
+    }
+
+    .gx-timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+    .gx-timeline-item:last-child::before {
+        display: none;
+    }
+
+    .gx-timeline-item::after {
+        content: '';
+        position: absolute;
+        top: 0.25rem;
+        left: 0;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 9999px;
+        background: var(--gx-card-bg);
+        box-shadow: inset 0 0 0 4px var(--gx-dot);
+    }
+
+    .gx-timeline-item:first-child::after {
+        box-shadow: inset 0 0 0 4px var(--gx-dot), 0 0 0 4px color-mix(in oklab, var(--gx-dot) 18%, transparent);
+    }
+
+    .gx-timeline-item[data-color='warning'] { --gx-dot: var(--warning-500); }
+    .gx-timeline-item[data-color='info'] { --gx-dot: var(--info-500); }
+    .gx-timeline-item[data-color='primary'] { --gx-dot: var(--primary-500); }
+    .gx-timeline-item[data-color='success'] { --gx-dot: var(--success-500); }
+    .gx-timeline-item[data-color='danger'] { --gx-dot: var(--danger-500); }
+
+    .gx-timeline-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .gx-timeline-kind {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--gray-500);
+    }
+
+    .gx-timeline-arrow {
+        width: 1rem;
+        height: 1rem;
+        color: var(--gray-400);
+    }
+
+    .gx-timeline-note {
+        margin-top: 0.375rem;
+        font-size: 0.875rem;
+        color: var(--gray-700);
+    }
+
+    .dark .gx-timeline-note {
+        color: var(--gray-300);
+    }
+
+    .gx-timeline-meta {
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+    }
+
+    /* ---------- Finance report: profit & loss statement ---------- */
+    .gx-pl {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.875rem;
+    }
+
+    .gx-pl-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.45rem 0;
+        color: var(--gray-700);
+    }
+
+    .dark .gx-pl-row {
+        color: var(--gray-300);
+    }
+
+    .gx-pl-amount {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+
+    .gx-pl-line {
+        padding-inline-start: 0.75rem;
+    }
+
+    .gx-pl-negative .gx-pl-amount {
+        color: var(--danger-600);
+    }
+
+    .gx-pl-positive .gx-pl-amount {
+        color: var(--success-600);
+    }
+
+    .dark .gx-pl-negative .gx-pl-amount {
+        color: var(--danger-400);
+    }
+
+    .dark .gx-pl-positive .gx-pl-amount {
+        color: var(--success-400);
+    }
+
+    .gx-pl-subtotal {
+        border-top: 1px dashed var(--gx-card-ring);
+        font-weight: 600;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-pl-subtotal {
+        color: #fff;
+    }
+
+    .gx-pl-total {
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        border-radius: var(--gx-radius-lg);
+        background: color-mix(in oklab, var(--gray-100) 70%, transparent);
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-pl-total {
+        background: color-mix(in oklab, var(--gray-800) 70%, transparent);
+        color: #fff;
+    }
+
+    .gx-pl-heading {
+        margin-top: 0.875rem;
+        padding-bottom: 0.25rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--gray-500);
+    }
+
+    .gx-pl > .gx-pl-heading:first-child {
+        margin-top: 0;
+    }
+
+    .gx-pl-empty,
+    .gx-pl-note {
+        padding: 0.25rem 0 0.25rem 0.75rem;
+        font-size: 0.8125rem;
+        color: var(--gray-500);
+    }
+
+    .gx-pl-note {
+        padding-inline-start: 0;
+    }
+
+    .gx-pl-warning {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: var(--gx-radius-lg);
+        background: color-mix(in oklab, var(--warning-500) 12%, transparent);
+        font-size: 0.8125rem;
+        color: var(--warning-700);
+    }
+
+    .dark .gx-pl-warning {
+        color: var(--warning-300);
+    }
+
+    .gx-pl-warning .fi-icon {
+        flex-shrink: 0;
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+    .gx-pl-aside {
+        margin-top: 1.25rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--gx-card-ring);
+    }
+
     /* ---------- Motion ---------- */
     .fi-page .fi-wi-widget {
         animation: gx-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
@@ -549,9 +1640,16 @@
 
     @media (prefers-reduced-motion: reduce) {
         .fi-page .fi-wi-widget,
-        .gx-cache-btn .fi-icon {
+        .gx-cache-btn .fi-icon,
+        .gx-courier-send .fi-badge,
+        .gx-courier-send .fi-badge .fi-icon {
             animation: none;
             transition: none;
+        }
+
+        .fi-ta-col:hover .gx-courier-send .fi-badge .fi-icon,
+        .fi-ta-col:active .gx-courier-send .fi-badge {
+            transform: none;
         }
 
         .fi-wi-stats-overview-stat:hover,

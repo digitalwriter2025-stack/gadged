@@ -32,11 +32,6 @@ class OfferFactory extends Factory
         ];
     }
 
-    public function mobileDeal(): static
-    {
-        return $this->state(fn (): array => ['is_mobile_deal' => true]);
-    }
-
     public function expired(): static
     {
         return $this->state(fn (): array => ['starts_at' => now()->subDays(20), 'ends_at' => now()->subDay()]);

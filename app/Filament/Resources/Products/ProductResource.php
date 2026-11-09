@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductResource extends Resource
 {
@@ -27,6 +28,8 @@ class ProductResource extends Resource
     protected static ?int $navigationSort = 3;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -41,6 +44,28 @@ class ProductResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with(['category', 'brand', 'media']);
+    }
+
+    /**
+     * Variant SKUs are included so a variable product is found by any of its SKUs.
+     *
+     * @return list<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'name_bn', 'sku', 'model', 'variants.sku'];
+    }
+
+    /**
+     * @param  Product  $record
+     * @return array<string, string>
+     */
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return array_filter([
+            'SKU' => (string) $record->sku,
+            'Brand' => (string) $record->brand?->name,
+        ], filled(...));
     }
 
     public static function getPages(): array

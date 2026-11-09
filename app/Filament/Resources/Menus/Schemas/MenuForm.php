@@ -24,7 +24,13 @@ class MenuForm
                             TextInput::make('name')
                                 ->label('Menu Title / Name')
                                 ->required()
+                                ->maxLength(100)
                                 ->placeholder('e.g. Information, Policies, Customer Care'),
+
+                            TextInput::make('name_bn')
+                                ->label('মেনুর নাম (Bangla title, optional)')
+                                ->maxLength(100)
+                                ->placeholder('যেমন: তথ্য, নীতিমালা'),
 
                             Select::make('location')
                                 ->label('Menu Placement Location')
@@ -34,7 +40,7 @@ class MenuForm
                                     'header_custom' => 'Custom Header Navigation',
                                 ])
                                 ->required(),
-                        ])->columns(2),
+                        ])->columns(3),
                     ]),
 
                 Section::make('Menu Navigation Links')
@@ -43,10 +49,18 @@ class MenuForm
                             ->relationship('rootItems')
                             ->label('Menu Links')
                             ->schema([
-                                TextInput::make('label')
-                                    ->label('Link Label')
-                                    ->required()
-                                    ->placeholder('e.g. About Us, Privacy Policy, Terms'),
+                                Group::make([
+                                    TextInput::make('label')
+                                        ->label('Link Label')
+                                        ->required()
+                                        ->maxLength(100)
+                                        ->placeholder('e.g. About Us, Privacy Policy, Terms'),
+
+                                    TextInput::make('label_bn')
+                                        ->label('লিংকের নাম (Bangla label, optional)')
+                                        ->maxLength(100)
+                                        ->placeholder('যেমন: আমাদের সম্পর্কে, গোপনীয়তা নীতি'),
+                                ])->columns(2),
 
                                 TextInput::make('url')
                                     ->label('Destination URL')

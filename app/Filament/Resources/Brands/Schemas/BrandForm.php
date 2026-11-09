@@ -54,7 +54,8 @@ class BrandForm
                             ->label('Brand Logo Artwork')
                             ->disk('public')
                             ->directory('brands')
-                            ->image(),
+                            ->image()
+                            ->dehydrated(false),
 
                         Group::make([
                             Toggle::make('is_featured')

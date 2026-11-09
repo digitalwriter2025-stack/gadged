@@ -7,17 +7,19 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 const REVEAL = { from: { autoAlpha: 0, y: 32 }, to: { autoAlpha: 1, y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.07 } };
 
 /**
- * Scroll reveals via ScrollTrigger.batch. Takes over from the CSS/IO version:
- * `reveal-gsap` on <html> neutralises the CSS hidden state in the same frame
- * GSAP hides the elements, so nothing flashes.
+ * Scroll reveals via ScrollTrigger.batch for everything the CSS/IO version has
+ * not revealed yet. `reveal-gsap` on each element neutralises the CSS hidden
+ * state in the same frame GSAP hides it, so nothing flashes.
+ *
+ * @returns {() => void} Hands the elements back to the CSS version.
  */
 function initReveals() {
-    const items = gsap.utils.toArray('[data-reveal]');
+    const items = gsap.utils.toArray('[data-reveal]:not(.is-visible)');
     if (items.length === 0) {
-        return;
+        return () => {};
     }
 
-    document.documentElement.classList.add('reveal-gsap');
+    items.forEach((item) => item.classList.add('reveal-gsap'));
     gsap.set(items, REVEAL.from);
 
     ScrollTrigger.batch(items, {
@@ -28,6 +30,8 @@ function initReveals() {
             gsap.to(batch, { ...REVEAL.to, overwrite: true });
         },
     });
+
+    return () => items.forEach((item) => item.classList.remove('reveal-gsap'));
 }
 
 /**
@@ -35,6 +39,11 @@ function initReveals() {
  */
 function initSplitHeadings() {
     document.querySelectorAll('[data-split]').forEach((heading) => {
+        // Already revealed by the CSS version: hiding its words again would flash.
+        if (heading.closest('[data-reveal]')?.classList.contains('is-visible')) {
+            return;
+        }
+
         SplitText.create(heading, {
             type: 'words',
             wordsClass: 'split-word',
@@ -142,7 +151,12 @@ async function initSmoothScroll() {
     };
 }
 
-export function enhanceMotion() {
+/**
+ * @param {() => void} stopCssReveal Stops the CSS/IO reveal that ran while this chunk loaded.
+ */
+export function enhanceMotion(stopCssReveal = () => {}) {
+    stopCssReveal();
+
     const mm = gsap.matchMedia();
 
     mm.add(
@@ -154,12 +168,10 @@ export function enhanceMotion() {
         (context) => {
             const { motion, desktop, finePointer } = context.conditions;
             if (!motion) {
-                document.documentElement.classList.remove('reveal-gsap');
-
                 return;
             }
 
-            initReveals();
+            const stopReveals = initReveals();
             initSplitHeadings();
             initDealPulse();
 
@@ -176,7 +188,7 @@ export function enhanceMotion() {
 
             return () => {
                 destroyLenis?.();
-                document.documentElement.classList.remove('reveal-gsap');
+                stopReveals();
             };
         },
     );

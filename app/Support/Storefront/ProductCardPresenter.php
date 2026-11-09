@@ -45,7 +45,7 @@ class ProductCardPresenter
 
         return [
             'id' => $product->id,
-            'name' => $product->name,
+            'name' => $product->translated('name'),
             'url' => route('store.products.show', $product->slug),
             'image' => $this->image($product, 'card'),
             'price' => Money::format($product->min_price),

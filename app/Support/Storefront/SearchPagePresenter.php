@@ -4,6 +4,7 @@ namespace App\Support\Storefront;
 
 use App\Models\Product;
 use App\Services\ProductFilterService;
+use App\Support\Localization;
 
 /**
  * Turns a search term and the shopper's filters into the data rendered by the
@@ -27,8 +28,14 @@ class SearchPagePresenter
     {
         $facets = $this->filterService->searchFacets($term);
 
+        $query = $this->filterService->searchQuery($term)->forCard()->with(ProductCardPresenter::relations());
+
+        if ($filters['sort'] === ProductFilterService::DEFAULT_SORT) {
+            $this->filterService->orderByRelevance($query, $term);
+        }
+
         $products = $this->filterService
-            ->apply($this->filterService->searchQuery($term)->forCard()->with(ProductCardPresenter::relations()), [...$filters, 'q' => null], $facets)
+            ->apply($query, [...$filters, 'q' => null], $facets)
             ->paginate(ProductFilterService::PER_PAGE)
             ->withQueryString()
             ->through(fn (Product $product): array => $this->cards->present($product));
@@ -37,26 +44,26 @@ class SearchPagePresenter
             + ($filters['min'] !== null || $filters['max'] !== null ? 1 : 0);
 
         $url = route('store.search', ['q' => $term]);
-        $heading = "Search results for “{$term}”";
+        $heading = __('Search results for “:term”', ['term' => $term]);
         $intro = $facets['total'] === 0
-            ? "We couldn't find any products matching “{$term}”. Check the spelling or try a more general term."
-            : number_format($facets['total'])." products found for “{$term}” at ".config('app.name').'.';
+            ? __('We couldn\'t find any products matching “:term”. Check the spelling or try a more general term.', ['term' => $term])
+            : __(':count products found for “:term” at :store.', ['count' => Localization::digits(number_format($facets['total'])), 'term' => $term, 'store' => config('app.name')]);
 
         return [
-            'category' => ['name' => 'search results', 'url' => $url, 'heading' => $heading, 'intro' => $intro],
+            'category' => ['name' => __('search results'), 'url' => $url, 'heading' => $heading, 'intro' => $intro],
             'breadcrumbs' => [
-                ['label' => 'Home', 'url' => route('store.home')],
-                ['label' => 'Search', 'url' => null],
+                ['label' => __('Home'), 'url' => route('store.home')],
+                ['label' => __('Search'), 'url' => null],
             ],
             'subcategories' => [],
             'filters' => [...$filters, 'q' => $term],
             'filterGroups' => $this->categoryPresenter->filterGroups($facets, $filters),
             'price' => $facets['price'],
             'activeFilterCount' => $activeFilterCount,
-            'sorts' => ProductFilterService::SORTS,
+            'sorts' => ProductFilterService::sortOptions(),
             'products' => $products,
             'seo' => [
-                'title' => "{$term} - Search Results",
+                'title' => __(':term - Search Results', ['term' => $term]),
                 'description' => $intro,
                 'canonical' => $url,
                 'noindex' => true,

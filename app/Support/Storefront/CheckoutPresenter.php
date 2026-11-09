@@ -6,9 +6,11 @@ use App\Enums\PaymentMethod;
 use App\Models\District;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ShippingMethod;
 use App\Services\CartService;
 use App\Services\CheckoutService;
 use App\Support\CartLine;
+use App\Support\Localization;
 use App\Support\Money;
 
 /**
@@ -32,7 +34,8 @@ class CheckoutPresenter
      *     subtotal: string,
      *     subtotalAmount: string,
      *     minimumOrder: ?string,
-     *     districts: list<array{id: int, name: string, shipping_amount: ?string, delivery_time: ?string}>,
+     *     districts: list<array{id: int, name: string}>,
+     *     shippingMethods: list<array{id: int, name: string, description: ?string, estimate: ?string, shipping_amount: string, charge_label: string}>,
      *     paymentMethods: list<array{value: string, label: string}>,
      *     currencySymbol: string,
      *     breadcrumbs: list<array{label: string, url: ?string}>,
@@ -49,8 +52,8 @@ class CheckoutPresenter
             'lines' => $lines->map(fn (CartLine $line): array => [
                 'variant_id' => $line->variant->id,
                 'name' => $line->product->isVariable() && filled($line->variant->name)
-                    ? "{$line->product->name} ({$line->variant->name})"
-                    : $line->product->name,
+                    ? "{$line->product->translated('name')} ({$line->variant->name})"
+                    : $line->product->translated('name'),
                 'url' => route('store.products.show', $line->product->slug),
                 'image' => $this->cards->image($line->product, 'thumb'),
                 'sku' => $line->variant->sku,
@@ -65,28 +68,32 @@ class CheckoutPresenter
             'subtotal' => Money::format($subtotal),
             'subtotalAmount' => $subtotal,
             'minimumOrder' => $lines->isNotEmpty() && Money::compare($subtotal, $minimum) < 0 ? Money::format($minimum) : null,
-            'districts' => $this->districts($subtotal),
+            'districts' => District::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'name_bn'])
+                ->map(fn (District $district): array => ['id' => $district->id, 'name' => $district->translated('name')])
+                ->all(),
+            'shippingMethods' => $this->shippingMethods($subtotal),
             'paymentMethods' => array_map(fn (PaymentMethod $method): array => [
                 'value' => $method->value,
                 'label' => $method->getLabel(),
             ], $this->checkout->paymentMethods()),
             'currencySymbol' => (string) config('shop.currency.symbol'),
             'breadcrumbs' => [
-                ['label' => 'Home', 'url' => route('store.home')],
-                ['label' => 'Checkout', 'url' => null],
+                ['label' => __('Home'), 'url' => route('store.home')],
+                ['label' => __('Checkout'), 'url' => null],
             ],
             'seo' => [
-                'title' => 'Checkout',
-                'description' => 'Review your cart and place your order.',
+                'title' => __('Checkout'),
+                'description' => __('Review your cart and place your order.'),
             ],
         ];
     }
 
     /**
      * @return array{
-     *     order: array{number: string, date: string, customer_name: string, customer_phone: string, customer_email: ?string, address: string, payment_method: string, note: ?string},
-     *     items: list<array{name: string, quantity: int, unit_price: string, line_total: string}>,
-     *     totals: array{subtotal: string, shipping: string, grand_total: string},
+     *     order: array{number: string, date: string, customer_name: string, customer_phone: string, customer_email: ?string, address: string, payment_method: string, payment_status: string, status: string, shipping_method: ?string, note: ?string},
+     *     items: list<array{name: string, sku: ?string, warranty: ?string, quantity: int, unit_price: string, line_total: string}>,
+     *     totals: array{subtotal: string, discount: ?string, coupon_code: ?string, shipping: string, tax: ?string, grand_total: string, paid: string, due: string},
+     *     site: array{name: string, logo: ?string},
      *     contact: array{hotline: ?string, hotline_tel: ?string, email: ?string, address: ?string, whatsapp: ?string, map_url: ?string, complain_url: ?string},
      *     seo: array{title: string, description: string}
      * }
@@ -98,59 +105,66 @@ class CheckoutPresenter
         return [
             'order' => [
                 'number' => $order->order_number,
-                'date' => $order->created_at->timezone(config('app.display_timezone'))->format('d M Y, h:i A'),
+                'date' => Localization::date($order->created_at->timezone(config('app.display_timezone')), 'd M Y, h:i A'),
                 'customer_name' => $order->customer_name,
                 'customer_phone' => $order->customer_phone,
                 'customer_email' => $order->customer_email,
                 'address' => collect([$order->shipping_address, $order->shipping_area, $order->shipping_district])->filter()->implode(', '),
                 'payment_method' => $order->payment_method->getLabel(),
+                'payment_status' => $order->payment_status->getLabel(),
+                'status' => $order->status->getLabel(),
+                'shipping_method' => $order->shipping_method_name ?? $order->shipping_zone_name,
                 'note' => $order->customer_note,
             ],
             'items' => $order->items->map(fn (OrderItem $item): array => [
                 'name' => $item->variant_name ? "{$item->product_name} ({$item->variant_name})" : $item->product_name,
+                'sku' => $item->sku,
+                'warranty' => $item->warranty,
                 'quantity' => $item->quantity,
                 'unit_price' => Money::format($item->unit_price),
                 'line_total' => Money::format($item->line_total),
             ])->all(),
             'totals' => [
                 'subtotal' => Money::format($order->subtotal),
-                'shipping' => Money::isZero($order->shipping_total) ? 'Free' : Money::format($order->shipping_total),
+                'discount' => Money::isPositive($order->discount_total) ? '-'.Money::format($order->discount_total) : null,
+                'coupon_code' => $order->coupon_code,
+                'shipping' => Money::isZero($order->shipping_total) ? __('Free') : Money::format($order->shipping_total),
+                'tax' => Money::isPositive($order->tax_total) ? Money::format($order->tax_total) : null,
                 'grand_total' => Money::format($order->grand_total),
+                'paid' => Money::format($order->paid_total),
+                'due' => Money::format(Money::max(Money::sub($order->grand_total, $order->paid_total), '0')),
             ],
+            'site' => $this->layout->site(),
             'contact' => $this->layout->contact(),
             'seo' => [
-                'title' => 'Thank you for your order',
-                'description' => "Order {$order->order_number} has been placed.",
+                'title' => __('Thank you for your order'),
+                'description' => __('Order :number has been placed.', ['number' => $order->order_number]),
             ],
         ];
     }
 
     /**
-     * Active districts with the delivery charge for the current subtotal, for the
+     * Active delivery methods with the charge for the current subtotal, for the
      * live total on the checkout page (the order total is recalculated on submit).
      *
-     * @return list<array{id: int, name: string, shipping_amount: ?string, delivery_time: ?string}>
+     * @return list<array{id: int, name: string, description: ?string, estimate: ?string, shipping_amount: string, charge_label: string}>
      */
-    private function districts(string $subtotal): array
+    private function shippingMethods(string $subtotal): array
     {
-        $rates = $this->checkout->shippingRates($this->checkout->shippingMethod());
-
-        return District::query()
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get(['id', 'name', 'shipping_zone_id'])
-            ->map(function (District $district) use ($rates, $subtotal): array {
-                $rate = $district->shipping_zone_id === null ? null : $rates->get($district->shipping_zone_id);
+        return $this->checkout->shippingMethods()
+            ->map(function (ShippingMethod $method) use ($subtotal): array {
+                $charge = $method->chargeFor($subtotal);
 
                 return [
-                    'id' => $district->id,
-                    'name' => $district->name,
-                    'shipping_amount' => $rate?->chargeFor($subtotal),
-                    'delivery_time' => $rate?->min_delivery_days && $rate->max_delivery_days
-                        ? "{$rate->zone->name}: {$rate->min_delivery_days}-{$rate->max_delivery_days} days"
-                        : $rate?->zone->name,
+                    'id' => $method->id,
+                    'name' => $method->translated('name'),
+                    'description' => $method->translated('description'),
+                    'estimate' => $method->translated('delivery_estimate'),
+                    'shipping_amount' => $charge,
+                    'charge_label' => Money::isZero($charge) ? __('Free') : Money::format($charge),
                 ];
             })
+            ->values()
             ->all();
     }
 }

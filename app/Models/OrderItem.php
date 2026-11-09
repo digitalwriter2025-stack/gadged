@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'order_id', 'product_id', 'product_variant_id', 'flash_sale_product_id',
     'product_name', 'sku', 'variant_name', 'variant_options', 'image_path', 'warranty',
-    'regular_price', 'unit_price', 'unit_discount', 'quantity', 'line_total',
+    'regular_price', 'unit_price', 'unit_discount', 'unit_cost', 'quantity', 'line_total',
 ])]
 class OrderItem extends Model
 {
@@ -27,6 +27,7 @@ class OrderItem extends Model
             'regular_price' => 'decimal:2',
             'unit_price' => 'decimal:2',
             'unit_discount' => 'decimal:2',
+            'unit_cost' => 'decimal:2',
             'line_total' => 'decimal:2',
             'quantity' => 'integer',
             'returned_quantity' => 'integer',

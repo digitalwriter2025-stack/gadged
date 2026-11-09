@@ -71,7 +71,6 @@ class MetaPixel
 
     public function __construct(
         private readonly SettingsService $settings,
-        private readonly Request $request,
     ) {}
 
     public function pixelId(): ?string
@@ -187,17 +186,17 @@ class MetaPixel
      */
     public function initiateCheckout(Collection $lines): void
     {
-        if ($lines->isEmpty() || ! $this->request->hasSession()) {
+        if ($lines->isEmpty() || ! $this->request()->hasSession()) {
             return;
         }
 
         $cart = $lines->map(fn (CartLine $line): string => "{$line->variant->id}:{$line->quantity}")->implode(',');
 
-        if ($this->request->session()->get(self::SESSION_CHECKOUT) === $cart) {
+        if ($this->request()->session()->get(self::SESSION_CHECKOUT) === $cart) {
             return;
         }
 
-        $this->request->session()->put(self::SESSION_CHECKOUT, $cart);
+        $this->request()->session()->put(self::SESSION_CHECKOUT, $cart);
 
         $contents = $lines->map(fn (CartLine $line): array => [
             'id' => $this->contentId($line->product),
@@ -266,12 +265,12 @@ class MetaPixel
 
         $eventId ??= (string) Str::uuid();
 
-        if ($customer !== [] && $this->advancedMatching() && $this->request->hasSession()) {
-            $this->request->session()->put(self::SESSION_CUSTOMER, array_filter($customer));
+        if ($customer !== [] && $this->advancedMatching() && $this->request()->hasSession()) {
+            $this->request()->session()->put(self::SESSION_CUSTOMER, array_filter($customer));
         }
 
-        if ($browser && $this->request->hasSession()) {
-            $this->request->session()->push(self::SESSION_EVENTS, ['name' => $eventName, 'data' => $customData, 'id' => $eventId]);
+        if ($browser && $this->request()->hasSession()) {
+            $this->request()->session()->push(self::SESSION_EVENTS, ['name' => $eventName, 'data' => $customData, 'id' => $eventId]);
         }
 
         if ($server) {
@@ -292,7 +291,7 @@ class MetaPixel
         $pageViewId = (string) Str::uuid();
         $browser = $this->browserEnabled();
 
-        if ($this->serverEnabled() && $this->request->isMethod('GET')) {
+        if ($this->serverEnabled() && $this->request()->isMethod('GET')) {
             $this->queueServerEvent('PageView', $pageViewId);
         }
 
@@ -301,8 +300,8 @@ class MetaPixel
             'pixel_id' => $browser ? $this->pixelId() : null,
             'advanced_matching' => $browser ? $this->hashedCustomer() : [],
             'page_view_id' => $pageViewId,
-            'events' => $browser && $this->request->hasSession()
-                ? array_values((array) $this->request->session()->pull(self::SESSION_EVENTS, []))
+            'events' => $browser && $this->request()->hasSession()
+                ? array_values((array) $this->request()->session()->pull(self::SESSION_EVENTS, []))
                 : [],
         ];
     }
@@ -416,9 +415,9 @@ class MetaPixel
     private function userData(array $customer = []): array
     {
         return array_filter([
-            'client_ip_address' => $this->request->ip(),
-            'client_user_agent' => $this->request->userAgent(),
-            'fbp' => $this->request->cookie('_fbp'),
+            'client_ip_address' => $this->request()->ip(),
+            'client_user_agent' => $this->request()->userAgent(),
+            'fbp' => $this->request()->cookie('_fbp'),
             'fbc' => $this->clickId(),
             ...$this->hashedCustomer($customer),
         ], fn (mixed $value): bool => is_string($value) && $value !== '');
@@ -434,8 +433,8 @@ class MetaPixel
             return [];
         }
 
-        $user = $this->request->user();
-        $remembered = $this->request->hasSession() ? (array) $this->request->session()->get(self::SESSION_CUSTOMER, []) : [];
+        $user = $this->request()->user();
+        $remembered = $this->request()->hasSession() ? (array) $this->request()->session()->get(self::SESSION_CUSTOMER, []) : [];
         $customer = array_filter($customer) + $remembered + ($user instanceof User ? array_filter([
             'email' => $user->email,
             'name' => $user->name,
@@ -491,16 +490,16 @@ class MetaPixel
      */
     private function clickId(): ?string
     {
-        return $this->request->cookie('_fbc')
-            ?? ($this->request->hasSession() ? $this->request->session()->get(self::SESSION_CLICK_ID) : null);
+        return $this->request()->cookie('_fbc')
+            ?? ($this->request()->hasSession() ? $this->request()->session()->get(self::SESSION_CLICK_ID) : null);
     }
 
     private function rememberClickId(): void
     {
-        $fbclid = $this->request->query('fbclid');
+        $fbclid = $this->request()->query('fbclid');
 
-        if (is_string($fbclid) && $fbclid !== '' && $this->request->hasSession()) {
-            $this->request->session()->put(self::SESSION_CLICK_ID, 'fb.1.'.now()->getTimestampMs().'.'.Str::limit($fbclid, 500, ''));
+        if (is_string($fbclid) && $fbclid !== '' && $this->request()->hasSession()) {
+            $this->request()->session()->put(self::SESSION_CLICK_ID, 'fb.1.'.now()->getTimestampMs().'.'.Str::limit($fbclid, 500, ''));
         }
     }
 
@@ -509,9 +508,17 @@ class MetaPixel
      */
     private function sourceUrl(): string
     {
-        return $this->request->isMethod('GET')
-            ? $this->request->fullUrl()
-            : ($this->request->headers->get('referer') ?: $this->request->fullUrl());
+        return $this->request()->isMethod('GET')
+            ? $this->request()->fullUrl()
+            : ($this->request()->headers->get('referer') ?: $this->request()->fullUrl());
+    }
+
+    /**
+     * The current request, looked up on every call rather than kept from construction.
+     */
+    private function request(): Request
+    {
+        return request();
     }
 
     private function advancedMatching(): bool

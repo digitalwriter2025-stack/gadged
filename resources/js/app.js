@@ -1,10 +1,10 @@
 import { loadEnhancements } from './enhance';
-import { initCart, initCheckout } from './modules/cart';
+import { initCart, initCheckout, initInvoicePrint } from './modules/cart';
 import { initCategoryPage } from './modules/category-page';
 import { initClickFeedback } from './modules/click-feedback';
 import { initCountdowns } from './modules/countdown';
 import { initDrawers, initModals } from './modules/drawer';
-import { initFooterAccordions, initImageFade, initRipples, initWishlistToggles } from './modules/effects';
+import { initFooterAccordions, initImageFade, initRipples, initSubmitOnce, initWishlistToggles } from './modules/effects';
 import { initHeader } from './modules/header';
 import { initInstantPreload } from './modules/instant-preload';
 import { initPageLoader } from './modules/page-loader';
@@ -25,12 +25,14 @@ initCategoryPage();
 initPcBuilder();
 initCart();
 initCheckout();
+initInvoicePrint();
 initDrawers();
 initModals();
 initImageFade();
 initRipples();
 initWishlistToggles();
 initFooterAccordions();
+initSubmitOnce();
 initCountdowns();
 loadEnhancements();
 

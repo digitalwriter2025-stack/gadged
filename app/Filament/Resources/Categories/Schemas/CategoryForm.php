@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Categories\Schemas;
 
 use App\Models\Category;
+use App\Support\Filament\TranslatableTabs;
 use App\Support\Icons\IconHelper;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -37,22 +38,29 @@ class CategoryForm
                                 ->default(0),
                         ])->columns(2),
 
-                        Group::make([
-                            TextInput::make('name')
-                                ->label('Category Name')
-                                ->required()
-                                ->live(onBlur: true)
-                                ->afterStateUpdated(function (string $operation, ?string $state, callable $set): void {
-                                    if ($operation === 'create' && filled($state)) {
-                                        $set('slug', Str::slug($state));
-                                    }
-                                }),
+                        TranslatableTabs::make('category', fn (string $suffix, bool $isEnglish): array => [
+                            TextInput::make("name{$suffix}")
+                                ->label($isEnglish ? 'Category Name' : 'ক্যাটাগরির নাম (Category Name)')
+                                ->helperText(TranslatableTabs::fallbackHint($isEnglish))
+                                ->required($isEnglish)
+                                ->maxLength(150)
+                                ->when($isEnglish, fn (TextInput $field): TextInput => $field
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function (string $operation, ?string $state, callable $set): void {
+                                        if ($operation === 'create' && filled($state)) {
+                                            $set('slug', Str::slug($state));
+                                        }
+                                    })),
 
-                            TextInput::make('slug')
-                                ->label('URL Slug')
-                                ->required()
-                                ->unique(Category::class, 'slug', ignoreRecord: true),
-                        ])->columns(2),
+                            Textarea::make("description{$suffix}")
+                                ->label($isEnglish ? 'Description' : 'বিবরণ (Description)')
+                                ->rows(2),
+                        ]),
+
+                        TextInput::make('slug')
+                            ->label('URL Slug')
+                            ->required()
+                            ->unique(Category::class, 'slug', ignoreRecord: true),
 
                         Group::make([
                             Select::make('icon')
@@ -64,12 +72,9 @@ class CategoryForm
                                 ->label('Category Thumbnail / Icon Image')
                                 ->disk('public')
                                 ->directory('categories')
-                                ->image(),
+                                ->image()
+                                ->dehydrated(false),
                         ])->columns(2),
-
-                        Textarea::make('description')
-                            ->label('Description')
-                            ->rows(2),
                     ]),
 
                 Section::make('Display & Navigation Flags')

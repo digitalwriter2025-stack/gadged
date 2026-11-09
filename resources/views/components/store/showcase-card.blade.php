@@ -8,12 +8,12 @@
 
         <div class="pointer-events-none absolute inset-x-2 top-2 z-10 flex items-start justify-between gap-1.5">
             @if ($product['savings'])
-                <span class="rounded-md bg-green-100 px-1.5 py-1 text-[11px] leading-none font-bold whitespace-nowrap text-green-800 @xl:text-xs">Save {{ $product['savings'] }}</span>
+                <span class="rounded-md bg-green-100 px-1.5 py-1 text-[11px] leading-none font-bold whitespace-nowrap text-green-800 @xl:text-xs">{{ __('Save :amount', ['amount' => $product['savings']]) }}</span>
             @else
                 <span></span>
             @endif
 
-            <button type="button" data-wishlist-toggle aria-pressed="false" aria-label="Save {{ $product['name'] }} to wishlist" class="pointer-events-auto grid size-8 shrink-0 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:scale-110 hover:border-gray-800 hover:text-gray-900 active:scale-90 aria-pressed:border-accent aria-pressed:text-accent">
+            <button type="button" data-wishlist-toggle aria-pressed="false" data-analytics-item="{{ json_encode(['item_id' => (string) $product['id'], 'item_name' => $product['name']]) }}" aria-label="{{ __('Save :name to wishlist', ['name' => $product['name']]) }}" class="pointer-events-auto grid size-8 shrink-0 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-gray-700 shadow-sm transition hover:scale-110 hover:border-gray-800 hover:text-gray-900 active:scale-90 aria-pressed:border-accent aria-pressed:text-accent">
                 <x-store.icon name="heart" class="size-4 transition in-aria-pressed:fill-current" />
             </button>
         </div>

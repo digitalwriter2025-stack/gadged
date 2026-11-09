@@ -44,7 +44,13 @@ class FilamentAdminTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get('/admin/manage-cache');
 
-        $response->assertSuccessful();
+        $response->assertSuccessful()
+            ->assertSee('Flush All Caches')
+            ->assertSee('wire:click="clearAllCache"', false)
+            ->assertSee('wire:click="flushCatalogCache"', false)
+            ->assertSee('wire:click="flushSettingsCache"', false)
+            ->assertSee('wire:click="clearViewCache"', false)
+            ->assertSee('wire:click="clearRouteConfigCache"', false);
     }
 
     public function test_admin_can_access_site_settings(): void

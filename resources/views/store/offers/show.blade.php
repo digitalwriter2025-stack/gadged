@@ -28,12 +28,12 @@
                     <dl class="mt-4 flex flex-wrap gap-2 text-xs">
                         <div class="flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-accent">
                             <x-store.icon name="calendar" class="size-3.5" />
-                            <dt class="sr-only">Offer period</dt>
+                            <dt class="sr-only">{{ __('Campaign period') }}</dt>
                             <dd><time datetime="{{ $offer['ends_at_iso'] }}">{{ $offer['period'] }}</time></dd>
                         </div>
                         <div class="flex items-center gap-1.5 rounded-full bg-builder/10 px-3 py-1.5 text-builder">
                             <x-store.icon name="store" class="size-3.5" />
-                            <dt class="sr-only">Available at</dt>
+                            <dt class="sr-only">{{ __('Available at') }}</dt>
                             <dd>{{ $offer['availability'] }}</dd>
                         </div>
                     </dl>
@@ -47,6 +47,6 @@
     </section>
 
     @if ($products !== [])
-        <x-store.product-grid title="Offer Products" :subtitle="count($products).' products in this offer'" :products="$products" :initial-count="10" :step="10" />
+        <x-store.product-grid :title="__('Campaign Products')" :subtitle="trans_choice(':count product in this campaign|:count products in this campaign', count($products), ['count' => \App\Support\Localization::digits(count($products))])" :products="$products" :initial-count="10" :step="10" />
     @endif
 </x-layouts.store>

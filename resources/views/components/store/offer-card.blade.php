@@ -31,7 +31,7 @@
             <p class="mt-1.5 line-clamp-2 text-xs leading-5 text-gray-500">{{ $offer['summary'] }}</p>
         @endif
         <div class="mt-auto pt-3.5">
-            <a href="{{ $offer['url'] }}" data-ripple class="relative inline-flex items-center overflow-hidden rounded-md bg-builder px-5 py-2 text-xs font-semibold text-white transition hover:brightness-110">View Details</a>
+            <a href="{{ $offer['url'] }}" data-ripple class="relative inline-flex items-center overflow-hidden rounded-md bg-button px-5 py-2 text-xs font-semibold text-button-text transition hover:bg-button-hover">{{ __('View Details') }}</a>
         </div>
     </div>
 </article>

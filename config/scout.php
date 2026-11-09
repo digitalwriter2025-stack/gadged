@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Product;
+use App\Services\ProductFilterService;
+
 return [
 
     /*
@@ -140,6 +143,12 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
+            Product::class => [
+                // Listed in ranking priority: a name match beats a keyword match.
+                'searchableAttributes' => ['name', 'model', 'brand', 'name_bn', 'sku', 'category', 'search_keywords'],
+                'displayedAttributes' => ['id'],
+                'pagination' => ['maxTotalHits' => ProductFilterService::MAX_SEARCH_HITS],
+            ],
             // 'users' => [
             //     'filterableAttributes' => ['id', 'name', 'email'],
             //     'embedders' => [

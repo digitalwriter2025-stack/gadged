@@ -1,3 +1,4 @@
+import { trackWishlist } from './analytics';
 import { prefersReducedMotion } from './motion';
 import { scrollToElement } from './scroll';
 
@@ -169,6 +170,10 @@ function initActions(page) {
             button.setAttribute('aria-pressed', String(!pressed));
             button.classList.toggle('border-accent', !pressed);
             button.classList.toggle('text-accent', !pressed);
+
+            if (!pressed && button.hasAttribute('data-wishlist')) {
+                trackWishlist(button);
+            }
         });
     });
 }

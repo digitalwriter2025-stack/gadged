@@ -13,7 +13,7 @@
     ];
 @endphp
 
-<nav {{ $attributes->merge(['class' => 'border-b border-gray-200 bg-white']) }} aria-label="Breadcrumb">
+<nav {{ $attributes->merge(['class' => 'border-b border-gray-200 bg-white']) }} aria-label="{{ __('Breadcrumb') }}">
     <ol class="scrollbar-none mx-auto flex {{ $container }} items-center gap-1.5 overflow-x-auto px-4 py-2.5 text-[11px] whitespace-nowrap text-gray-500 lg:text-xs">
         @foreach ($items as $crumb)
             <li class="flex items-center gap-1.5">

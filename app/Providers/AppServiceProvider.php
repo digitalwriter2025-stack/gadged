@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Models;
 use App\Models\User;
+use App\Policies\RolePolicy;
 use App\Services\CartService;
+use App\Services\GoogleTag;
 use App\Services\MetaPixel;
 use App\Support\Storefront\NavigationMenu;
 use App\Support\Storefront\StoreLayout;
@@ -32,7 +34,6 @@ class AppServiceProvider extends ServiceProvider
         'district' => Models\District::class,
         'shipping_zone' => Models\ShippingZone::class,
         'shipping_method' => Models\ShippingMethod::class,
-        'shipping_rate' => Models\ShippingRate::class,
         'category' => Models\Category::class,
         'brand' => Models\Brand::class,
         'tag' => Models\Tag::class,
@@ -96,11 +97,30 @@ class AppServiceProvider extends ServiceProvider
 
         Date::use(CarbonImmutable::class);
 
+        // Locally the app is opened on whichever host `artisan serve` prints (127.0.0.1 vs localhost, :8000 vs :8001).
+        // File URLs must share that origin, or the admin upload previews can't fetch them and hang on "Loading".
+        if ($this->app->isLocal() && ! $this->app->runningInConsole()) {
+            config(['filesystems.disks.public.url' => request()->getSchemeAndHttpHost().'/storage']);
+        }
+
         // Store stable aliases instead of class names in *_type columns.
         Relation::enforceMorphMap(self::MORPH_MAP);
 
-        // Super Admin passes every authorization check.
-        Gate::before(fn (User $user): ?bool => $user->isActive() && $user->isSuperAdmin() ? true : null);
+        Gate::policy(Role::class, RolePolicy::class);
+
+        // Super Admin passes every authorization check, except on locked records (the Super Admin
+        // account itself and the built-in roles), which always defer to their policy.
+        Gate::before(function (User $user, string $ability, array $arguments): ?bool {
+            if (! $user->isActive() || ! $user->isSuperAdmin()) {
+                return null;
+            }
+
+            $record = $arguments[0] ?? null;
+            $isLocked = ($record instanceof User && $record->isSuperAdmin())
+                || ($record instanceof Role && RolePolicy::isBuiltIn($record));
+
+            return $isLocked ? null : true;
+        });
 
         Password::defaults(fn (): Password => $isProduction
             ? Password::min(8)->letters()->numbers()->uncompromised()
@@ -112,6 +132,7 @@ class AppServiceProvider extends ServiceProvider
                 'cartCount' => $this->app->make(CartService::class)->count(),
                 ...$this->app->make(StoreLayout::class)->data(),
                 'metaPixel' => $this->app->make(MetaPixel::class)->page(),
+                'googleTag' => $this->app->make(GoogleTag::class)->page(),
             ]);
         });
     }

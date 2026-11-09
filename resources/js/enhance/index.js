@@ -23,9 +23,13 @@ export function loadEnhancements() {
             });
     }
 
+    // Reveal on-screen content right away instead of waiting for the GSAP
+    // chunk; GSAP then takes over whatever is still hidden.
+    const stopCssReveal = initReveal();
+
     import('./gsap')
-        .then(({ enhanceMotion }) => enhanceMotion())
-        .catch(() => initReveal());
+        .then(({ enhanceMotion }) => enhanceMotion(stopCssReveal))
+        .catch(() => {});
 
     const lists = document.querySelectorAll('[data-auto-animate]');
     if (lists.length > 0) {

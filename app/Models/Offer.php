@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasImageConversions;
+use App\Models\Concerns\HasTranslations;
 use App\Observers\CatalogCacheObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\OfferFactory;
@@ -17,18 +18,19 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- * Promotional campaign listed on the Offers page (and the Mobile Deal page
- * when flagged), with a square poster and the products it covers.
+ * Promotional campaign listed on the Campaigns page, with a square poster and
+ * the products it covers.
  */
 #[Fillable([
     'title', 'slug', 'summary', 'description', 'availability', 'is_mobile_deal',
     'starts_at', 'ends_at', 'is_active', 'sort_order',
+    'title_bn', 'summary_bn', 'description_bn',
 ])]
 #[ObservedBy(CatalogCacheObserver::class)]
 class Offer extends Model implements HasMedia
 {
     /** @use HasFactory<OfferFactory> */
-    use HasFactory, HasImageConversions;
+    use HasFactory, HasImageConversions, HasTranslations;
 
     /**
      * @return array<string, string>
@@ -82,14 +84,5 @@ class Offer extends Model implements HasMedia
             ->where('ends_at', '>', $at)
             ->orderBy('sort_order')
             ->latest('starts_at');
-    }
-
-    /**
-     * @param  Builder<self>  $query
-     */
-    #[Scope]
-    protected function mobileDeals(Builder $query): void
-    {
-        $query->where('is_mobile_deal', true);
     }
 }

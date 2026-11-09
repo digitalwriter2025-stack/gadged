@@ -9,16 +9,16 @@ use Filament\Support\Contracts\HasLabel;
  */
 enum FlashSaleDiscountType: string implements HasLabel
 {
-    case FixedPrice = 'fixed_price';
-    case Amount = 'amount';
     case Percent = 'percent';
+    case Amount = 'amount';
+    case FixedPrice = 'fixed_price';
 
     public function getLabel(): string
     {
         return match ($this) {
-            self::FixedPrice => 'Fixed sale price',
-            self::Amount => 'Amount off',
-            self::Percent => 'Percentage off',
+            self::Percent => 'Percentage off (%)',
+            self::Amount => 'Amount off (৳)',
+            self::FixedPrice => 'Fixed sale price (৳)',
         };
     }
 }

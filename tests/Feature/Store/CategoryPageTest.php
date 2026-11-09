@@ -115,6 +115,40 @@ class CategoryPageTest extends TestCase
             ->assertSee('Fast Card')->assertSee('Slow Card');
     }
 
+    public function test_active_filters_render_chips_that_each_remove_one_filter(): void
+    {
+        $category = Category::factory()->create();
+        $asus = Brand::factory()->create(['name' => 'Asus', 'slug' => 'asus']);
+        $msi = Brand::factory()->create(['name' => 'Msi', 'slug' => 'msi']);
+        Product::factory()->priced('50000.00')->create(['category_id' => $category->id, 'brand_id' => $asus->id]);
+        Product::factory()->priced('90000.00')->create(['category_id' => $category->id, 'brand_id' => $msi->id]);
+
+        $base = route('store.categories.show', $category->slug);
+
+        $this->get($base)->assertOk()->assertDontSee('data-active-filters', false);
+
+        $this->get($base.'?brand[]=asus&brand[]=msi&min=60000&page=2')->assertOk()
+            ->assertSee('data-active-filters', false)
+            ->assertSee('Remove filter Brands: Asus')
+            ->assertSee($base.'?brand%5B0%5D=msi&min=60000')
+            ->assertSee($base.'?brand%5B0%5D=asus&min=60000')
+            ->assertSee('৳60,000 – ৳90,000')
+            ->assertSee($base.'?brand%5B0%5D=asus&brand%5B1%5D=msi');
+    }
+
+    public function test_long_option_lists_get_a_search_box(): void
+    {
+        $short = Category::factory()->create();
+        Product::factory()->count(2)->create(['category_id' => $short->id]);
+
+        $long = Category::factory()->create();
+        Product::factory()->count(9)->sequence(fn ($sequence): array => ['brand_id' => Brand::factory()->create(['name' => 'Brand '.$sequence->index])->id])
+            ->create(['category_id' => $long->id]);
+
+        $this->get(route('store.categories.show', $short->slug))->assertOk()->assertDontSee('data-filter-search', false);
+        $this->get(route('store.categories.show', $long->slug))->assertOk()->assertSee('data-filter-search', false)->assertSee('Search Brands');
+    }
+
     public function test_listing_is_paginated_with_query_string(): void
     {
         $category = Category::factory()->create();

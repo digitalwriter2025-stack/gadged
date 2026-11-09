@@ -7,6 +7,7 @@ use App\Http\Requests\Store\CheckoutRequest;
 use App\Models\Order;
 use App\Services\CartService;
 use App\Services\CheckoutService;
+use App\Services\GoogleTag;
 use App\Services\MetaPixel;
 use App\Support\Storefront\CheckoutPresenter;
 use Illuminate\Contracts\View\View;
@@ -24,10 +25,13 @@ class CheckoutController extends Controller
     /**
      * Show the cart together with the delivery form.
      */
-    public function show(CheckoutPresenter $presenter, CartService $cart, MetaPixel $metaPixel): View
+    public function show(CheckoutPresenter $presenter, CartService $cart, MetaPixel $metaPixel, GoogleTag $googleTag): View
     {
-        if ($metaPixel->enabled()) {
-            $metaPixel->initiateCheckout($cart->lines());
+        if ($metaPixel->enabled() || $googleTag->enabled()) {
+            $lines = $cart->lines();
+
+            $metaPixel->initiateCheckout($lines);
+            $googleTag->beginCheckout($lines);
         }
 
         return view('store.checkout.show', $presenter->present());
@@ -36,13 +40,14 @@ class CheckoutController extends Controller
     /**
      * Place the order and move on to the thank-you page.
      */
-    public function store(CheckoutRequest $request, CheckoutService $checkout, MetaPixel $metaPixel): RedirectResponse
+    public function store(CheckoutRequest $request, CheckoutService $checkout, MetaPixel $metaPixel, GoogleTag $googleTag): RedirectResponse
     {
         $order = $checkout->placeOrder($request->details(), $request->user(), $request->ip(), $request->userAgent());
 
         $request->session()->push(self::PLACED_ORDERS_KEY, $order->order_number);
 
         $metaPixel->purchase($order);
+        $googleTag->purchase($order);
 
         return redirect()->route('store.checkout.thank-you', $order);
     }

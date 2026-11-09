@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use App\Observers\CatalogCacheObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\FlashSaleFactory;
@@ -16,12 +17,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Time-boxed campaign. "Running" is always decided with server time.
  */
-#[Fillable(['title', 'slug', 'description', 'starts_at', 'ends_at', 'is_active', 'sort_order'])]
+#[Fillable(['title', 'slug', 'description', 'starts_at', 'ends_at', 'is_active', 'sort_order', 'title_bn', 'description_bn'])]
 #[ObservedBy(CatalogCacheObserver::class)]
 class FlashSale extends Model
 {
     /** @use HasFactory<FlashSaleFactory> */
-    use HasFactory;
+    use HasFactory, HasTranslations;
 
     /**
      * @return array<string, string>

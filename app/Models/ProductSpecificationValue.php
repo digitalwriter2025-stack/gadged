@@ -28,7 +28,7 @@ class ProductSpecificationValue extends Model
      */
     public function displayValue(): string
     {
-        $value = $this->option?->value ?? (string) $this->value;
+        $value = $this->option?->translated('value') ?? (string) $this->value;
         $unit = $this->specification?->unit;
 
         return $unit && $this->option === null && is_numeric($value) ? "{$value} {$unit}" : $value;

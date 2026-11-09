@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\BannerPlacement;
 use App\Models\Concerns\HasImageConversions;
+use App\Models\Concerns\HasTranslations;
 use App\Observers\CatalogCacheObserver;
+use App\Support\Localization;
 use Carbon\CarbonInterface;
 use Database\Factories\BannerFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -23,12 +25,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 #[Fillable([
     'placement', 'title', 'subtitle', 'cta_label', 'url', 'open_in_new_tab', 'alt_text',
     'starts_at', 'ends_at', 'is_active', 'sort_order',
+    'title_bn', 'subtitle_bn', 'cta_label_bn', 'alt_text_bn',
 ])]
 #[ObservedBy(CatalogCacheObserver::class)]
 class Banner extends Model implements HasMedia
 {
     /** @use HasFactory<BannerFactory> */
-    use HasFactory, HasImageConversions;
+    use HasFactory, HasImageConversions, HasTranslations;
 
     /**
      * @return array<string, string>
@@ -49,12 +52,23 @@ class Banner extends Model implements HasMedia
     {
         $this->addMediaCollection('desktop')->singleFile()->acceptsMimeTypes(self::IMAGE_MIME_TYPES);
         $this->addMediaCollection('mobile')->singleFile()->acceptsMimeTypes(self::IMAGE_MIME_TYPES);
+        // Optional Bangla artwork, for banners with text inside the image.
+        $this->addMediaCollection('desktop_bn')->singleFile()->acceptsMimeTypes(self::IMAGE_MIME_TYPES);
+        $this->addMediaCollection('mobile_bn')->singleFile()->acceptsMimeTypes(self::IMAGE_MIME_TYPES);
     }
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addWebpConversions(['desktop'], ['desktop' => 1920], responsive: ['desktop']);
-        $this->addWebpConversions(['mobile'], ['mobile' => 828], responsive: ['mobile']);
+        $this->addWebpConversions(['desktop', 'desktop_bn'], ['desktop' => 1920], responsive: ['desktop']);
+        $this->addWebpConversions(['mobile', 'mobile_bn'], ['mobile' => 828], responsive: ['mobile']);
+    }
+
+    /**
+     * Banner artwork for the storefront language: the Bangla upload when there is one, else the English image.
+     */
+    public function imageFor(string $collection): ?Media
+    {
+        return $this->getFirstMedia(Localization::column($collection)) ?? $this->getFirstMedia($collection);
     }
 
     public function isVisible(?CarbonInterface $at = null): bool

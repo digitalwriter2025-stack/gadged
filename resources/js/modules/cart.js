@@ -1,3 +1,5 @@
+import { digits, t } from './i18n';
+
 /**
  * Cart: handles the `cart:add` event fired by the product page and the listing
  * cards by posting the product to the cart, which redirects to the checkout
@@ -60,12 +62,11 @@ export function initCheckout() {
 
     const symbol = page.dataset.currencySymbol ?? '';
     const subtotal = Number(page.dataset.subtotal ?? 0);
-    const select = page.querySelector('[data-district-select]');
+    const methods = page.querySelectorAll('[data-shipping-method]');
     const shippingOutput = page.querySelector('[data-shipping-total]');
     const totalOutput = page.querySelector('[data-grand-total]');
-    const deliveryTime = page.querySelector('[data-delivery-time]');
     const formatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
-    const format = (amount) => `${symbol}${formatter.format(amount)}`;
+    const format = (amount) => `${symbol}${digits(formatter.format(amount))}`;
 
     const setText = (element, text) => {
         if (element) {
@@ -74,24 +75,26 @@ export function initCheckout() {
     };
 
     const update = () => {
-        const option = select?.selectedOptions[0];
+        if (methods.length === 0) {
+            return;
+        }
 
-        if (!option || option.value === '') {
-            setText(shippingOutput, 'Select district');
+        const selected = [...methods].find((input) => input.checked);
+
+        if (!selected) {
+            setText(shippingOutput, t('Select delivery method'));
             setText(totalOutput, format(subtotal));
-            setText(deliveryTime, '');
 
             return;
         }
 
-        const shipping = Number(option.dataset.shipping || 0);
+        const shipping = Number(selected.dataset.shipping || 0);
 
-        setText(shippingOutput, shipping > 0 ? format(shipping) : 'Free');
+        setText(shippingOutput, shipping > 0 ? format(shipping) : t('Free'));
         setText(totalOutput, format(subtotal + shipping));
-        setText(deliveryTime, option.dataset.deliveryTime ?? '');
     };
 
-    select?.addEventListener('change', update);
+    methods.forEach((input) => input.addEventListener('change', update));
     update();
 
     const form = page.querySelector('[data-checkout-form]');
@@ -114,4 +117,11 @@ export function initCheckout() {
             button.classList.remove('is-loading');
         }
     });
+}
+
+/**
+ * Order invoice on the thank-you page: print it (or "Save as PDF").
+ */
+export function initInvoicePrint() {
+    document.querySelector('[data-print-invoice]')?.addEventListener('click', () => window.print());
 }

@@ -3,11 +3,11 @@
     <div class="mx-auto max-w-hero px-3 pt-2.5 sm:px-4 lg:px-3">
         <div @class(['grid gap-1.5 lg:gap-2', 'lg:grid-cols-[840fr_418fr]' => $section['slides'] !== [] && $section['side'] !== []])>
             @if ($section['slides'] !== [])
-                <div class="group/hero relative animate-fade-up lg:h-full" data-hero-slider aria-roledescription="carousel" aria-label="Featured offers">
+                <div class="group/hero relative animate-fade-up lg:h-full" data-hero-slider aria-roledescription="{{ __('carousel') }}" aria-label="{{ __('Featured offers') }}">
                     <div data-hero-viewport class="relative aspect-[1672/941] touch-pan-y overflow-hidden rounded-md lg:aspect-auto lg:h-full lg:rounded-none">
                         <div data-hero-track class="swiper-wrapper absolute inset-0">
                             @foreach ($section['slides'] as $slide)
-                                <a href="{{ $slide['url'] }}" @if ($slide['new_tab']) target="_blank" rel="noopener" @endif data-slide aria-roledescription="slide" aria-label="{{ $loop->iteration }} of {{ $loop->count }}" @class(['swiper-slide hero-slide absolute inset-0 overflow-hidden transition-opacity duration-700', 'opacity-100' => $loop->first, 'opacity-0' => ! $loop->first])>
+                                <a href="{{ $slide['url'] }}" @if ($slide['new_tab']) target="_blank" rel="noopener" @endif data-slide aria-roledescription="{{ __('slide') }}" aria-label="{{ __(':current of :total', ['current' => \App\Support\Localization::digits($loop->iteration), 'total' => \App\Support\Localization::digits($loop->count)]) }}" @class(['swiper-slide hero-slide absolute inset-0 overflow-hidden transition-opacity duration-700', 'opacity-100' => $loop->first, 'opacity-0' => ! $loop->first])>
                                     <picture>
                                         @if ($slide['mobile_image'])
                                             <source media="(max-width: 767px)" srcset="{{ $slide['mobile_image'] }}">
@@ -24,7 +24,7 @@
                                     'absolute top-1/2 z-10 hidden size-10 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white/85 text-gray-900 opacity-0 shadow-lg backdrop-blur transition duration-300 ease-out-expo group-hover/hero:opacity-100 hover:scale-110 hover:bg-white focus-visible:opacity-100 active:scale-95 md:grid',
                                     'left-3 group-hover/hero:left-4' => $direction === 'prev',
                                     'right-3 group-hover/hero:right-4' => $direction === 'next',
-                                ]) aria-label="{{ $direction === 'prev' ? 'Previous' : 'Next' }} slide">
+                                ]) aria-label="{{ $direction === 'prev' ? __('Previous slide') : __('Next slide') }}">
                                     <x-store.icon :name="$icon" class="size-5" />
                                 </button>
                             @endforeach
@@ -34,7 +34,7 @@
                     @if (count($section['slides']) > 1)
                         <div class="flex justify-center gap-1.5 py-2 lg:absolute lg:inset-x-0 lg:bottom-0 lg:z-10 lg:translate-y-1/2 lg:py-0">
                             @foreach ($section['slides'] as $slide)
-                                <button type="button" data-slide-dot @class(['hero-dot group/dot grid h-4 w-7 cursor-pointer place-items-center', 'is-active' => $loop->first]) aria-label="Show slide {{ $loop->iteration }}" @if ($loop->first) aria-current="true" @endif>
+                                <button type="button" data-slide-dot @class(['hero-dot group/dot grid h-4 w-7 cursor-pointer place-items-center', 'is-active' => $loop->first]) aria-label="{{ __('Show slide :number', ['number' => \App\Support\Localization::digits($loop->iteration)]) }}" @if ($loop->first) aria-current="true" @endif>
                                     <span class="relative block h-[3px] w-full overflow-hidden rounded-full bg-gray-300 transition group-hover/dot:bg-gray-400">
                                         <span class="hero-dot-fill absolute inset-0 rounded-full bg-gray-800"></span>
                                     </span>

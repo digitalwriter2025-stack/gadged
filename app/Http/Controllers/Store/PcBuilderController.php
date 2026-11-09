@@ -6,13 +6,33 @@ use App\Enums\PcBuilderComponent;
 use App\Http\Controllers\Controller;
 use App\Services\PcBuilderService;
 use App\Support\Storefront\PcBuilderPresenter;
+use App\Support\Storefront\StoreLayout;
+use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
 
-class PcBuilderController extends Controller
+class PcBuilderController extends Controller implements HasMiddleware
 {
+    /**
+     * The builder is only reachable while it is switched on in Site Settings.
+     *
+     * @return list<Closure>
+     */
+    public static function middleware(): array
+    {
+        return [
+            function (Request $request, Closure $next): Response {
+                abort_unless(app(StoreLayout::class)->headerSettings()['show_pc_builder'], 404);
+
+                return $next($request);
+            },
+        ];
+    }
+
     /**
      * Show the shopper's current build.
      */
@@ -42,10 +62,10 @@ class PcBuilderController extends Controller
         ]);
 
         if (! $builder->choose($component, (int) $validated['product_id'])) {
-            return back()->withErrors(['product_id' => "That product can't be used as a {$component->label()}."]);
+            return back()->withErrors(['product_id' => __("That product can't be used as a :component.", ['component' => $component->label()])]);
         }
 
-        return redirect()->route('store.pc-builder.show')->with('status', "{$component->label()} added to your build.");
+        return redirect()->route('store.pc-builder.show')->with('status', __(':component added to your build.', ['component' => $component->label()]));
     }
 
     /**

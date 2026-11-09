@@ -79,9 +79,12 @@ enum OrderStatus: string implements HasColor, HasLabel
         };
     }
 
+    /**
+     * In the storefront language; the admin panel shows English.
+     */
     public function getLabel(): string
     {
-        return match ($this) {
+        return __(match ($this) {
             self::Pending => 'Pending',
             self::Confirmed => 'Confirmed',
             self::Processing => 'Processing',
@@ -91,7 +94,7 @@ enum OrderStatus: string implements HasColor, HasLabel
             self::Cancelled => 'Cancelled',
             self::Returned => 'Returned',
             self::Refunded => 'Refunded',
-        };
+        });
     }
 
     public function getColor(): string

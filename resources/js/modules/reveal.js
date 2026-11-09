@@ -3,6 +3,7 @@ const MAX_STAGGER = 8;
 /**
  * Fade elements in as they scroll into view. A `[data-reveal-group]` reveals
  * all of its `[data-reveal]` children together, staggered in DOM order.
+ * Returns a function that stops observing, so GSAP can take over the rest.
  */
 export function initReveal() {
     const groups = [...document.querySelectorAll('[data-reveal-group]')];
@@ -20,7 +21,7 @@ export function initReveal() {
     if (!('IntersectionObserver' in window)) {
         document.querySelectorAll('[data-reveal]').forEach((item) => item.classList.add('is-visible'));
 
-        return;
+        return () => {};
     }
 
     const observer = new IntersectionObserver(
@@ -43,4 +44,6 @@ export function initReveal() {
     );
 
     [...groups, ...singles].forEach((target) => observer.observe(target));
+
+    return () => observer.disconnect();
 }

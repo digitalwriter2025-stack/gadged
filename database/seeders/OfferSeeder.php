@@ -22,15 +22,10 @@ class OfferSeeder extends Seeder
 
         /** @var list<array{0: string, 1: string, 2: string, 3: bool, 4: list<string>, 5: ?string}> $offers title, summary, availability, mobile deal, category keywords, poster */
         $offers = [
-            ['Mobile Deal', 'Buy Mobile & Get Exciting Discount with Free Delivery!', 'Online', true, ['phone', 'mobile', 'smartphone'], null],
-            ['Triple Desktop Offer', 'Buy Desktop PC & Get Exciting Discount & Gifts!', 'All Outlet', false, ['desktop'], null],
-            ['Build Your PC with MSI Offer', 'Buy Selected MSI Products and Get Amazing Gifts', 'All Outlet', false, ['component', 'graphics'], 'images/banners/msi-build-your-pc.webp'],
-            ['Logitech MX Series Assured Gift Offer', 'Buy Selected Logitech products and Get Amazing Gifts', 'All Outlet', false, ['accessories'], 'images/banners/logitech-mx-offer.webp'],
-            ['Smartwatch & Earbuds Deal', 'Grab smartwatches and earbuds with special mobile deal prices!', 'Online', true, ['watch', 'earbud', 'gadget'], null],
-            ['Camera Deal', 'Buy camera and camera lens and get exciting discount and free delivery!', 'All Outlet', false, ['camera'], null],
-            ['Monitor Mega Deal', 'Upgrade your display and enjoy exciting discounts!', 'Online', false, ['monitor'], null],
-            ['Air Conditioner Deal', 'Buy AC & Enjoy Exciting Discount with Free Delivery!', 'All Outlet', false, ['air conditioner', 'appliance'], null],
-            ['TV Deal', 'Buy Smart TV & Get Exciting Discount!', 'All Outlet', false, ['tv', 'television'], null],
+            ['Mobile Deal', 'Buy Mobile & Get Exciting Discount with Free Delivery!', 'Online', true, ['phone'], null],
+            ['Smartwatch & Earbuds Deal', 'Grab smartwatches and earbuds with special mobile deal prices!', 'Online', true, ['watch', 'earbud'], null],
+            ['Power Bank & Charger Deal', 'Stay charged for less: save on power banks, chargers and cables!', 'Online', false, ['powerbank', 'charger'], null],
+            ['Speaker & Headphone Deal', 'Buy speakers and headphones and get exciting discounts!', 'All Outlet', false, ['speaker', 'headphone'], null],
         ];
 
         foreach ($offers as $index => [$title, $summary, $availability, $isMobileDeal, $keywords, $poster]) {

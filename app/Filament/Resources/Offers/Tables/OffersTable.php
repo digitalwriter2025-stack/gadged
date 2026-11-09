@@ -29,7 +29,7 @@ class OffersTable
                     ->square(),
 
                 TextColumn::make('title')
-                    ->label('Offer Title')
+                    ->label('Campaign Title')
                     ->searchable()
                     ->weight('bold')
                     ->description(fn (Offer $record): ?string => $record->summary),
@@ -38,10 +38,6 @@ class OffersTable
                     ->label('Availability')
                     ->badge()
                     ->color('info'),
-
-                IconColumn::make('is_mobile_deal')
-                    ->label('Mobile Deal')
-                    ->boolean(),
 
                 IconColumn::make('is_active')
                     ->label('Active')
@@ -59,8 +55,6 @@ class OffersTable
             ])
             ->defaultSort('starts_at', 'desc')
             ->filters([
-                TernaryFilter::make('is_mobile_deal')
-                    ->label('Mobile Deals Only'),
                 TernaryFilter::make('is_active')
                     ->label('Active Only'),
             ])

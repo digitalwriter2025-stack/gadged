@@ -7,10 +7,11 @@ use App\Enums\StaffRole;
 use App\Models\Category;
 use App\Models\District;
 use App\Models\FlashSale;
+use App\Models\FlashSaleProduct;
 use App\Models\InventoryTransaction;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\ShippingRate;
+use App\Models\ShippingMethod;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,6 +31,7 @@ class SeederTest extends TestCase
             InventoryTransaction::query()->count(),
             Category::query()->count(),
             User::query()->count(),
+            FlashSaleProduct::query()->count(),
         ];
         $first = $counts();
 
@@ -40,7 +42,7 @@ class SeederTest extends TestCase
 
         $this->assertSame(64, District::query()->count());
         $this->assertSame(1, District::query()->whereHas('shippingZone', fn ($q) => $q->where('code', 'inside_dhaka'))->count());
-        $this->assertSame(2, ShippingRate::query()->count());
+        $this->assertSame(['inside_dhaka', 'outside_dhaka'], ShippingMethod::query()->active()->pluck('code')->all());
 
         $admin = User::query()->where('email', 'admin@example.com')->firstOrFail();
         $this->assertTrue($admin->hasRole(StaffRole::SuperAdmin->value));
@@ -60,7 +62,12 @@ class SeederTest extends TestCase
         $this->assertGreaterThan(1, $variable->variants->count());
         $this->assertCount(3, $variable->variants->first()->attributeValues);
 
-        $this->assertTrue(FlashSale::query()->running()->exists());
+        // Enough deals to fill a full desktop carousel row (five cards).
+        $this->assertGreaterThanOrEqual(5, FlashSale::query()->running()->firstOrFail()->items()->count());
+        $this->assertGreaterThan(0, Product::query()->trending()->count());
+        Product::query()->combos()->withCount('comboItems')->get()
+            ->each(fn (Product $combo) => $this->assertGreaterThanOrEqual(2, $combo->combo_items_count, "{$combo->name} has too few items"));
+        $this->assertGreaterThan(0, Product::query()->combos()->count());
         $this->assertSame(0, Category::query()->where('path', '/')->count());
     }
 
@@ -71,8 +78,8 @@ class SeederTest extends TestCase
         $html = $this->get(route('store.home'))
             ->assertOk()
             ->assertSeeInOrder([
-                'Featured Categories', 'Flash Sale', 'Mobile Phones', 'Smart Watches', 'Earbuds',
-                'Select AMD-powered gaming devices', 'Featured Products', 'New and Noteworthy',
+                'Featured Categories', 'Flash Sale', 'Trending Now', 'Mobile Phones', 'Smart Watches', 'Earbuds',
+                'Stay charged on the go', 'Combo Deals', 'Featured Products', 'New and Noteworthy',
                 'Latest Products', 'Best Sellers', 'All Product',
             ])
             ->getContent();

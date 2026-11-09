@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['specification_id', 'value', 'slug', 'sort_order'])]
+#[Fillable(['specification_id', 'value', 'slug', 'sort_order', 'value_bn'])]
 class SpecificationOption extends Model
 {
+    use HasTranslations;
+
     /**
      * @return array<string, string>
      */

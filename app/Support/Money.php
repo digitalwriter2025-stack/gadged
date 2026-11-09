@@ -106,14 +106,15 @@ final class Money
     }
 
     /**
-     * Formats for display, e.g. "৳12,500" (decimals only when non-zero).
+     * Formats for display, e.g. "৳12,500" (decimals only when non-zero), with
+     * Bangla digits ("৳১২,৫০০") while the storefront is in Bangla.
      */
     public static function format(string|int|null $amount, string $symbol = '৳'): string
     {
         $amount = self::of($amount);
         $decimals = str_ends_with($amount, '.00') ? 0 : self::SCALE;
 
-        return $symbol.number_format((float) $amount, $decimals);
+        return Localization::digits($symbol.number_format((float) $amount, $decimals));
     }
 
     /**

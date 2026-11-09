@@ -4,8 +4,14 @@
  * so the page is already cached in browser memory when the user finishes clicking.
  */
 const prefetchedUrls = new Set();
+let isPrefetching = false;
+let pendingUrl = null;
 
 function isSupported() {
+    if (!document.createElement('link').relList?.supports?.('prefetch')) {
+        return false;
+    }
+
     // Check if user has data saver on or is on slow connection
     if (navigator.connection) {
         if (navigator.connection.saveData) {
@@ -18,29 +24,51 @@ function isSupported() {
     return true;
 }
 
+/**
+ * One prefetch at a time, and none until the current page has finished
+ * loading, so hover prefetches never queue ahead of the page's own requests.
+ * While one is in flight only the most recently hovered link waits its turn.
+ */
 function prefetch(url) {
     if (!isSupported() || prefetchedUrls.has(url)) {
         return;
     }
 
+    if (isPrefetching || document.readyState !== 'complete') {
+        pendingUrl = url;
+
+        return;
+    }
+
     prefetchedUrls.add(url);
+    isPrefetching = true;
 
     // Prefer <link rel="prefetch">
     const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = url;
     link.as = 'document';
+    link.onload = prefetchPending;
 
     // Low priority fetch fallback
     link.onerror = () => {
-        try {
-            fetch(url, { priority: 'low', mode: 'no-cors' }).catch(() => {});
-        } catch {
-            // Ignore prefetch errors
-        }
+        fetch(url, { priority: 'low', mode: 'no-cors' })
+            .catch(() => {})
+            .finally(prefetchPending);
     };
 
     document.head.appendChild(link);
+}
+
+function prefetchPending() {
+    isPrefetching = false;
+
+    const url = pendingUrl;
+    pendingUrl = null;
+
+    if (url) {
+        prefetch(url);
+    }
 }
 
 function getValidInternalUrl(anchor) {
@@ -93,6 +121,10 @@ export function initInstantPreload() {
 
     // Record initial page as prefetched
     prefetchedUrls.add(window.location.href);
+
+    if (document.readyState !== 'complete') {
+        window.addEventListener('load', prefetchPending, { once: true });
+    }
 
     let hoverTimeout = null;
 

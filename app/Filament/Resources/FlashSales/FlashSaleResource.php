@@ -27,6 +27,8 @@ class FlashSaleResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-bolt';
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     public static function form(Schema $schema): Schema
     {
         return FlashSaleForm::configure($schema);
@@ -35,6 +37,14 @@ class FlashSaleResource extends Resource
     public static function table(Table $table): Table
     {
         return FlashSalesTable::configure($table);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'title_bn'];
     }
 
     public static function getPages(): array

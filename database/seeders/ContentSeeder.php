@@ -81,7 +81,6 @@ class ContentSeeder extends Seeder
         $menus = [
             'footer_information' => ['Information', [
                 ['About Us', 'about-us'],
-                ['Brands', '/brands'],
                 ['Affiliation', 'affiliation'],
                 ['Service Centers', 'service-centers'],
                 ['EMI Information', 'emi-information'],

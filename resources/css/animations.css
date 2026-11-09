@@ -147,7 +147,7 @@
     /* Flash-sale countdown */
     .countdown.is-urgent {
         border-color: var(--color-price);
-        background-color: rgb(223 1 0 / 0.06);
+        background-color: color-mix(in srgb, var(--color-price) 6%, transparent);
     }
 
     .countdown.is-urgent [data-unit] {
@@ -155,29 +155,60 @@
     }
 
     .countdown [data-unit] {
+        position: relative;
         display: inline-block;
         min-width: 1.6ch;
         text-align: center;
         font-variant-numeric: tabular-nums;
         line-height: 1.15;
-        will-change: transform, opacity;
     }
 
+    .countdown-digit {
+        display: block;
+    }
+
+    .countdown-digit.is-leaving {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    /* Seconds box: a soft accent glow breathes out on every tick */
     .countdown-sec {
         position: relative;
-        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
     }
 
-    .countdown-sec.is-ticking {
-        animation: countdown-sec-pulse 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    .countdown-sec::after {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        box-shadow:
+            0 0 0 2px color-mix(in srgb, var(--color-accent) 22%, transparent),
+            0 0 10px color-mix(in srgb, var(--color-accent) 25%, transparent);
+        opacity: 0;
+        pointer-events: none;
     }
 
-    @keyframes countdown-sec-pulse {
+    .countdown.is-urgent .countdown-sec::after {
+        box-shadow:
+            0 0 0 2px color-mix(in srgb, var(--color-price) 28%, transparent),
+            0 0 12px color-mix(in srgb, var(--color-price) 30%, transparent);
+    }
+
+    .countdown-sec.is-ticking::after {
+        animation: countdown-sec-glow 0.95s ease-in-out;
+    }
+
+    @keyframes countdown-sec-glow {
         0% {
-            transform: scale(1.05);
+            opacity: 0;
+        }
+        35% {
+            opacity: 1;
         }
         100% {
-            transform: scale(1);
+            opacity: 0;
         }
     }
 

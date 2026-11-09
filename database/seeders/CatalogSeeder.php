@@ -35,24 +35,12 @@ class CatalogSeeder extends Seeder
      * @var array<string, array{0: string, 1: array<string, array{0: string, 1: bool}>, 2?: bool}>
      */
     private const CATEGORIES = [
-        'Desktop' => ['desktop', ['Gaming PC' => ['gaming-pc', false], 'Brand PC' => ['desktop', false], 'Mini PC' => ['mini-pc', false], 'All-in-One PC' => ['all-in-one', false]], true],
-        'Laptop' => ['laptop', ['Gaming Laptop' => ['laptop', false], 'Ultrabook' => ['laptop', false], 'AI Laptop' => ['ai-laptop', true]], true],
-        'Component' => ['cpu', ['Processor' => ['processor', true], 'Motherboard' => ['motherboard', true], 'Graphics Card' => ['graphics-card', true], 'RAM' => ['ram', true], 'SSD' => ['ssd', true], 'Power Supply' => ['power-supply', false], 'Casing' => ['casing', false]]],
-        'Monitor' => ['monitor', [], true],
-        'Power' => ['power', ['UPS' => ['ups', false], 'Power Station' => ['power-station', false]]],
-        'Phone' => ['smartphone', ['Smartphone' => ['smartphone', true], 'Feature Phone' => ['feature-phone', false]]],
-        'Tablet' => ['tablet', []],
-        'Office Equipment' => ['printer', ['Printer' => ['printer', true], 'Projector' => ['projector', true], 'Scanner' => ['scanner', false]]],
-        'Camera' => ['camera', []],
-        'Security' => ['cctv', ['CC Camera' => ['cctv', false]]],
-        'Networking' => ['router', ['Router' => ['router', true], 'Switch' => ['switch', false]]],
-        'Software' => ['software', []],
-        'Server & Storage' => ['server', []],
-        'Accessories' => ['headphone', ['Headphone' => ['headphone', false], 'Keyboard' => ['keyboard', false], 'Mouse' => ['mouse', false], 'Speaker' => ['speaker', false]]],
-        'Gadget' => ['smartwatch', ['Smart Watch' => ['smartwatch', false], 'Earbuds' => ['earbuds', false]]],
-        'Gaming' => ['gamepad', ['Gaming Console' => ['gamepad', false], 'Gaming Chair' => ['chair', false]]],
-        'TV' => ['television', ['Television' => ['television', true]]],
-        'Appliance' => ['appliance', ['Air Conditioner' => ['air-conditioner', true], 'Air Fryer' => ['air-fryer', true], 'Refrigerator' => ['refrigerator', false]]],
+        'Smart Watch' => ['smartwatch', [], true],
+        'Headphones' => ['headphone', ['Earbuds' => ['earbuds', true], 'Over-Ear Headphones' => ['headphone', false]], true],
+        'Speaker' => ['speaker', [], true],
+        'Powerbanks' => ['powerbank', [], true],
+        'Charger & Cable' => ['charger', [], true],
+        'Smart Phone' => ['smartphone', [], true],
     ];
 
     /**
@@ -61,191 +49,190 @@ class CatalogSeeder extends Seeder
      * @var array<string, list<string>>
      */
     private const CATEGORY_SPECIFICATIONS = [
-        'monitor' => ['screen-size', 'resolution', 'refresh-rate', 'panel-type', 'curved-display', 'ports', 'warranty-details'],
-        'laptop' => ['processor-brand', 'processor-model', 'generation', 'ram', 'ram-type', 'storage-capacity', 'storage-type', 'screen-size', 'resolution', 'refresh-rate', 'graphics-chipset', 'wi-fi', 'bluetooth', 'weight', 'warranty-details'],
-        'desktop' => ['processor-brand', 'processor-model', 'ram', 'storage-capacity', 'storage-type', 'graphics-chipset', 'video-memory', 'form-factor', 'wi-fi', 'warranty-details'],
-        'processor' => ['processor-brand', 'processor-model', 'generation', 'cores', 'threads', 'warranty-details'],
-        'graphics-card' => ['graphics-chipset', 'video-memory', 'video-memory-type', 'memory-clock', 'memory-bus', 'cuda-cores', 'bus-interface', 'directx', 'opengl', 'max-resolution', 'multi-display', 'ports', 'power-consumption', 'recommended-psu', 'power-connector', 'dimensions', 'warranty-details'],
-        'casing' => ['form-factor', 'color', 'warranty-details'],
-        'smartphone' => ['screen-size', 'resolution', 'refresh-rate', 'panel-type', 'processor-brand', 'processor-model', 'ram', 'storage-capacity', 'rear-camera', 'front-camera', 'battery-capacity', 'fast-charging', 'warranty-details'],
-        'headphone' => ['connection-type', 'driver-size', 'surround-sound', 'color', 'warranty-details'],
-        'speaker' => ['connection-type', 'output-power', 'bluetooth', 'battery-capacity', 'warranty-details'],
+        'smart-phone' => ['screen-size', 'resolution', 'refresh-rate', 'panel-type', 'processor-brand', 'processor-model', 'ram', 'storage-capacity', 'rear-camera', 'front-camera', 'battery-capacity', 'fast-charging', 'warranty-details'],
+        'over-ear-headphones' => ['connection-type', 'driver-size', 'surround-sound', 'color', 'warranty-details'],
+        'speaker' => ['connection-type', 'output-power', 'bluetooth', 'battery-capacity', 'color', 'weight', 'warranty-details'],
         'smart-watch' => ['screen-size', 'panel-type', 'bluetooth', 'battery-capacity', 'warranty-details'],
         'earbuds' => ['connection-type', 'driver-size', 'bluetooth', 'battery-capacity', 'color', 'warranty-details'],
-        'television' => ['screen-size', 'resolution', 'refresh-rate', 'panel-type', 'ports', 'warranty-details'],
-        'air-conditioner' => ['cooling-capacity', 'inverter', 'warranty-details'],
-        'power-station' => ['capacity', 'output-power', 'ports', 'warranty-details'],
+        'powerbanks' => ['battery-capacity', 'output-power', 'fast-charging', 'ports', 'connection-type', 'color', 'weight', 'warranty-details'],
+        'charger-cable' => ['output-power', 'fast-charging', 'ports', 'connection-type', 'warranty-details'],
     ];
 
     /**
      * @var list<array{0: string, 1: ?string}>
      */
     private const BRANDS = [
-        ['Redragon', 'https://www.redragonzone.com'], ['Lenovo', 'https://www.lenovo.com'], ['PNY', 'https://www.pny.com'],
-        ['LG', 'https://www.lg.com'], ['ASUS', 'https://www.asus.com'], ['JBL', 'https://www.jbl.com'],
-        ['ARZOPA', null], ['KOSPET', null], ['MSI', 'https://www.msi.com'], ['AMD', 'https://www.amd.com'],
-        ['Unika', null], ['Maxcool', null], ['Samsung', 'https://www.samsung.com'], ['Haier', 'https://www.haier.com'],
-        ['Intel', 'https://www.intel.com'], ['Gigabyte', 'https://www.gigabyte.com'], ['Zotac', 'https://www.zotac.com'],
-        ['TP-Link', 'https://www.tp-link.com'], ['Anker', 'https://www.anker.com'], ['Xiaomi', 'https://www.mi.com'],
-        ['Dahua', 'https://www.dahuasecurity.com'], ['TCL', 'https://www.tcl.com'],
-        ['Apple', 'https://www.apple.com'], ['Google', 'https://store.google.com'], ['HONOR', 'https://www.honor.com'],
-        ['Amazfit', 'https://www.amazfit.com'], ['CMF by Nothing', 'https://nothing.tech'], ['Haylou', null],
-        ['Kieslect', null], ['SoundPEATS', null], ['QCY', null],
+        ['Apple', 'https://www.apple.com'], ['Samsung', 'https://www.samsung.com'], ['Google', 'https://store.google.com'],
+        ['HONOR', 'https://www.honor.com'], ['Xiaomi', 'https://www.mi.com'], ['Anker', 'https://www.anker.com'],
+        ['JBL', 'https://www.jbl.com'], ['Amazfit', 'https://www.amazfit.com'], ['CMF by Nothing', 'https://nothing.tech'],
+        ['KOSPET', null], ['Haylou', null], ['Kieslect', null], ['SoundPEATS', null], ['QCY', null], ['Redragon', 'https://www.redragonzone.com'],
     ];
 
     /**
-     * name, category slug, brand, regular price, sale price, stock, model, warranty, flags, specs.
+     * name, category slug, brand (null when unbranded), regular price, sale price, stock, model,
+     * warranty, flags (featured, latest, best, trending, flash), optional sku (default: by position)
+     * and search keywords (default: model), combo contents for bundles, specs.
      * Prices are sample values for development.
      *
      * @var list<array<string, mixed>>
      */
     private const PRODUCTS = [
-        // Flash sale items (sale price is applied by the flash sale, not the variant).
-        ['name' => 'Redragon H320 Lamia RGB Virtual 7.1 Surround Sound Gaming Headset', 'category' => 'headphone', 'brand' => 'redragon', 'price' => '3600', 'stock' => 25, 'model' => 'H320', 'warranty' => '1 Year', 'flash' => '2949',
+        ['name' => 'Redragon H320 Lamia RGB Virtual 7.1 Surround Sound Gaming Headset', 'category' => 'over-ear-headphones', 'brand' => 'redragon', 'price' => '3600', 'stock' => 25, 'model' => 'H320', 'warranty' => '1 Year', 'flash' => '2949',
             'specs' => ['connection-type' => 'Wired', 'driver-size' => '53', 'surround-sound' => 'Virtual 7.1', 'color' => 'Black']],
-        ['name' => 'Redragon H130 Pelias Wired Gaming Headphone', 'category' => 'headphone', 'brand' => 'redragon', 'price' => '1450', 'stock' => 40, 'model' => 'H130', 'warranty' => '6 Months', 'flash' => '999',
+        ['name' => 'Redragon H130 Pelias Wired Gaming Headphone', 'category' => 'over-ear-headphones', 'brand' => 'redragon', 'price' => '1450', 'stock' => 40, 'model' => 'H130', 'warranty' => '6 Months', 'best' => true, 'flash' => '999',
             'specs' => ['connection-type' => 'Wired', 'driver-size' => '50', 'color' => 'Black']],
-        ['name' => 'Redragon H231 Scream Wired RGB Gaming Headphone (White)', 'category' => 'headphone', 'brand' => 'redragon', 'price' => '2150', 'stock' => 18, 'model' => 'H231', 'warranty' => '1 Year', 'flash' => '1620',
+        ['name' => 'Redragon H231 Scream Wired RGB Gaming Headphone (White)', 'category' => 'over-ear-headphones', 'brand' => 'redragon', 'price' => '2150', 'stock' => 18, 'model' => 'H231', 'warranty' => '1 Year', 'flash' => '1620',
             'specs' => ['connection-type' => 'Wired', 'driver-size' => '50', 'color' => 'White']],
-        ['name' => 'Lenovo G24-20 24 Inch FHD 144Hz IPS Gaming Monitor', 'category' => 'monitor', 'brand' => 'lenovo', 'price' => '27500', 'stock' => 12, 'model' => 'G24-20', 'warranty' => '3 Years', 'flash' => '17500',
-            'specs' => ['screen-size' => '23.8', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '144Hz', 'panel-type' => 'IPS', 'curved-display' => false, 'ports' => 'HDMI 1.4, DisplayPort 1.2']],
-        ['name' => 'Lenovo L24-4e 23.8 Inch 100Hz Full HD IPS Monitor (Black)', 'category' => 'monitor', 'brand' => 'lenovo', 'price' => '15500', 'stock' => 20, 'model' => 'L24-4e', 'warranty' => '3 Years', 'flash' => '12500',
-            'specs' => ['screen-size' => '23.8', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '100Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'Lenovo L24i-40 23.8 Inch IPS FHD 100Hz Professional Monitor', 'category' => 'monitor', 'brand' => 'lenovo', 'price' => '20900', 'stock' => 9, 'model' => 'L24i-40', 'warranty' => '3 Years', 'flash' => '15500',
-            'specs' => ['screen-size' => '23.8', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '100Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-
-        // Latest products.
-        ['name' => 'PNY GeForce RTX 5060 Ti 8GB EPIC-X RGB OC Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '75000', 'sale' => '73000', 'stock' => 6, 'model' => 'VCG5060T8TFXXPB1-O', 'warranty' => '3 Years', 'latest' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5060 Ti', 'video-memory' => '8', 'video-memory-type' => 'GDDR7', 'ports' => '3x DisplayPort 2.1b, 1x HDMI 2.1b']],
-        ['name' => 'LG 34U640B-B 34-inch WQHD UltraWide Curved Monitor', 'category' => 'monitor', 'brand' => 'lg', 'price' => '75000', 'sale' => '71000', 'stock' => 4, 'model' => '34U640B-B', 'warranty' => '3 Years', 'latest' => true,
-            'specs' => ['screen-size' => '34', 'resolution' => '3440x1440 (WQHD)', 'refresh-rate' => '100Hz', 'panel-type' => 'VA', 'curved-display' => true]],
-        ['name' => 'ASUS NUC 15 Pro Core 5 210H Wi-Fi 7 BE202 Mini PC', 'category' => 'mini-pc', 'brand' => 'asus', 'price' => '70000', 'sale' => '62000', 'stock' => 5, 'model' => 'NUC 15 Pro', 'warranty' => '3 Years', 'latest' => true,
-            'specs' => ['processor-brand' => 'Intel', 'processor-model' => 'Core 5 210H', 'form-factor' => 'Mini PC', 'wi-fi' => 'Wi-Fi 7 (BE202)']],
-        ['name' => 'JBL PartyBox 720 800W Bluetooth Party Speaker', 'category' => 'speaker', 'brand' => 'jbl', 'price' => '118800', 'sale' => '102500', 'stock' => 3, 'model' => 'PartyBox 720', 'warranty' => '1 Year', 'latest' => true,
+        ['name' => 'JBL PartyBox 720 800W Bluetooth Party Speaker', 'category' => 'speaker', 'brand' => 'jbl', 'price' => '118800', 'sale' => '102500', 'stock' => 3, 'model' => 'PartyBox 720', 'warranty' => '1 Year', 'trending' => true, 'latest' => true,
             'specs' => ['connection-type' => 'Wired & Wireless', 'output-power' => '800', 'bluetooth' => '5.4']],
-        ['name' => 'ARZOPA Z1FC G1 Game Max 16.1-inch 144Hz Portable Gaming Monitor', 'category' => 'monitor', 'brand' => 'arzopa', 'price' => '18500', 'sale' => '17500', 'stock' => 7, 'model' => 'Z1FC', 'warranty' => '1 Year', 'latest' => true,
-            'specs' => ['screen-size' => '16.1', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '144Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'KOSPET TANK T3 ULTRA 2 1.43 Inch AMOLED GPS BT Calling Smartwatch', 'category' => 'smart-watch', 'brand' => 'kospet', 'price' => '10499', 'sale' => '9790', 'stock' => 15, 'model' => 'TANK T3 ULTRA 2', 'warranty' => '1 Year', 'latest' => true,
+        ['name' => 'KOSPET TANK T3 ULTRA 2 1.43 Inch AMOLED GPS BT Calling Smartwatch', 'category' => 'smart-watch', 'brand' => 'kospet', 'price' => '10499', 'sale' => '9790', 'stock' => 15, 'model' => 'TANK T3 ULTRA 2', 'warranty' => '1 Year', 'trending' => true, 'latest' => true,
             'specs' => ['screen-size' => '1.43', 'panel-type' => 'AMOLED', 'bluetooth' => '5.3', 'battery-capacity' => '480']],
 
-        // Best sellers.
-        ['name' => 'AMD Ryzen 7 7700 MSI PRO B650M-P 16GB RAM 500GB SSD RTX 5070 Gaming PC', 'category' => 'gaming-pc', 'brand' => 'amd', 'price' => '245000', 'sale' => '237000', 'stock' => 2, 'model' => 'GD-R7-7700-5070', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['processor-brand' => 'AMD', 'processor-model' => 'Ryzen 7 7700', 'ram' => '16', 'storage-capacity' => '512GB', 'storage-type' => 'NVMe SSD', 'graphics-chipset' => 'NVIDIA GeForce RTX 5070', 'video-memory' => '12', 'form-factor' => 'Micro ATX']],
-        ['name' => 'Unika Radeon RX 580 BLIZZARDS 8GD5 V2 Graphics Card', 'category' => 'graphics-card', 'brand' => 'unika', 'price' => '19500', 'sale' => '17800', 'stock' => 11, 'model' => 'RX 580 BLIZZARDS 8GD5 V2', 'warranty' => '2 Years', 'best' => true,
-            'specs' => ['graphics-chipset' => 'AMD Radeon RX 580', 'video-memory' => '8', 'video-memory-type' => 'GDDR5']],
-        ['name' => 'MSI PRO MP243L E14 23.8" 144Hz IPS FHD Gaming Monitor', 'category' => 'monitor', 'brand' => 'msi', 'price' => '14500', 'sale' => '12400', 'stock' => 22, 'model' => 'PRO MP243L E14', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['screen-size' => '23.8', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '144Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'PNY GeForce RTX 5060 8GB OC Dual Fan Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '61000', 'sale' => '56000', 'stock' => 8, 'model' => 'VCG50608DFXPB1-O', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5060', 'video-memory' => '8', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'MSI PRO MP251 E14L 24.5 inch FHD 144Hz IPS Gaming Monitor', 'category' => 'monitor', 'brand' => 'msi', 'price' => '20000', 'sale' => '12800', 'stock' => 14, 'model' => 'PRO MP251 E14L', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['screen-size' => '24.5', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '144Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'Maxcool Inferno MC5 Micro ATX Gaming Computer Case', 'category' => 'casing', 'brand' => 'maxcool', 'price' => '3800', 'sale' => '2800', 'stock' => 30, 'model' => 'Inferno MC5', 'warranty' => '1 Year', 'best' => true,
-            'specs' => ['form-factor' => 'Micro ATX', 'color' => 'Black']],
-
-        // Other categories.
-        ['name' => 'AMD Ryzen 7 7700 Processor', 'category' => 'processor', 'brand' => 'amd', 'price' => '34500', 'stock' => 10, 'model' => '100-100000592BOX', 'warranty' => '3 Years', 'featured' => true,
-            'specs' => ['processor-brand' => 'AMD', 'processor-model' => 'Ryzen 7 7700', 'generation' => 'Ryzen 7000', 'cores' => '8', 'threads' => '16']],
-        ['name' => 'Haier HSU-19GravityInv Pro X6 1.5 Ton Inverter Air Conditioner', 'category' => 'air-conditioner', 'brand' => 'haier', 'price' => '78000', 'sale' => '72900', 'stock' => 6, 'model' => 'HSU-19GravityInv Pro X6', 'warranty' => '10 Years Compressor', 'featured' => true,
-            'specs' => ['cooling-capacity' => '1.5 Ton', 'inverter' => true]],
-        ['name' => 'Samsung 55U8510 55 Inch Crystal UHD 4K Smart TV', 'category' => 'television', 'brand' => 'samsung', 'price' => '92000', 'sale' => '86500', 'stock' => 4, 'model' => 'UA55U8510', 'warranty' => '2 Years',
-            'specs' => ['screen-size' => '55', 'resolution' => '3840x2160 (4K UHD)', 'refresh-rate' => '60Hz']],
-        ['name' => 'Anker SOLIX C1000 Gen 2 Portable Power Station', 'category' => 'power-station', 'brand' => 'anker', 'price' => '115000', 'stock' => 0, 'model' => 'SOLIX C1000 Gen 2', 'warranty' => '5 Years',
-            'specs' => ['capacity' => '1024Wh', 'output-power' => '2000']],
-        ['name' => 'Gigabyte GeForce RTX 5070 Ti WINDFORCE OC SFF 16G Graphics Card', 'category' => 'graphics-card', 'brand' => 'gigabyte', 'price' => '124000', 'sale' => '118000', 'stock' => 5, 'model' => 'GV-N507TWF3OC-16GD', 'warranty' => '3 Years', 'latest' => true,
-            'specs' => [
-                'graphics-chipset' => 'NVIDIA GeForce RTX 5070 Ti', 'video-memory' => '16', 'video-memory-type' => 'GDDR7',
-                'memory-clock' => '28 Gbps', 'memory-bus' => '256', 'cuda-cores' => '8960', 'bus-interface' => 'PCI-E 5.0',
-                'directx' => 'DirectX 12 Ultimate', 'opengl' => 'OpenGL 4.6', 'max-resolution' => '7680x4320', 'multi-display' => '4',
-                'ports' => '3x DisplayPort 2.1b, 1x HDMI 2.1b', 'power-consumption' => '300', 'recommended-psu' => '750',
-                'power-connector' => '1x 16-pin', 'dimensions' => '304 x 126 x 50 mm', 'warranty-details' => '3 Years',
-            ],
-            'description' => '<h2>Built for 4K gaming and AI workloads</h2>'
-                .'<p>The GeForce RTX 5070 Ti WINDFORCE OC SFF pairs NVIDIA\'s Blackwell architecture with 16GB of GDDR7 memory running at 28 Gbps, in a small-form-factor friendly design.</p>'
-                .'<h3>Features</h3>'
-                .'<ul><li><strong>8960 CUDA cores</strong> for high-speed rendering and AI processing</li>'
-                .'<li><strong>16GB GDDR7</strong> memory with a 256-bit bus</li>'
-                .'<li><strong>PCI-E 5.0</strong> interface</li>'
-                .'<li><strong>8K output</strong> over DisplayPort 2.1b and HDMI 2.1b</li>'
-                .'<li><strong>WINDFORCE cooling</strong> for quiet, stable performance</li></ul>'
-                .'<p>A 750W power supply with a 16-pin connector is recommended.</p>'],
-
-        // Remaining homepage cards (names match DemoStorefront so every card links to a real product page).
-        ['name' => 'Lenovo L24i-4A 23.8 Inch FHD IPS 100Hz Monitor', 'category' => 'monitor', 'brand' => 'lenovo', 'price' => '16500', 'stock' => 10, 'model' => 'L24i-4A', 'warranty' => '3 Years', 'flash' => '14200',
-            'specs' => ['screen-size' => '23.8', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '100Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'Samsung 50U8000F 50 Inch Crystal UHD 4K Smart TV', 'category' => 'television', 'brand' => 'samsung', 'price' => '64000', 'stock' => 5, 'model' => 'UA50U8000F', 'warranty' => '2 Years', 'flash' => '58900',
-            'specs' => ['screen-size' => '50', 'resolution' => '3840x2160 (4K UHD)', 'refresh-rate' => '60Hz']],
-        ['name' => 'TCL 32S5K 32 Inch HD Android Smart TV', 'category' => 'television', 'brand' => 'tcl', 'price' => '21500', 'stock' => 8, 'model' => '32S5K', 'warranty' => '2 Years', 'flash' => '18900',
-            'specs' => ['screen-size' => '32', 'resolution' => '1366x768 (HD)', 'refresh-rate' => '60Hz']],
-        ['name' => 'PNY GeForce RTX 5080 16GB GDDR7 ARGB EPIC-X RGB OC Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '175000', 'sale' => '168000', 'stock' => 3, 'model' => 'VCG508016TFXXPB1-O', 'warranty' => '3 Years', 'latest' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5080', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'ZOTAC GAMING GeForce RTX 5080 AMP Extreme INFINITY Graphics Card', 'category' => 'graphics-card', 'brand' => 'zotac', 'price' => '180000', 'sale' => '172000', 'stock' => 2, 'model' => 'ZT-B50800B-10P', 'warranty' => '3 Years', 'latest' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5080', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'Haier HSU-19GRAVITY INV PRO X6 1.5 Ton Inverter AC', 'category' => 'air-conditioner', 'brand' => 'haier', 'price' => '74000', 'sale' => '68500', 'stock' => 5, 'model' => 'HSU-19GRAVITY INV PRO X6', 'warranty' => '10 Years Compressor', 'latest' => true,
-            'specs' => ['cooling-capacity' => '1.5 Ton', 'inverter' => true]],
-        ['name' => 'AMD Ryzen 7 9700X Gaming PC', 'category' => 'gaming-pc', 'brand' => 'amd', 'price' => '206000', 'sale' => '198000', 'stock' => 3, 'model' => 'GD-R7-9700X', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['processor-brand' => 'AMD', 'processor-model' => 'Ryzen 7 9700X', 'ram' => '32', 'storage-capacity' => '1TB', 'storage-type' => 'NVMe SSD', 'form-factor' => 'Micro ATX']],
-        ['name' => 'ASUS TUF Gaming VG249QM5F 23.8 Inch FHD 210Hz Monitor', 'category' => 'monitor', 'brand' => 'asus', 'price' => '23500', 'sale' => '21500', 'stock' => 9, 'model' => 'VG249QM5F', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['screen-size' => '23.8', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '210Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'ASUS TUF Gaming VG27AQL5F 27 Inch QHD 210Hz Monitor', 'category' => 'monitor', 'brand' => 'asus', 'price' => '39000', 'sale' => '36500', 'stock' => 6, 'model' => 'VG27AQL5F', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['screen-size' => '27', 'resolution' => '2560x1440 (QHD)', 'refresh-rate' => '210Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'ASUS VA249QGS-W 23.8 Inch FHD 144Hz IPS Monitor', 'category' => 'monitor', 'brand' => 'asus', 'price' => '16800', 'sale' => '15200', 'stock' => 12, 'model' => 'VA249QGS-W', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['screen-size' => '23.8', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '144Hz', 'panel-type' => 'IPS', 'curved-display' => false]],
-        ['name' => 'Dahua DHI-LM27-B221W 27 Inch FHD Monitor', 'category' => 'monitor', 'brand' => 'dahua', 'price' => '15500', 'sale' => '13900', 'stock' => 10, 'model' => 'DHI-LM27-B221W', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['screen-size' => '27', 'resolution' => '1920x1080 (FHD)', 'curved-display' => false]],
-        ['name' => 'MSI PRO MP225 E12VL 21.45 Inch FHD 120Hz Monitor', 'category' => 'monitor', 'brand' => 'msi', 'price' => '11000', 'sale' => '9800', 'stock' => 15, 'model' => 'PRO MP225 E12VL', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['screen-size' => '21.45', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '120Hz', 'curved-display' => false]],
-        ['name' => 'PNY GeForce RTX 5070 Ti OC 16GB Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '122000', 'sale' => '116000', 'stock' => 4, 'model' => 'VCG5070T16TFXPB1-O', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5070 Ti', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'PNY GeForce RTX 5080 OC Triple Fan 16GB Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '170000', 'sale' => '162000', 'stock' => 3, 'model' => 'VCG508016TFXPB1-O', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5080', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'ZOTAC GAMING GeForce RTX 5080 SOLID CORE OC Graphics Card', 'category' => 'graphics-card', 'brand' => 'zotac', 'price' => '166000', 'sale' => '158000', 'stock' => 3, 'model' => 'ZT-B50800J-10P', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5080', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'ZOTAC GeForce RTX 5070 Twin Edge OC Graphics Card', 'category' => 'graphics-card', 'brand' => 'zotac', 'price' => '86500', 'sale' => '82000', 'stock' => 5, 'model' => 'ZT-B50700H-10M', 'warranty' => '3 Years', 'best' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5070', 'video-memory' => '12', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'Gigabyte AORUS PRIME 5 AMD Ryzen 7 9700X AMD B850 32GB RAM 1TB SSD RTX 5070 Ti Gaming PC', 'category' => 'brand-pc', 'brand' => 'gigabyte', 'price' => '365000', 'sale' => '345000', 'stock' => 2, 'model' => 'AORUS PRIME 5', 'warranty' => '3 Years', 'featured' => true,
-            'specs' => ['processor-brand' => 'AMD', 'processor-model' => 'Ryzen 7 9700X', 'ram' => '32', 'storage-capacity' => '1TB', 'storage-type' => 'NVMe SSD', 'graphics-chipset' => 'NVIDIA GeForce RTX 5070 Ti', 'video-memory' => '16']],
-        ['name' => 'PNY GeForce RTX 5080 OC 16GB GDDR7 Triple Fan Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '199000', 'sale' => '191000', 'stock' => 3, 'model' => 'VCG508016TFXPB1-O-T', 'warranty' => '3 Years', 'featured' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5080', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'AMD Ryzen 7 7700 MSI PRO B650M-P 16GB RAM 500GB SSD RTX 5070 Gaming PC Build', 'category' => 'gaming-pc', 'brand' => 'amd', 'price' => '245000', 'sale' => '237000', 'stock' => 2, 'model' => 'GD-R7-7700-5070-B', 'warranty' => '3 Years', 'featured' => true,
-            'specs' => ['processor-brand' => 'AMD', 'processor-model' => 'Ryzen 7 7700', 'ram' => '16', 'storage-capacity' => '512GB', 'storage-type' => 'NVMe SSD', 'graphics-chipset' => 'NVIDIA GeForce RTX 5070', 'video-memory' => '12', 'form-factor' => 'Micro ATX']],
-        ['name' => 'Gigabyte GeForce RTX 5070 Ti WINDFORCE OC SFF 16G GDDR7 Graphics Card', 'category' => 'graphics-card', 'brand' => 'gigabyte', 'price' => '199000', 'sale' => '188000', 'stock' => 3, 'model' => 'GV-N507TWF3OC-16GD-G7', 'warranty' => '3 Years', 'featured' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5070 Ti', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'PNY GeForce RTX 5070 Ti OC 16GB Triple Fan Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '190000', 'sale' => '167999', 'stock' => 4, 'model' => 'VCG5070T16TFXPB1-O-T', 'warranty' => '3 Years', 'featured' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5070 Ti', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-        ['name' => 'PNY GeForce RTX 5080 16GB GDDR7 ARGB EPIC-X RGB OC Triple Fan Graphics Card', 'category' => 'graphics-card', 'brand' => 'pny', 'price' => '225000', 'sale' => '222000', 'stock' => 2, 'model' => 'VCG508016TFXXPB1-O-T', 'warranty' => '3 Years', 'featured' => true,
-            'specs' => ['graphics-chipset' => 'NVIDIA GeForce RTX 5080', 'video-memory' => '16', 'video-memory-type' => 'GDDR7']],
-
-        // Homepage category carousels: mobile phones, smart watches and earbuds.
-        ['name' => 'Apple iPhone 17 Pro 256GB Cosmic Orange', 'category' => 'smartphone', 'brand' => 'apple', 'price' => '175000', 'sale' => '165000', 'stock' => 4, 'model' => 'iPhone 17 Pro', 'warranty' => '1 Year',
+        ['name' => 'Apple iPhone 17 Pro 256GB Cosmic Orange', 'category' => 'smart-phone', 'brand' => 'apple', 'price' => '175000', 'sale' => '165000', 'stock' => 4, 'model' => 'iPhone 17 Pro', 'warranty' => '1 Year', 'trending' => true,
             'specs' => ['screen-size' => '6.3', 'refresh-rate' => '120Hz', 'panel-type' => 'OLED', 'processor-brand' => 'Apple', 'processor-model' => 'A19 Pro', 'ram' => '12', 'storage-capacity' => '256GB', 'rear-camera' => '48MP + 48MP + 48MP', 'front-camera' => '18MP']],
-        ['name' => 'Samsung Galaxy S26 Ultra 12GB/256GB Cobalt Violet', 'category' => 'smartphone', 'brand' => 'samsung', 'price' => '169999', 'sale' => '158000', 'stock' => 5, 'model' => 'Galaxy S26 Ultra', 'warranty' => '1 Year',
+        ['name' => 'Samsung Galaxy S26 Ultra 12GB/256GB Cobalt Violet', 'category' => 'smart-phone', 'brand' => 'samsung', 'price' => '169999', 'sale' => '158000', 'stock' => 5, 'model' => 'Galaxy S26 Ultra', 'warranty' => '1 Year', 'trending' => true,
             'specs' => ['screen-size' => '6.9', 'refresh-rate' => '120Hz', 'panel-type' => 'AMOLED', 'processor-brand' => 'Qualcomm', 'ram' => '12', 'storage-capacity' => '256GB', 'battery-capacity' => '5000']],
-        ['name' => 'Apple iPhone 17 256GB Lavender', 'category' => 'smartphone', 'brand' => 'apple', 'price' => '125000', 'sale' => '118000', 'stock' => 6, 'model' => 'iPhone 17', 'warranty' => '1 Year',
+        ['name' => 'Apple iPhone 17 256GB Lavender', 'category' => 'smart-phone', 'brand' => 'apple', 'price' => '125000', 'sale' => '118000', 'stock' => 6, 'model' => 'iPhone 17', 'warranty' => '1 Year',
             'specs' => ['screen-size' => '6.3', 'refresh-rate' => '120Hz', 'panel-type' => 'OLED', 'processor-brand' => 'Apple', 'processor-model' => 'A19', 'ram' => '8', 'storage-capacity' => '256GB', 'rear-camera' => '48MP + 48MP', 'front-camera' => '18MP']],
-        ['name' => 'Google Pixel 9 Pro 16GB/256GB Obsidian', 'category' => 'smartphone', 'brand' => 'google', 'price' => '112000', 'sale' => '98500', 'stock' => 3, 'model' => 'Pixel 9 Pro', 'warranty' => '1 Year',
+        ['name' => 'Google Pixel 9 Pro 16GB/256GB Obsidian', 'category' => 'smart-phone', 'brand' => 'google', 'price' => '112000', 'sale' => '98500', 'stock' => 3, 'model' => 'Pixel 9 Pro', 'warranty' => '1 Year',
             'specs' => ['screen-size' => '6.3', 'refresh-rate' => '120Hz', 'panel-type' => 'OLED', 'processor-model' => 'Google Tensor G4', 'ram' => '16', 'storage-capacity' => '256GB']],
-        ['name' => 'HONOR X7d 8GB/256GB Smartphone', 'category' => 'smartphone', 'brand' => 'honor', 'price' => '26999', 'sale' => '23999', 'stock' => 12, 'model' => 'X7d', 'warranty' => '1 Year',
+        ['name' => 'HONOR X7d 8GB/256GB Smartphone', 'category' => 'smart-phone', 'brand' => 'honor', 'price' => '26999', 'sale' => '23999', 'stock' => 12, 'model' => 'X7d', 'warranty' => '1 Year', 'best' => true,
             'specs' => ['ram' => '8', 'storage-capacity' => '256GB']],
         ['name' => 'Apple Watch Series 11 GPS 46mm Aluminum Case with Sport Band', 'category' => 'smart-watch', 'brand' => 'apple', 'price' => '56000', 'sale' => '52500', 'stock' => 4, 'model' => 'Watch Series 11', 'warranty' => '1 Year',
             'specs' => ['panel-type' => 'OLED']],
         ['name' => 'Amazfit Active 2 Square AMOLED GPS Smart Watch', 'category' => 'smart-watch', 'brand' => 'amazfit', 'price' => '19900', 'sale' => '17500', 'stock' => 7, 'model' => 'Active 2 Square', 'warranty' => '1 Year',
             'specs' => ['panel-type' => 'AMOLED']],
-        ['name' => 'CMF by Nothing Watch Pro 2 AMOLED Bluetooth Calling Smart Watch', 'category' => 'smart-watch', 'brand' => 'cmf-by-nothing', 'price' => '8999', 'sale' => '7490', 'stock' => 10, 'model' => 'Watch Pro 2', 'warranty' => '1 Year',
+        ['name' => 'CMF by Nothing Watch Pro 2 AMOLED Bluetooth Calling Smart Watch', 'category' => 'smart-watch', 'brand' => 'cmf-by-nothing', 'price' => '8999', 'sale' => '7490', 'stock' => 10, 'model' => 'Watch Pro 2', 'warranty' => '1 Year', 'trending' => true, 'flash' => '6490',
             'specs' => ['panel-type' => 'AMOLED']],
-        ['name' => 'Haylou Solar Pro AMOLED Bluetooth Calling Smart Watch', 'category' => 'smart-watch', 'brand' => 'haylou', 'price' => '6500', 'sale' => '5490', 'stock' => 14, 'model' => 'Solar Pro', 'warranty' => '1 Year',
+        ['name' => 'Haylou Solar Pro AMOLED Bluetooth Calling Smart Watch', 'category' => 'smart-watch', 'brand' => 'haylou', 'price' => '6500', 'sale' => '5490', 'stock' => 14, 'model' => 'Solar Pro', 'warranty' => '1 Year', 'best' => true, 'flash' => '4590',
             'specs' => ['panel-type' => 'AMOLED']],
         ['name' => 'Kieslect KS3 AMOLED Bluetooth Calling Smart Watch', 'category' => 'smart-watch', 'brand' => 'kieslect', 'price' => '5990', 'sale' => '4790', 'stock' => 16, 'model' => 'KS3', 'warranty' => '1 Year',
             'specs' => ['panel-type' => 'AMOLED']],
-        ['name' => 'Apple AirPods 4 Wireless Earbuds with USB-C Charging Case', 'category' => 'earbuds', 'brand' => 'apple', 'price' => '18500', 'sale' => '16500', 'stock' => 8, 'model' => 'AirPods 4', 'warranty' => '1 Year',
+        ['name' => 'Apple AirPods 4 Wireless Earbuds with USB-C Charging Case', 'category' => 'earbuds', 'brand' => 'apple', 'price' => '18500', 'sale' => '16500', 'stock' => 8, 'model' => 'AirPods 4', 'warranty' => '1 Year', 'trending' => true,
             'specs' => ['connection-type' => 'Wireless', 'color' => 'White']],
         ['name' => 'SoundPEATS Life ANC Wireless Earbuds', 'category' => 'earbuds', 'brand' => 'soundpeats', 'price' => '4290', 'sale' => '3490', 'stock' => 20, 'model' => 'Life ANC', 'warranty' => '6 Months',
             'specs' => ['connection-type' => 'Wireless', 'color' => 'Black']],
-        ['name' => 'Xiaomi Redmi Buds 6 ANC TWS Earbuds', 'category' => 'earbuds', 'brand' => 'xiaomi', 'price' => '3990', 'sale' => '3490', 'stock' => 18, 'model' => 'Redmi Buds 6', 'warranty' => '6 Months',
+        ['name' => 'Xiaomi Redmi Buds 6 ANC TWS Earbuds', 'category' => 'earbuds', 'brand' => 'xiaomi', 'price' => '3990', 'sale' => '3490', 'stock' => 18, 'model' => 'Redmi Buds 6', 'warranty' => '6 Months', 'best' => true, 'flash' => '2890',
             'specs' => ['connection-type' => 'Wireless', 'color' => 'Black']],
-        ['name' => 'Anker Soundcore R50i NC Wireless Earbuds', 'category' => 'earbuds', 'brand' => 'anker', 'price' => '3990', 'sale' => '3290', 'stock' => 22, 'model' => 'Soundcore R50i NC', 'warranty' => '18 Months',
+        ['name' => 'Anker Soundcore R50i NC Wireless Earbuds', 'category' => 'earbuds', 'brand' => 'anker', 'price' => '3990', 'sale' => '3290', 'stock' => 22, 'model' => 'Soundcore R50i NC', 'warranty' => '18 Months', 'flash' => '2790',
             'specs' => ['connection-type' => 'Wireless', 'color' => 'Black']],
-        ['name' => 'QCY AilyBuds Pro+ ANC Wireless Earbuds', 'category' => 'earbuds', 'brand' => 'qcy', 'price' => '3200', 'sale' => '2690', 'stock' => 25, 'model' => 'AilyBuds Pro+', 'warranty' => '6 Months',
+        ['name' => 'QCY AilyBuds Pro+ ANC Wireless Earbuds', 'category' => 'earbuds', 'brand' => 'qcy', 'price' => '3200', 'sale' => '2690', 'stock' => 25, 'model' => 'AilyBuds Pro+', 'warranty' => '6 Months', 'flash' => '2190',
             'specs' => ['connection-type' => 'Wireless', 'color' => 'Blue']],
+
+        // Unbranded power banks.
+        ['name' => 'Compact Ivory 10000mAh 20W Fast Charging Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-01', 'price' => '1890', 'sale' => '1590', 'stock' => 30, 'model' => 'PB-10K20', 'warranty' => '6 Months', 'best' => true,
+            'keywords' => 'powerbank, portable charger, 10000mAh, ivory',
+            'specs' => ['battery-capacity' => '10000', 'output-power' => '20', 'fast-charging' => 'PD 20W, QC 3.0', 'ports' => '1x USB-C, 1x USB-A', 'connection-type' => 'Wired', 'color' => 'Ivory', 'weight' => '210g']],
+        ['name' => 'Premium Brushed Silver 20000mAh 65W PD Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-02', 'price' => '4490', 'sale' => '3890', 'stock' => 15, 'model' => 'PB-20K65', 'warranty' => '1 Year', 'flash' => '3290',
+            'keywords' => 'powerbank, portable charger, 20000mAh, 65W, silver, aluminium',
+            'specs' => ['battery-capacity' => '20000', 'output-power' => '65', 'fast-charging' => 'PD 3.0 65W, QC 3.0', 'ports' => '2x USB-C, 1x USB-A', 'connection-type' => 'Wired', 'color' => 'Silver', 'weight' => '420g']],
+        ['name' => 'Premium Graphite 30000mAh 140W Laptop Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-03', 'price' => '8990', 'sale' => '7990', 'stock' => 8, 'model' => 'PB-30K140', 'warranty' => '1 Year', 'trending' => true, 'featured' => true,
+            'keywords' => 'powerbank, laptop power bank, macbook charger, 30000mAh, 140W, digital display',
+            'specs' => ['battery-capacity' => '30000', 'output-power' => '140', 'fast-charging' => 'PD 3.1 140W', 'ports' => '3x USB-C, 1x USB-A', 'connection-type' => 'Wired', 'color' => 'Graphite', 'weight' => '640g']],
+        ['name' => 'Premium Forest Green 20000mAh 30W Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-04', 'price' => '3290', 'sale' => '2790', 'stock' => 18, 'model' => 'PB-20K30', 'warranty' => '1 Year',
+            'keywords' => 'powerbank, portable charger, 20000mAh, green',
+            'specs' => ['battery-capacity' => '20000', 'output-power' => '30', 'fast-charging' => 'PD 30W, QC 3.0', 'ports' => '1x USB-C, 2x USB-A', 'connection-type' => 'Wired', 'color' => 'Forest Green', 'weight' => '390g']],
+        ['name' => 'Warm White 5000mAh Magnetic Wireless Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-05', 'price' => '2990', 'sale' => '2490', 'stock' => 20, 'model' => 'PB-5KMW', 'warranty' => '6 Months', 'flash' => '1990',
+            'keywords' => 'powerbank, magsafe, magnetic, wireless charger, iphone, 5000mAh',
+            'specs' => ['battery-capacity' => '5000', 'output-power' => '15', 'fast-charging' => '15W Magnetic Wireless, PD 20W', 'ports' => '1x USB-C', 'connection-type' => 'Wired & Wireless', 'color' => 'Warm White', 'weight' => '120g']],
+        ['name' => 'Slim Matte Charcoal 10000mAh 20W Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-06', 'price' => '1990', 'sale' => '1690', 'stock' => 35, 'model' => 'PB-10KS', 'warranty' => '6 Months',
+            'keywords' => 'powerbank, slim, portable charger, 10000mAh, black',
+            'specs' => ['battery-capacity' => '10000', 'output-power' => '20', 'fast-charging' => 'PD 20W, QC 3.0', 'ports' => '1x USB-C, 1x USB-A', 'connection-type' => 'Wired', 'color' => 'Charcoal', 'weight' => '190g']],
+        ['name' => 'Deep Navy 20000mAh 22.5W Fast Charging Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-07', 'price' => '2790', 'sale' => '2390', 'stock' => 25, 'model' => 'PB-20K22', 'warranty' => '1 Year', 'best' => true,
+            'keywords' => 'powerbank, portable charger, 20000mAh, blue',
+            'specs' => ['battery-capacity' => '20000', 'output-power' => '22.5', 'fast-charging' => 'PD 20W, QC 22.5W', 'ports' => '1x USB-C, 2x USB-A', 'connection-type' => 'Wired', 'color' => 'Navy Blue', 'weight' => '400g']],
+        ['name' => 'Premium Black 40000mAh 100W High-Capacity Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-08', 'price' => '9990', 'sale' => '8790', 'stock' => 6, 'model' => 'PB-40K100', 'warranty' => '1 Year', 'featured' => true,
+            'keywords' => 'powerbank, high capacity, laptop power bank, 40000mAh, 100W',
+            'specs' => ['battery-capacity' => '40000', 'output-power' => '100', 'fast-charging' => 'PD 3.0 100W, QC 3.0', 'ports' => '2x USB-C, 2x USB-A', 'connection-type' => 'Wired', 'color' => 'Black', 'weight' => '820g']],
+        ['name' => 'Premium Space Gray 25000mAh 100W Laptop Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-09', 'price' => '7490', 'sale' => '6590', 'stock' => 10, 'model' => 'PB-25K100', 'warranty' => '1 Year',
+            'keywords' => 'powerbank, laptop power bank, macbook charger, 25000mAh, 100W, gray',
+            'specs' => ['battery-capacity' => '25000', 'output-power' => '100', 'fast-charging' => 'PD 3.0 100W', 'ports' => '2x USB-C, 1x USB-A', 'connection-type' => 'Wired', 'color' => 'Space Gray', 'weight' => '560g']],
+        ['name' => 'Lavender 10000mAh Magnetic Wireless Power Bank', 'category' => 'powerbanks', 'brand' => null, 'sku' => 'GD-PB-10', 'price' => '3490', 'sale' => '2890', 'stock' => 16, 'model' => 'PB-10KMW', 'warranty' => '1 Year', 'trending' => true,
+            'keywords' => 'powerbank, magsafe, magnetic, wireless charger, iphone, 10000mAh, purple',
+            'specs' => ['battery-capacity' => '10000', 'output-power' => '15', 'fast-charging' => '15W Magnetic Wireless, PD 20W', 'ports' => '1x USB-C', 'connection-type' => 'Wired & Wireless', 'color' => 'Lavender', 'weight' => '200g']],
+
+        // Unbranded chargers, cables and adapters.
+        ['name' => 'Braided USB-C to USB-C 60W Fast Charging Cable 1m', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-01', 'price' => '690', 'sale' => '550', 'stock' => 60, 'model' => 'CB-CC60', 'warranty' => '6 Months',
+            'keywords' => 'type c cable, usb c cable, charging cable, data cable, braided, 60W',
+            'specs' => ['output-power' => '60', 'fast-charging' => 'PD 60W', 'ports' => 'USB-C to USB-C', 'connection-type' => 'Wired']],
+        ['name' => 'Brushed Silver USB-C to USB-A 3.0 OTG Adapter', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-02', 'price' => '450', 'sale' => '350', 'stock' => 50, 'model' => 'AD-OTG3', 'warranty' => '3 Months',
+            'keywords' => 'otg, type c adapter, usb c to usb, converter, pendrive adapter',
+            'specs' => ['ports' => 'USB-C (male) to USB-A 3.0 (female)', 'connection-type' => 'Wired']],
+        ['name' => 'White USB-A to USB-C 3A Fast Charging Cable 1m', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-03', 'price' => '350', 'sale' => '290', 'stock' => 80, 'model' => 'CB-AC3A', 'warranty' => '3 Months', 'best' => true,
+            'keywords' => 'type c cable, usb c cable, charging cable, data cable',
+            'specs' => ['output-power' => '15', 'fast-charging' => 'QC 3.0, 3A', 'ports' => 'USB-A to USB-C', 'connection-type' => 'Wired']],
+        ['name' => 'Compact Black 38W Dual-Port Car Charger', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-04', 'price' => '1290', 'sale' => '990', 'stock' => 30, 'model' => 'CC-38D', 'warranty' => '6 Months',
+            'keywords' => 'car charger, car adapter, fast charger, usb c, 38W',
+            'specs' => ['output-power' => '38', 'fast-charging' => 'PD 20W + QC 3.0 18W', 'ports' => '1x USB-C, 1x USB-A', 'connection-type' => 'Wired']],
+        ['name' => 'Matte Black USB-A to Micro-USB 2.4A Charging Cable 1m', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-05', 'price' => '250', 'sale' => '199', 'stock' => 80, 'model' => 'CB-AM24', 'warranty' => '3 Months',
+            'keywords' => 'micro usb cable, android cable, charging cable, data cable',
+            'specs' => ['output-power' => '12', 'fast-charging' => '2.4A', 'ports' => 'USB-A to Micro-USB', 'connection-type' => 'Wired']],
+        ['name' => 'Matte Charcoal 35W Dual-Port Wall Charger', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-06', 'price' => '1590', 'sale' => '1290', 'stock' => 35, 'model' => 'WC-35D', 'warranty' => '6 Months', 'trending' => true, 'flash' => '1050',
+            'keywords' => 'wall charger, adapter, fast charger, usb c charger, 35W',
+            'specs' => ['output-power' => '35', 'fast-charging' => 'PD 3.0, QC 3.0', 'ports' => '1x USB-C, 1x USB-A', 'connection-type' => 'Wired']],
+        ['name' => 'Satin White 20W USB-C PD Wall Charger', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-07', 'price' => '990', 'sale' => '790', 'stock' => 45, 'model' => 'WC-20C', 'warranty' => '6 Months', 'best' => true,
+            'keywords' => 'wall charger, iphone charger, adapter, usb c charger, 20W',
+            'specs' => ['output-power' => '20', 'fast-charging' => 'PD 20W', 'ports' => '1x USB-C', 'connection-type' => 'Wired']],
+        ['name' => 'Slim 15W Magnetic Wireless Charging Pad', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-08', 'price' => '1890', 'sale' => '1490', 'stock' => 20, 'model' => 'WP-15M', 'warranty' => '6 Months', 'trending' => true,
+            'keywords' => 'wireless charger, magsafe, qi charger, charging pad, iphone',
+            'specs' => ['output-power' => '15', 'fast-charging' => 'Qi 15W', 'ports' => '1x USB-C (input)', 'connection-type' => 'Wireless']],
+        ['name' => 'Space Gray 5-in-1 USB-C Hub with 4K HDMI', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-09', 'price' => '2490', 'sale' => '1990', 'stock' => 15, 'model' => 'HB-5C4K', 'warranty' => '6 Months',
+            'keywords' => 'usb c hub, type c hub, multiport adapter, hdmi adapter, docking, macbook',
+            'specs' => ['ports' => '1x HDMI 4K, 2x USB-A 3.0, SD, microSD', 'connection-type' => 'Wired']],
+        ['name' => 'White USB-A to Lightning 2.4A Charging Cable 1m', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CC-10', 'price' => '590', 'sale' => '450', 'stock' => 60, 'model' => 'CB-AL24', 'warranty' => '3 Months',
+            'keywords' => 'lightning cable, iphone cable, charging cable, data cable',
+            'specs' => ['output-power' => '12', 'fast-charging' => '2.4A', 'ports' => 'USB-A to Lightning', 'connection-type' => 'Wired']],
+
+        // Unbranded speakers.
+        ['name' => 'Charcoal 10W Portable Bluetooth Speaker', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-01', 'price' => '1990', 'sale' => '1590', 'stock' => 30, 'model' => 'SP-10P', 'warranty' => '6 Months', 'best' => true,
+            'keywords' => 'bluetooth speaker, portable speaker, mini speaker, wireless speaker, black',
+            'specs' => ['connection-type' => 'Wireless', 'output-power' => '10', 'bluetooth' => '5.3', 'battery-capacity' => '1800', 'color' => 'Charcoal', 'weight' => '380g']],
+        ['name' => 'Elegant Cream Retro 15W Bluetooth Speaker', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-02', 'price' => '3490', 'sale' => '2890', 'stock' => 15, 'model' => 'SP-15R', 'warranty' => '6 Months', 'trending' => true,
+            'keywords' => 'retro speaker, vintage speaker, bluetooth speaker, leather, cream, gold',
+            'specs' => ['connection-type' => 'Wireless', 'output-power' => '15', 'bluetooth' => '5.3', 'battery-capacity' => '2400', 'color' => 'Cream', 'weight' => '720g']],
+        ['name' => 'Rugged Navy 20W Waterproof Portable Bluetooth Speaker', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-03', 'price' => '2990', 'sale' => '2490', 'stock' => 25, 'model' => 'SP-20W', 'warranty' => '1 Year', 'best' => true, 'flash' => '1990',
+            'keywords' => 'bluetooth speaker, waterproof speaker, outdoor speaker, ipx7, blue',
+            'specs' => ['connection-type' => 'Wireless', 'output-power' => '20', 'bluetooth' => '5.3', 'battery-capacity' => '3600', 'color' => 'Navy Blue', 'weight' => '560g']],
+        ['name' => 'Slim Black 40W Bluetooth Soundbar', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-04', 'price' => '4990', 'sale' => '4290', 'stock' => 12, 'model' => 'SB-40S', 'warranty' => '1 Year',
+            'keywords' => 'soundbar, tv speaker, computer speaker, bluetooth soundbar, aux',
+            'specs' => ['connection-type' => 'Wired & Wireless', 'output-power' => '40', 'bluetooth' => '5.3', 'battery-capacity' => '2000', 'color' => 'Black', 'weight' => '1.1kg']],
+        ['name' => 'Premium Silver-Gray 20W Smart Speaker with Voice Assistant', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-05', 'price' => '5990', 'sale' => '4990', 'stock' => 10, 'model' => 'SP-20S', 'warranty' => '1 Year', 'featured' => true,
+            'keywords' => 'smart speaker, voice assistant, wifi speaker, home speaker, gray',
+            'specs' => ['connection-type' => 'Wireless', 'output-power' => '20', 'bluetooth' => '5.3', 'battery-capacity' => '5200', 'color' => 'Silver-Gray', 'weight' => '950g']],
+        ['name' => 'Matte Black 25W RGB Gaming Bluetooth Speaker', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-06', 'price' => '3990', 'sale' => '3390', 'stock' => 18, 'model' => 'SP-25G', 'warranty' => '1 Year', 'trending' => true,
+            'keywords' => 'gaming speaker, rgb speaker, pc speaker, bluetooth speaker, led',
+            'specs' => ['connection-type' => 'Wired & Wireless', 'output-power' => '25', 'bluetooth' => '5.3', 'battery-capacity' => '3000', 'color' => 'Matte Black', 'weight' => '1.2kg']],
+        ['name' => 'Portable 80W Party Speaker with Blue LED Rings', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-07', 'price' => '9990', 'sale' => '8490', 'stock' => 8, 'model' => 'PS-80L', 'warranty' => '1 Year', 'trending' => true, 'featured' => true,
+            'keywords' => 'party speaker, karaoke speaker, dj speaker, led speaker, dual woofer, mic input',
+            'specs' => ['connection-type' => 'Wired & Wireless', 'output-power' => '80', 'bluetooth' => '5.3', 'battery-capacity' => '6000', 'color' => 'Black', 'weight' => '4.8kg']],
+        ['name' => 'Premium Olive 40W Portable Bluetooth Boombox Speaker', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-08', 'price' => '5490', 'sale' => '4690', 'stock' => 14, 'model' => 'SP-40B', 'warranty' => '1 Year', 'latest' => true,
+            'keywords' => 'boombox, bluetooth speaker, outdoor speaker, portable speaker, green',
+            'specs' => ['connection-type' => 'Wireless', 'output-power' => '40', 'bluetooth' => '5.3', 'battery-capacity' => '7200', 'color' => 'Olive Green', 'weight' => '1.6kg']],
+        ['name' => 'Walnut 50W Bluetooth Bookshelf Speaker with Copper Woofer', 'category' => 'speaker', 'brand' => null, 'sku' => 'GD-SP-09', 'price' => '8490', 'sale' => '7490', 'stock' => 6, 'model' => 'BS-50W', 'warranty' => '1 Year', 'latest' => true,
+            'keywords' => 'bookshelf speaker, wooden speaker, hifi speaker, home audio, walnut',
+            'specs' => ['connection-type' => 'Wired & Wireless', 'output-power' => '50', 'bluetooth' => '5.3', 'color' => 'Walnut', 'weight' => '3.2kg']],
+
+        // Combos: sold as one product at their own price and stock; 'combo' lists what is in the box (slug => quantity).
+        ['name' => 'iPhone 17 Essentials Combo: iPhone 17 + AirPods 4 + 20W Charger', 'category' => 'smart-phone', 'brand' => null, 'sku' => 'GD-CB-01', 'price' => '144490', 'sale' => '132990', 'stock' => 3, 'model' => 'Combo iPhone 17 Essentials', 'warranty' => '1 Year', 'trending' => true,
+            'keywords' => 'combo, bundle, iphone combo, airpods, charger',
+            'combo' => ['apple-iphone-17-256gb-lavender' => 1, 'apple-airpods-4-wireless-earbuds-with-usb-c-charging-case' => 1, 'satin-white-20w-usb-c-pd-wall-charger' => 1],
+            'specs' => []],
+        ['name' => 'Galaxy Power Combo: Galaxy S26 Ultra + 20000mAh 65W Power Bank + USB-C Cable', 'category' => 'smart-phone', 'brand' => null, 'sku' => 'GD-CB-02', 'price' => '175179', 'sale' => '162990', 'stock' => 3, 'model' => 'Combo Galaxy Power', 'warranty' => '1 Year',
+            'keywords' => 'combo, bundle, samsung combo, power bank, cable',
+            'combo' => ['samsung-galaxy-s26-ultra-12gb256gb-cobalt-violet' => 1, 'premium-brushed-silver-20000mah-65w-pd-power-bank' => 1, 'braided-usb-c-to-usb-c-60w-fast-charging-cable-1m' => 1],
+            'specs' => []],
+        ['name' => 'Travel Charging Combo: 10000mAh Power Bank + 35W Wall Charger + Car Charger + Cable', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CB-03', 'price' => '5120', 'sale' => '3990', 'stock' => 15, 'model' => 'Combo Travel Charging', 'warranty' => '6 Months', 'trending' => true,
+            'keywords' => 'combo, bundle, travel kit, power bank, charger, car charger',
+            'combo' => ['compact-ivory-10000mah-20w-fast-charging-power-bank' => 1, 'matte-charcoal-35w-dual-port-wall-charger' => 1, 'compact-black-38w-dual-port-car-charger' => 1, 'white-usb-a-to-usb-c-3a-fast-charging-cable-1m' => 1],
+            'specs' => []],
+        ['name' => 'Fitness Combo: Amazfit Active 2 Smart Watch + SoundPEATS Life ANC Earbuds', 'category' => 'smart-watch', 'brand' => null, 'sku' => 'GD-CB-04', 'price' => '24190', 'sale' => '19490', 'stock' => 6, 'model' => 'Combo Fitness', 'warranty' => '1 Year',
+            'keywords' => 'combo, bundle, smart watch, earbuds, fitness, gym',
+            'combo' => ['amazfit-active-2-square-amoled-gps-smart-watch' => 1, 'soundpeats-life-anc-wireless-earbuds' => 1],
+            'specs' => []],
+        ['name' => 'Desk Setup Combo: 5-in-1 USB-C Hub + Wireless Charging Pad + Braided Cable', 'category' => 'charger-cable', 'brand' => null, 'sku' => 'GD-CB-05', 'price' => '5070', 'sale' => '3990', 'stock' => 10, 'model' => 'Combo Desk Setup', 'warranty' => '6 Months',
+            'keywords' => 'combo, bundle, desk setup, usb c hub, wireless charger, macbook',
+            'combo' => ['space-gray-5-in-1-usb-c-hub-with-4k-hdmi' => 1, 'slim-15w-magnetic-wireless-charging-pad' => 1, 'braided-usb-c-to-usb-c-60w-fast-charging-cable-1m' => 1],
+            'specs' => []],
     ];
 
     public function run(InventoryService $inventory): void
@@ -258,7 +245,7 @@ class CatalogSeeder extends Seeder
         $specifications = Specification::query()->with('options')->get()->keyBy('slug');
         $attributes = $this->seedAttributes();
 
-        $flashItems = [];
+        $comboContents = [];
 
         foreach (self::PRODUCTS as $position => $data) {
             $slug = Str::slug($data['name']);
@@ -271,9 +258,9 @@ class CatalogSeeder extends Seeder
                 'type' => ProductType::Simple,
                 'name' => $data['name'],
                 'slug' => $slug,
-                'sku' => 'GD-'.str_pad((string) ($position + 1001), 5, '0', STR_PAD_LEFT),
+                'sku' => $data['sku'] ?? 'GD-'.str_pad((string) ($position + 1001), 5, '0', STR_PAD_LEFT),
                 'model' => $data['model'],
-                'brand_id' => $brands[$data['brand']]->id,
+                'brand_id' => $data['brand'] !== null ? $brands[$data['brand']]->id : null,
                 'category_id' => $categories[$data['category']]->id,
                 'short_description' => $data['name'].'. '.$data['warranty'].' official warranty.',
                 'description' => $data['description'] ?? null,
@@ -281,9 +268,11 @@ class CatalogSeeder extends Seeder
                 'is_featured' => $data['featured'] ?? false,
                 'is_latest' => $data['latest'] ?? false,
                 'is_best_seller' => $data['best'] ?? false,
+                'is_trending' => $data['trending'] ?? false,
+                'is_combo' => isset($data['combo']),
                 'status' => ProductStatus::Active,
                 'published_at' => now()->subDays(count(self::PRODUCTS) - $position),
-                'search_keywords' => $data['model'],
+                'search_keywords' => $data['keywords'] ?? $data['model'],
                 'created_by' => $admin?->id,
             ]);
 
@@ -306,13 +295,34 @@ class CatalogSeeder extends Seeder
 
             $this->setSpecifications($product, $data['specs'], $specifications);
 
-            if (isset($data['flash'])) {
-                $flashItems[] = [$product, $data['flash']];
+            if (isset($data['combo'])) {
+                $comboContents[] = [$product, $data['combo']];
             }
         }
 
         $this->seedVariableProducts($categories, $brands, $specifications, $attributes, $inventory, $admin);
-        $this->seedFlashSale($flashItems);
+        $this->seedFlashSale();
+        $this->seedComboItems($comboContents);
+    }
+
+    /**
+     * Records what is inside each newly created combo, once every bundled product exists.
+     *
+     * @param  list<array{0: Product, 1: array<string, int>}>  $combos  combo => [product slug => quantity]
+     */
+    private function seedComboItems(array $combos): void
+    {
+        foreach ($combos as [$combo, $contents]) {
+            $productIds = Product::query()->whereIn('slug', array_keys($contents))->pluck('id', 'slug');
+
+            foreach (array_keys($contents) as $order => $slug) {
+                $combo->comboItems()->create([
+                    'product_id' => $productIds[$slug],
+                    'quantity' => $contents[$slug],
+                    'sort_order' => $order + 1,
+                ]);
+            }
+        }
     }
 
     /**
@@ -431,7 +441,7 @@ class CatalogSeeder extends Seeder
     ): void {
         $products = [
             [
-                'name' => 'Samsung Galaxy A56 5G Smartphone', 'category' => 'smartphone', 'brand' => 'samsung',
+                'name' => 'Samsung Galaxy A56 5G Smartphone', 'category' => 'smart-phone', 'brand' => 'samsung',
                 'sku' => 'GD-PH-A56', 'model' => 'SM-A566E', 'warranty' => '1 Year',
                 'specs' => ['screen-size' => '6.7', 'resolution' => '1080x2340 (FHD+)', 'refresh-rate' => '120Hz', 'panel-type' => 'Super AMOLED', 'processor-brand' => 'Samsung Exynos', 'processor-model' => 'Exynos 1580', 'rear-camera' => '50MP + 12MP + 5MP', 'front-camera' => '12MP', 'battery-capacity' => '5000', 'fast-charging' => '45W'],
                 'variants' => [
@@ -439,16 +449,6 @@ class CatalogSeeder extends Seeder
                     [['ram' => '8GB', 'storage' => '256GB', 'color' => 'Awesome Graphite'], '57999', '55999', 5],
                     [['ram' => '8GB', 'storage' => '256GB', 'color' => 'Awesome Lightgray'], '57999', '55999', 3],
                     [['ram' => '12GB', 'storage' => '256GB', 'color' => 'Awesome Graphite'], '62999', null, 0],
-                ],
-            ],
-            [
-                'name' => 'Lenovo IdeaPad Slim 3 15IRH10 Core i5 13th Gen 15.3" Laptop', 'category' => 'laptop', 'brand' => 'lenovo',
-                'sku' => 'GD-LP-IPS3', 'model' => '15IRH10', 'warranty' => '2 Years',
-                'specs' => ['processor-brand' => 'Intel', 'processor-model' => 'Core i5-13420H', 'generation' => '13th Gen', 'ram-type' => 'DDR5', 'storage-type' => 'NVMe SSD', 'screen-size' => '15.3', 'resolution' => '1920x1080 (FHD)', 'refresh-rate' => '60Hz', 'graphics-chipset' => 'Intel UHD Graphics', 'wi-fi' => 'Wi-Fi 6', 'bluetooth' => '5.2', 'weight' => '1.59 kg'],
-                'variants' => [
-                    [['ram' => '16GB', 'storage' => '512GB', 'color' => 'Cloud Grey'], '78500', '74900', 6],
-                    [['ram' => '16GB', 'storage' => '1TB', 'color' => 'Cloud Grey'], '84500', null, 4],
-                    [['ram' => '24GB', 'storage' => '1TB', 'color' => 'Abyss Blue'], '92000', null, 2],
                 ],
             ],
         ];
@@ -550,11 +550,16 @@ class CatalogSeeder extends Seeder
     }
 
     /**
-     * @param  list<array{0: Product, 1: string}>  $items
+     * Puts every product with a 'flash' price into the running sale. Products already in the
+     * sale are left untouched, so re-seeding only appends deals that were added to the list.
      */
-    private function seedFlashSale(array $items): void
+    private function seedFlashSale(): void
     {
-        if ($items === []) {
+        $prices = collect(self::PRODUCTS)
+            ->filter(fn (array $data): bool => isset($data['flash']))
+            ->mapWithKeys(fn (array $data): array => [Str::slug($data['name']) => $data['flash']]);
+
+        if ($prices->isEmpty()) {
             return;
         }
 
@@ -566,17 +571,24 @@ class CatalogSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Only newly created products reach here, so re-seeding just appends them to the existing sale.
-        $offset = $sale->items()->count();
+        $products = Product::query()->whereIn('slug', $prices->keys())->get()->keyBy('slug');
+        $existing = $sale->items()->pluck('product_id')->all();
+        $sortOrder = (int) $sale->items()->max('sort_order');
 
-        foreach ($items as $position => [$product, $price]) {
+        foreach ($prices as $slug => $price) {
+            $product = $products->get($slug);
+
+            if ($product === null || in_array($product->id, $existing, true)) {
+                continue;
+            }
+
             $sale->items()->create([
                 'product_id' => $product->id,
                 'discount_type' => FlashSaleDiscountType::FixedPrice,
                 'discount_value' => $price,
                 'quantity_limit' => 10,
                 'per_order_limit' => 2,
-                'sort_order' => $offset + $position + 1,
+                'sort_order' => ++$sortOrder,
             ]);
         }
     }

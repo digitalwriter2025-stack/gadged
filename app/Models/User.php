@@ -24,7 +24,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'phone', 'password', 'status'])]
+#[Fillable(['name', 'username', 'email', 'phone', 'password', 'status'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery
 {
@@ -57,9 +57,12 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
         return $this->status === UserStatus::Active;
     }
 
+    /**
+     * Staff are users holding any role (built-in or custom) or a directly granted section permission.
+     */
     public function isStaff(): bool
     {
-        return $this->hasAnyRole(StaffRole::values());
+        return $this->roles->isNotEmpty() || $this->permissions->isNotEmpty();
     }
 
     public function isSuperAdmin(): bool
@@ -73,7 +76,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     #[Scope]
     protected function staff(Builder $query): void
     {
-        $query->whereHas('roles', fn (Builder $roles) => $roles->whereIn('name', StaffRole::values()));
+        $query->where(fn (Builder $staff) => $staff->has('roles')->orHas('permissions'));
     }
 
     /**
@@ -82,7 +85,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     #[Scope]
     protected function customers(Builder $query): void
     {
-        $query->whereDoesntHave('roles', fn (Builder $roles) => $roles->whereIn('name', StaffRole::values()));
+        $query->doesntHave('roles')->doesntHave('permissions');
     }
 
     /**

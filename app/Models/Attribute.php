@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AttributeDisplayType;
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,9 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * A variation axis such as RAM, Storage or Color.
  */
-#[Fillable(['name', 'slug', 'display_type', 'sort_order'])]
+#[Fillable(['name', 'slug', 'display_type', 'sort_order', 'name_bn'])]
 class Attribute extends Model
 {
+    use HasTranslations;
+
     /**
      * @return array<string, string>
      */

@@ -5,6 +5,7 @@ namespace App\Support\Storefront;
 use App\Models\Category;
 use App\Models\Product;
 use App\Services\ProductFilterService;
+use App\Support\Localization;
 use App\Support\Money;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
@@ -37,6 +38,7 @@ class CategoryPagePresenter
      *     activeFilterCount: int,
      *     sorts: array<string, string>,
      *     products: LengthAwarePaginator<int, array<string, mixed>>,
+     *     emptyState: array{title: string, text: string, action: array{label: string, url: string}},
      *     seo: array{title: string, description: string, canonical: string, noindex: bool}
      * }
      */
@@ -57,22 +59,28 @@ class CategoryPagePresenter
             + ($filters['q'] !== null ? 1 : 0);
 
         $url = route('store.categories.show', $category->slug);
-        $heading = "{$category->name} Price in Bangladesh";
+        $name = $category->translated('name');
+        $heading = __(':name Price in Bangladesh', ['name' => $name]);
         $intro = $this->intro($category, $facets['price'], $facets['total']);
 
         return [
-            'category' => ['name' => $category->name, 'url' => $url, 'heading' => $heading, 'intro' => $intro],
+            'category' => ['name' => $name, 'url' => $url, 'heading' => $heading, 'intro' => $intro],
             'breadcrumbs' => $this->breadcrumbs($category),
             'subcategories' => $this->subcategories($category),
             'filters' => $filters,
             'filterGroups' => $this->filterGroups($facets, $filters),
             'price' => $facets['price'],
             'activeFilterCount' => $activeFilterCount,
-            'sorts' => ProductFilterService::SORTS,
+            'sorts' => ProductFilterService::sortOptions(),
             'products' => $products,
+            'emptyState' => [
+                'title' => __('No :name products listed yet', ['name' => $name]),
+                'text' => __('Call or message us to ask about availability, or see which gadgets are trending right now.'),
+                'action' => ['label' => __('See Trending Gadgets'), 'url' => route('store.trending')],
+            ],
             'seo' => [
-                'title' => $category->seo_title ?: $heading.' '.now()->year,
-                'description' => $category->seo_description ?: Str::limit($intro, 160),
+                'title' => $category->translated('seo_title') ?: $heading.' '.Localization::digits(now()->year),
+                'description' => $category->translated('seo_description') ?: Str::limit($intro, 160),
                 'canonical' => $products->currentPage() > 1 ? $url.'?page='.$products->currentPage() : $url,
                 'noindex' => $activeFilterCount > 0 || $filters['sort'] !== ProductFilterService::DEFAULT_SORT,
             ],
@@ -84,21 +92,27 @@ class CategoryPagePresenter
      */
     private function intro(Category $category, array $price, int $total): string
     {
-        if (filled($category->description)) {
-            return strip_tags($category->description);
+        $description = $category->translated('description');
+
+        if (filled($description)) {
+            return strip_tags($description);
         }
 
         $store = config('app.name');
-        $name = $category->name;
+        $name = $category->translated('name');
 
         if ($total === 0) {
-            return "{$name} products will be available at {$store} soon. Stay tuned for the latest prices in Bangladesh.";
+            return __(':name products will be available at :store soon. Stay tuned for the latest prices in Bangladesh.', ['name' => $name, 'store' => $store]);
         }
 
-        return "{$name} price in Bangladesh at {$store} starts from only BDT ".Money::format($price['min'])
-            .' and can reach up to BDT '.Money::format($price['max'])
-            .' based on brand and specifications. Discover '.number_format($total).'+ '.Str::lower($name)
-            ." products with official warranty, attractive discounts and fast delivery across Bangladesh. {$store} is your trusted destination to compare and buy {$name} at the best price.";
+        return __(':name price in Bangladesh at :store starts from only BDT :min and can reach up to BDT :max based on brand and specifications. Discover :count+ :lower products with official warranty, attractive discounts and fast delivery across Bangladesh. :store is your trusted destination to compare and buy :name at the best price.', [
+            'name' => $name,
+            'store' => $store,
+            'min' => Money::format($price['min']),
+            'max' => Money::format($price['max']),
+            'count' => Localization::digits(number_format($total)),
+            'lower' => Str::lower($name),
+        ]);
     }
 
     /**
@@ -109,14 +123,14 @@ class CategoryPagePresenter
         $ancestors = Category::query()
             ->whereKey($category->ancestorIds())
             ->orderBy('depth')
-            ->get(['id', 'name', 'slug'])
-            ->map(fn (Category $ancestor): array => ['label' => $ancestor->name, 'url' => route('store.categories.show', $ancestor->slug)])
+            ->get(['id', 'name', 'name_bn', 'slug'])
+            ->map(fn (Category $ancestor): array => ['label' => $ancestor->translated('name'), 'url' => route('store.categories.show', $ancestor->slug)])
             ->all();
 
         return [
-            ['label' => 'Home', 'url' => route('store.home')],
+            ['label' => __('Home'), 'url' => route('store.home')],
             ...$ancestors,
-            ['label' => $category->name, 'url' => null],
+            ['label' => $category->translated('name'), 'url' => null],
         ];
     }
 
@@ -127,8 +141,8 @@ class CategoryPagePresenter
     {
         return $category->children()
             ->active()
-            ->get(['id', 'name', 'slug'])
-            ->map(fn (Category $child): array => ['name' => $child->name, 'url' => route('store.categories.show', $child->slug)])
+            ->get(['id', 'name', 'name_bn', 'slug'])
+            ->map(fn (Category $child): array => ['name' => $child->translated('name'), 'url' => route('store.categories.show', $child->slug)])
             ->all();
     }
 
@@ -143,15 +157,15 @@ class CategoryPagePresenter
     public function filterGroups(array $facets, array $filters): array
     {
         $groups = [
-            $this->group('stock[]', 'Availability', $facets['availability'], $filters['stock'], alwaysOpen: true),
+            $this->group('stock[]', 'availability', __('Availability'), $facets['availability'], $filters['stock'], alwaysOpen: true),
         ];
 
         if ($facets['brands'] !== []) {
-            $groups[] = $this->group('brand[]', 'Brands', $facets['brands'], $filters['brands']);
+            $groups[] = $this->group('brand[]', 'brands', __('Brands'), $facets['brands'], $filters['brands']);
         }
 
         foreach ($facets['specs'] as $spec) {
-            $groups[] = $this->group("spec[{$spec['slug']}][]", $spec['name'], $spec['options'], $filters['specs'][$spec['slug']] ?? []);
+            $groups[] = $this->group("spec[{$spec['slug']}][]", $spec['slug'], $spec['name'], $spec['options'], $filters['specs'][$spec['slug']] ?? []);
         }
 
         return $groups;
@@ -162,7 +176,7 @@ class CategoryPagePresenter
      * @param  list<string>  $selected
      * @return FilterGroup
      */
-    private function group(string $input, string $name, array $options, array $selected, bool $alwaysOpen = false): array
+    private function group(string $input, string $key, string $name, array $options, array $selected, bool $alwaysOpen = false): array
     {
         $options = array_map(fn (array $option): array => [
             'value' => $option['value'],
@@ -174,7 +188,7 @@ class CategoryPagePresenter
         $hasSelection = in_array(true, array_column($options, 'checked'), true);
 
         return [
-            'key' => Str::slug($name),
+            'key' => $key,
             'name' => $name,
             'input' => $input,
             'open' => $alwaysOpen || $hasSelection,

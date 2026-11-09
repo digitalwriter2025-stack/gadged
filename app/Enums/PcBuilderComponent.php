@@ -26,9 +26,12 @@ enum PcBuilderComponent: string
     case AntiVirus = 'anti-virus';
     case Ups = 'ups';
 
+    /**
+     * In the storefront language; the admin panel shows English.
+     */
     public function label(): string
     {
-        return match ($this) {
+        return __(match ($this) {
             self::Cpu => 'CPU',
             self::CpuCooler => 'CPU Cooler',
             self::Motherboard => 'Motherboard',
@@ -46,7 +49,7 @@ enum PcBuilderComponent: string
             self::NetworkAdapter => 'Wifi Adapter / LAN Card',
             self::AntiVirus => 'Anti Virus',
             self::Ups => 'UPS',
-        };
+        });
     }
 
     public function isRequired(): bool

@@ -6,14 +6,14 @@
             <x-store.section-heading :title="$title" :subtitle="$subtitle" />
 
             <div class="flex shrink-0 items-center gap-2" data-reveal>
-                <button type="button" data-carousel-prev class="hidden size-9 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition hover:border-accent hover:bg-accent hover:text-white active:scale-90 disabled:pointer-events-none disabled:opacity-40 sm:grid lg:size-8" aria-label="Previous {{ $title }}">
+                <button type="button" data-carousel-prev class="hidden size-9 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition hover:border-button hover:bg-button hover:text-button-text active:scale-90 disabled:pointer-events-none disabled:opacity-40 sm:grid lg:size-8" aria-label="{{ __('Previous: :title', ['title' => $title]) }}">
                     <x-store.icon name="chevron-left" class="size-4" />
                 </button>
-                <button type="button" data-carousel-next class="hidden size-9 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition hover:border-accent hover:bg-accent hover:text-white active:scale-90 disabled:pointer-events-none disabled:opacity-40 sm:grid lg:size-8" aria-label="Next {{ $title }}">
+                <button type="button" data-carousel-next class="hidden size-9 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition hover:border-button hover:bg-button hover:text-button-text active:scale-90 disabled:pointer-events-none disabled:opacity-40 sm:grid lg:size-8" aria-label="{{ __('Next: :title', ['title' => $title]) }}">
                     <x-store.icon name="chevron-right" class="size-4" />
                 </button>
                 <a href="{{ $viewAllUrl }}" class="group flex h-8 items-center gap-1 rounded-full border border-gray-200 bg-white px-3 text-[11px] sm:h-9 sm:px-3.5 sm:text-xs font-medium text-gray-800 transition hover:border-accent hover:text-accent lg:h-8 lg:text-[11px]">
-                    View All <x-store.icon name="arrow-right" class="size-3 transition group-hover:translate-x-1" />
+                    {{ __('View All') }} <x-store.icon name="arrow-right" class="size-3 transition group-hover:translate-x-1" />
                 </a>
             </div>
         </div>

@@ -1,5 +1,5 @@
 <x-store.product-grid
-    :title="$section['title'] ?? 'All Products'"
+    :title="$section['title'] ?? __('All Products')"
     :subtitle="$section['subtitle']"
     :products="$section['products']"
     :initial-count="$section['initial_count']"

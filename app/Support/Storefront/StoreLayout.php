@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Models\Product;
 use App\Services\CatalogCache;
 use App\Services\SettingsService;
+use App\Support\Localization;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -38,13 +39,23 @@ class StoreLayout
         'tiktok' => ['label' => 'TikTok', 'background' => 'bg-black'],
     ];
 
+    /**
+     * Header quick links an admin can rename, re-point or hide, with their built-in wording and page.
+     *
+     * @var array<string, array{label: string, caption: string, route: string}>
+     */
+    public const HEADER_QUICK_LINKS = [
+        'track' => ['label' => 'Order Track', 'caption' => 'Where is my order', 'route' => 'store.orders.track'],
+        'combo' => ['label' => 'Combo', 'caption' => 'Bundle Deals', 'route' => 'store.combos.index'],
+    ];
+
     public function __construct(
         private readonly SettingsService $settings,
         private readonly CatalogCache $cache,
     ) {}
 
     /**
-     * @return array{site: array{name: string, logo: ?string}, contact: Contact, socialLinks: list<array{icon: string, label: string, background: string, url: string}>, footerMenus: list<array{title: string, links: list<array{label: string, url: string, new_tab: bool}>}>, affiliations: list<array{image: string, name: string, url: ?string}>, footer: array{copyright: string, developer_name: ?string, developer_url: ?string, payment_methods_image: ?string}}
+     * @return array{site: array{name: string, logo: ?string}, contact: Contact, socialLinks: list<array{icon: string, label: string, background: string, url: string}>, footerMenus: list<array{title: string, links: list<array{label: string, url: string, new_tab: bool}>}>, affiliations: list<array{image: string, name: string, url: ?string}>, footer: array{copyright: string, developer_name: ?string, developer_url: ?string, payment_methods_image: ?string}, showLanguageSwitcher: bool}
      */
     public function data(): array
     {
@@ -60,6 +71,8 @@ class StoreLayout
             'floatingSettings' => $this->floatingSettings(),
             'seo' => $this->seo(),
             'analytics' => $this->analytics(),
+            'themeColors' => $this->themeColors(),
+            'showLanguageSwitcher' => (bool) $this->settings->get('localization.show_switcher', true),
         ];
     }
 
@@ -86,7 +99,7 @@ class StoreLayout
             'hotline' => $hotline,
             'hotline_tel' => $hotline === null ? null : preg_replace('/[^\d+]/', '', $hotline),
             'email' => $contact['email'] ?? null,
-            'address' => $contact['address'] ?? null,
+            'address' => $this->settings->translated('contact.address'),
             'whatsapp' => isset($contact['whatsapp']) ? preg_replace('/\D/', '', $contact['whatsapp']) : null,
             'map_url' => $contact['map_url'] ?? null,
             'complain_url' => $contact['complain_url'] ?? null,
@@ -130,7 +143,7 @@ class StoreLayout
             ->get()
             ->sortBy(fn (Menu $menu): int|false => array_search($menu->location, self::FOOTER_MENU_LOCATIONS, true))
             ->map(fn (Menu $menu): array => [
-                'title' => $menu->name,
+                'title' => $menu->translated('name'),
                 'links' => $menu->rootItems
                     ->map(fn (MenuItem $item): ?array => $this->menuLink($item))
                     ->filter()
@@ -164,11 +177,12 @@ class StoreLayout
     public function footer(): array
     {
         $footer = $this->settings->group('footer');
+        $copyright = $this->settings->translated('footer.copyright_text');
 
         return [
-            'copyright' => filled($footer['copyright_text'] ?? null)
-                ? str_replace('{year}', (string) now()->year, $footer['copyright_text'])
-                : 'Copyright © '.now()->year.', '.$this->site()['name'].'. All Rights Reserved.',
+            'copyright' => filled($copyright)
+                ? str_replace('{year}', Localization::digits(now()->year), $copyright)
+                : __('Copyright © :year, :name. All Rights Reserved.', ['year' => Localization::digits(now()->year), 'name' => $this->site()['name']]),
             'developer_name' => $footer['developer_name'] ?? null,
             'developer_url' => $footer['developer_url'] ?? null,
             'payment_methods_image' => $this->imageUrl($footer['payment_methods_image'] ?? null),
@@ -197,7 +211,7 @@ class StoreLayout
             default => $item->url,
         };
 
-        return blank($url) ? null : ['label' => $item->label, 'url' => $url, 'new_tab' => $item->open_in_new_tab];
+        return blank($url) ? null : ['label' => $item->translated('label'), 'url' => $url, 'new_tab' => $item->open_in_new_tab];
     }
 
     /**
@@ -209,7 +223,7 @@ class StoreLayout
 
         return [
             'enabled' => (bool) ($a['enabled'] ?? false),
-            'text' => $a['text'] ?? null,
+            'text' => $this->settings->translated('announcement.text'),
             'link' => $a['link'] ?? null,
             'bg_color' => $a['bg_color'] ?? '#ea580c',
             'text_color' => $a['text_color'] ?? '#ffffff',
@@ -217,15 +231,62 @@ class StoreLayout
     }
 
     /**
-     * @return array{show_pc_builder: bool}
+     * Admin-chosen storefront colours as Tailwind theme variables ("--color-button" => "#df0100"),
+     * printed over the stylesheet defaults. Only known keys holding a hex colour are kept, so a
+     * saved value can never break out of the inline style block.
+     *
+     * @return array<string, string>
+     */
+    public function themeColors(): array
+    {
+        return collect($this->settings->group('theme'))
+            ->only(array_keys(config('shop.settings.theme', [])))
+            ->filter(fn (mixed $color): bool => is_string($color) && preg_match('/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i', $color) === 1)
+            ->mapWithKeys(fn (string $color, string $key): array => ['--color-'.str_replace('_', '-', $key) => strtolower($color)])
+            ->all();
+    }
+
+    /**
+     * PC Builder is off unless switched on: the store now sells gadgets, not PC parts.
+     *
+     * @return array{show_pc_builder: bool, quick_links: array<string, array{label: string, caption: string, url: string}>}
      */
     public function headerSettings(): array
     {
         $h = $this->settings->group('header');
 
         return [
-            'show_pc_builder' => (bool) ($h['show_pc_builder'] ?? true),
+            'show_pc_builder' => (bool) ($h['show_pc_builder'] ?? false),
+            'quick_links' => $this->headerQuickLinks(),
         ];
+    }
+
+    /**
+     * Admin-editable header links, keyed by HEADER_QUICK_LINKS; switched-off links are left out.
+     *
+     * @return array<string, array{label: string, caption: string, url: string}>
+     */
+    public function headerQuickLinks(): array
+    {
+        $links = [];
+
+        foreach (self::HEADER_QUICK_LINKS as $key => $defaults) {
+            if (! $this->settings->get("header.{$key}_enabled", true)) {
+                continue;
+            }
+
+            $label = $this->settings->translated("header.{$key}_label");
+            $caption = $this->settings->translated("header.{$key}_caption");
+            $url = $this->settings->get("header.{$key}_url");
+
+            $links[$key] = [
+                'label' => filled($label) ? $label : __($defaults['label']),
+                'caption' => filled($caption) ? $caption : __($defaults['caption']),
+                'url' => filled($url) ? $url : route($defaults['route']),
+            ];
+        }
+
+        return $links;
     }
 
     /**
@@ -250,8 +311,8 @@ class StoreLayout
         $s = $this->settings->group('seo');
 
         return [
-            'meta_title' => $s['meta_title'] ?? null,
-            'meta_description' => $s['meta_description'] ?? null,
+            'meta_title' => $this->settings->translated('seo.meta_title'),
+            'meta_description' => $this->settings->translated('seo.meta_description'),
             'og_image' => $this->imageUrl($s['og_image'] ?? null),
             'robots_index' => (bool) ($s['robots_index'] ?? true),
             'favicon' => $this->imageUrl($this->settings->get('general.favicon')),

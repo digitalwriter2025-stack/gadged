@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['attribute_id', 'value', 'slug', 'color_hex', 'sort_order'])]
+#[Fillable(['attribute_id', 'value', 'slug', 'color_hex', 'sort_order', 'value_bn'])]
 class AttributeValue extends Model
 {
+    use HasTranslations;
+
     /**
      * @return array<string, string>
      */

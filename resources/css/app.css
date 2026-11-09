@@ -17,6 +17,9 @@
     --color-hero: #f2f2f2;
     --color-accent: #df0100;
     --color-accent-dark: #b30000;
+    --color-button: #df0100;
+    --color-button-hover: #b30000;
+    --color-button-text: #ffffff;
     --color-price: #df0100;
     --color-savings: #0b6b3a;
     --color-highlight: #7b8a10;
@@ -157,19 +160,115 @@
 @layer components {
     /* Listing filters: a slide-in drawer below lg, a plain sidebar from lg up */
     .filter-panel {
-        @apply max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:z-50 max-lg:w-[min(20rem,88vw)] max-lg:-translate-x-full max-lg:shadow-2xl max-lg:transition-transform max-lg:duration-300 max-lg:ease-out-expo;
+        @apply max-lg:invisible max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:z-50 max-lg:w-[min(22rem,90vw)] max-lg:-translate-x-full max-lg:shadow-2xl max-lg:transition-[translate,visibility] max-lg:duration-300 max-lg:ease-out-expo;
 
+        /* Become visible at once when opening (so focus can land); hide only after sliding out */
         &[data-open] {
-            @apply max-lg:translate-x-0;
+            @apply max-lg:visible max-lg:translate-x-0 max-lg:transition-[translate];
         }
     }
 
     .filter-backdrop {
-        @apply pointer-events-none fixed inset-0 z-40 bg-black/40 opacity-0 transition-opacity duration-300;
+        @apply pointer-events-none fixed inset-0 z-[45] bg-black/45 opacity-0 backdrop-blur-[2px] transition-opacity duration-300;
     }
 
     .filter-panel[data-open] ~ .filter-backdrop {
         @apply pointer-events-auto opacity-100;
+    }
+
+    /* Filter groups open and close smoothly where the browser can animate to height: auto */
+    .filter-group {
+        interpolate-size: allow-keywords;
+
+        &::details-content {
+            block-size: 0;
+            overflow-y: clip;
+            transition:
+                block-size 0.25s var(--ease-out-expo),
+                content-visibility 0.25s allow-discrete;
+        }
+
+        &[open]::details-content {
+            block-size: auto;
+        }
+    }
+
+    /* Filter checkbox: a square that fills with the builder colour and pops a tick */
+    .filter-check {
+        @apply grid size-[18px] shrink-0 cursor-pointer appearance-none place-content-center rounded-[5px] border-[1.5px] border-gray-300 bg-white transition-colors duration-150;
+
+        &::before {
+            content: '';
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            @apply size-2.5 scale-0 bg-white transition-transform duration-150 ease-spring;
+        }
+
+        &:hover:not(:disabled) {
+            @apply border-gray-500;
+        }
+
+        &:checked {
+            @apply border-builder bg-builder;
+        }
+
+        &:checked::before {
+            @apply scale-100;
+        }
+
+        &:focus-visible {
+            @apply outline-2 outline-offset-2 outline-builder;
+        }
+
+        &:disabled {
+            @apply cursor-not-allowed border-gray-200 bg-surface;
+        }
+    }
+
+    /* Two range inputs stacked on one track; only their thumbs take the pointer */
+    .price-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        @apply pointer-events-none absolute inset-0 m-0 h-full w-full bg-transparent outline-none;
+
+        &::-webkit-slider-runnable-track {
+            @apply h-full bg-transparent;
+        }
+
+        &::-moz-range-track {
+            @apply h-full bg-transparent;
+        }
+
+        &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            @apply pointer-events-auto size-[18px] cursor-grab rounded-full border-2 border-builder bg-white shadow-[0_1px_4px_rgba(0,0,0,0.25)] transition-[scale,box-shadow] duration-150;
+        }
+
+        &::-moz-range-thumb {
+            @apply pointer-events-auto box-border size-[18px] cursor-grab rounded-full border-2 border-builder bg-white shadow-[0_1px_4px_rgba(0,0,0,0.25)] transition-[scale,box-shadow] duration-150;
+        }
+
+        &:active::-webkit-slider-thumb {
+            @apply scale-110 cursor-grabbing;
+        }
+
+        &:active::-moz-range-thumb {
+            @apply scale-110 cursor-grabbing;
+        }
+
+        &:focus-visible::-webkit-slider-thumb {
+            box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-builder) 18%, transparent);
+        }
+
+        &:focus-visible::-moz-range-thumb {
+            box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-builder) 18%, transparent);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .filter-group::details-content {
+            transition: none;
+        }
     }
 }
 
