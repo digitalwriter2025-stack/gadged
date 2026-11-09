@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
+use Filament\Forms\Components\Repeater;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -128,6 +129,65 @@ class ProductResourceTest extends TestCase
         $this->assertNull($variant->sale_price);
         $this->assertSame(12, $variant->stock_quantity);
         $this->assertSame(0, $product->refresh()->discount_percent);
+    }
+
+    public function test_combo_is_created_with_its_items_and_shows_the_customer_saving(): void
+    {
+        $undoRepeaterFake = Repeater::fake();
+        $category = Category::factory()->create();
+        $watch = Product::factory()->priced('1000.00', null, 5)->create(['name' => 'Combo Watch']);
+        $earbuds = Product::factory()->priced('2000.00', null, 5)->create(['name' => 'Combo Earbuds']);
+
+        Livewire::test(CreateProduct::class)
+            ->assertSee('Turn on the switch above to make this a combo')
+            ->fillForm([
+                'name' => 'Fitness Combo',
+                'slug' => 'fitness-combo',
+                'sku' => 'GD-CB-01',
+                'category_id' => $category->id,
+                'selling_price' => '4000',
+                'stock_quantity' => 5,
+                'is_combo' => true,
+                'comboItems' => [
+                    ['product_id' => $watch->id, 'quantity' => 1],
+                    ['product_id' => $earbuds->id, 'quantity' => 2],
+                ],
+            ])
+            ->assertSee('Bought separately')
+            ->assertSee('৳5,000')
+            ->assertSee('৳1,000 (20%)')
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $combo = Product::query()->where('slug', 'fitness-combo')->firstOrFail();
+
+        $this->assertTrue($combo->is_combo);
+        $this->assertSame(
+            [[$watch->id, 1], [$earbuds->id, 2]],
+            $combo->comboItems->map(fn ($item): array => [$item->product_id, $item->quantity])->all(),
+        );
+
+        $undoRepeaterFake();
+    }
+
+    public function test_combo_priced_above_its_items_is_flagged(): void
+    {
+        $undoRepeaterFake = Repeater::fake();
+        $watch = Product::factory()->priced('1000.00', null, 5)->create();
+        $earbuds = Product::factory()->priced('2000.00', null, 5)->create();
+
+        Livewire::test(CreateProduct::class)
+            ->fillForm([
+                'selling_price' => '3500',
+                'is_combo' => true,
+                'comboItems' => [
+                    ['product_id' => $watch->id, 'quantity' => 1],
+                    ['product_id' => $earbuds->id, 'quantity' => 1],
+                ],
+            ])
+            ->assertSee('The combo costs the same or more than buying the items one by one.');
+
+        $undoRepeaterFake();
     }
 
     public function test_regular_price_must_be_higher_than_selling_price(): void

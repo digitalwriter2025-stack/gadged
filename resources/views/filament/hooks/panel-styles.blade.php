@@ -1280,6 +1280,151 @@
         min-height: 11rem;
     }
 
+    /* ---------- Product editor: combo ---------- */
+    .gx-combo .fi-section-header > .fi-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-top: 0;
+        padding: 0.5625rem;
+        border-radius: 0.75rem;
+        color: var(--primary-600);
+        background: color-mix(in oklab, var(--primary-500) 10%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--primary-500) 16%, transparent);
+    }
+
+    .dark .gx-combo .fi-section-header > .fi-icon {
+        color: var(--primary-400);
+    }
+
+    .gx-combo-empty {
+        display: grid;
+        gap: 0.25rem;
+        padding: 1rem 1.125rem;
+        border-radius: var(--gx-radius-lg);
+        background-color: color-mix(in oklab, var(--gray-50) 70%, transparent);
+        outline: 1.5px dashed color-mix(in oklab, var(--gray-400) 50%, transparent);
+        outline-offset: -1.5px;
+    }
+
+    .dark .gx-combo-empty {
+        background-color: rgb(255 255 255 / 0.03);
+    }
+
+    .gx-combo-empty-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-combo-empty-title {
+        color: var(--gray-50);
+    }
+
+    .gx-combo-empty-text {
+        font-size: 0.8125rem;
+        line-height: 1.45;
+        color: var(--gray-500);
+    }
+
+    .dark .gx-combo-empty-text {
+        color: var(--gray-400);
+    }
+
+    .gx-combo-summary {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+
+    .gx-combo-stat {
+        display: grid;
+        gap: 0.125rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--gx-radius-lg);
+        background-color: color-mix(in oklab, var(--gray-50) 80%, transparent);
+        box-shadow: inset 0 0 0 1px var(--gx-card-ring);
+    }
+
+    .dark .gx-combo-stat {
+        background-color: rgb(255 255 255 / 0.03);
+    }
+
+    .gx-combo-stat-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--gray-500);
+    }
+
+    .dark .gx-combo-stat-label {
+        color: var(--gray-400);
+    }
+
+    .gx-combo-stat-value {
+        font-size: 1.125rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        font-variant-numeric: tabular-nums;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-combo-stat-value {
+        color: var(--gray-50);
+    }
+
+    .gx-combo-stat-muted .gx-combo-stat-value {
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--gray-400);
+    }
+
+    .gx-combo-stat-good {
+        background-color: color-mix(in oklab, var(--success-500) 10%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--success-600) 30%, transparent);
+    }
+
+    .gx-combo-stat-good .gx-combo-stat-label,
+    .gx-combo-stat-good .gx-combo-stat-value {
+        color: var(--success-700);
+    }
+
+    .dark .gx-combo-stat-good .gx-combo-stat-label,
+    .dark .gx-combo-stat-good .gx-combo-stat-value {
+        color: var(--success-400);
+    }
+
+    .gx-combo-stat-bad {
+        background-color: color-mix(in oklab, var(--danger-500) 8%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--danger-600) 30%, transparent);
+    }
+
+    .gx-combo-stat-bad .gx-combo-stat-value {
+        color: var(--danger-600);
+    }
+
+    .dark .gx-combo-stat-bad .gx-combo-stat-value {
+        color: var(--danger-400);
+    }
+
+    .gx-combo-note {
+        grid-column: 1 / -1;
+        font-size: 0.8125rem;
+        color: var(--gray-500);
+    }
+
+    .gx-combo-note-bad {
+        color: var(--danger-600);
+    }
+
+    .dark .gx-combo-note-bad {
+        color: var(--danger-400);
+    }
+
+    @media (max-width: 40rem) {
+        .gx-combo-summary {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
     /* ---------- Banner editor ---------- */
     .gx-banner-form .gx-upload .filepond--root,
     .gx-banner-form .gx-upload .filepond--drop-label {

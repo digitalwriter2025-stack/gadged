@@ -12,18 +12,24 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Support\Filament\TranslatableTabs;
 use App\Support\Money;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 /**
@@ -205,10 +211,11 @@ class ProductForm
             ->extraAttributes(['class' => 'gx-combo'])
             ->schema([
                 Text::make(new HtmlString(
-                    '<span class="gx-combo-empty-title">This product is not a combo</span>'
-                    .'<span class="gx-combo-empty-text">Turn on the switch to pick the products in the bundle. The combo is then listed on the Combo Deals page, and its product page shows what is in the box.</span>'
+                    '<div class="gx-combo-empty">'
+                    .'<span class="gx-combo-empty-title">Turn on the switch above to make this a combo</span>'
+                    .'<span class="gx-combo-empty-text">Then pick the products in the bundle. The combo is listed on the Combo Deals page, and its product page shows what is in the box.</span>'
+                    .'</div>'
                 ))
-                    ->extraAttributes(['class' => 'gx-combo-empty'])
                     ->hidden($isCombo),
 
                 Repeater::make('comboItems')
