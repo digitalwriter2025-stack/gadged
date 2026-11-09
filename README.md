@@ -119,6 +119,8 @@ Now open:
 
 > 💡 If you leave `ADMIN_PASSWORD` empty, the seeder generates a random password and prints it once in the terminal. Change it after your first login.
 
+> 🗄️ To run the site with the real data instead of demo data (database dump + uploaded images), follow [DATABASE.md](DATABASE.md).
+
 ---
 
 ## 📁 Project Structure
