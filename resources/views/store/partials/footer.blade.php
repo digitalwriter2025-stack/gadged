@@ -3,23 +3,23 @@
         <div class="grid sm:grid-cols-2 sm:gap-8 lg:grid-cols-[1.05fr_0.9fr_0.9fr_1fr] lg:gap-0 lg:divide-x lg:divide-white/10" data-reveal-group>
             <section class="pb-4 sm:pb-0 lg:pr-6" data-reveal>
                 <h2 class="text-lg font-semibold lg:text-xl">{{ __('Contact Us') }}</h2>
-                <ul class="mt-3 space-y-3 text-[15px] font-medium text-footer-link sm:text-sm">
+                <ul class="mt-3 space-y-3 text-[15px] font-medium !text-white sm:text-sm">
                     @if ($contact['hotline'])
                         <li>
-                            <a href="tel:{{ $contact['hotline_tel'] }}" class="group flex items-center gap-2 hover:underline">
+                            <a href="tel:{{ $contact['hotline_tel'] }}" class="group flex items-center gap-2 !text-white hover:underline">
                                 <x-store.icon name="phone" class="size-4 shrink-0 transition group-hover:animate-wiggle" /> {{ __('Hotline') }}: {{ $contact['hotline'] }}
                             </a>
                         </li>
                     @endif
                     @if ($contact['email'])
                         <li>
-                            <a href="mailto:{{ $contact['email'] }}" class="group flex items-center gap-2 break-all hover:underline">
+                            <a href="mailto:{{ $contact['email'] }}" class="group flex items-center gap-2 break-all !text-white hover:underline">
                                 <x-store.icon name="mail" class="size-4 shrink-0 transition group-hover:animate-wiggle" /> {{ __('Email') }}: {{ $contact['email'] }}
                             </a>
                         </li>
                     @endif
                     @if ($contact['address'])
-                        <li class="flex items-start gap-2">
+                        <li class="flex items-start gap-2 !text-white">
                             <x-store.icon name="map-pin" class="mt-0.5 size-4 shrink-0" /> <span class="whitespace-pre-line">{{ $contact['address'] }}</span>
                         </li>
                     @endif
@@ -46,7 +46,7 @@
                 @if ($footerButtons !== [])
                     <div class="mt-4 flex flex-wrap gap-2">
                         @foreach ($footerButtons as [$icon, $label, $url])
-                            <a href="{{ $url }}" target="_blank" rel="noopener" class="flex items-center gap-1.5 rounded-sm border border-footer-link px-3 py-2 text-xs font-medium text-footer-link transition hover:-translate-y-0.5 hover:bg-footer-link hover:text-white lg:px-3 lg:py-1.5 lg:text-[13px]">
+                            <a href="{{ $url }}" target="_blank" rel="noopener" class="flex items-center gap-1.5 rounded-sm border !border-white px-3 py-2 text-xs font-medium !text-white transition hover:-translate-y-0.5 hover:!bg-white hover:!text-footer lg:px-3 lg:py-1.5 lg:text-[13px]">
                                 <x-store.icon :name="$icon" class="size-4" /> {{ $label }}
                             </a>
                         @endforeach
