@@ -57,7 +57,9 @@ class ThemeColorSettingsTest extends TestCase
             ->assertSee('--color-button:#2563eb;', false)
             ->assertSee('--color-button-hover:#1d4ed8;', false)
             ->assertSee('--color-button-text:#ffffff;', false)
-            ->assertSee('<meta name="theme-color" content="#0f172a">', false);
+            ->assertSee('--color-topbar:#0f172a;', false)
+            ->assertSee('<meta name="theme-color" content="#ffffff">', false)
+            ->assertSee('<meta name="apple-mobile-web-app-status-bar-style" content="default">', false);
     }
 
     public function test_a_color_that_is_not_hex_is_rejected(): void
