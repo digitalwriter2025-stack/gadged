@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // The hosting platform terminates HTTPS at its proxy, so trust it to report the real scheme and client IP.
+        $middleware->trustProxies(at: '*');
+
         // Protected by DEPLOY_TOKEN instead, so it can be called from the hosting:clear-cache command.
         $middleware->validateCsrfTokens(except: ['clear-cache', 'clean-cache']);
 
