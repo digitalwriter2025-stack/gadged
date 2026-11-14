@@ -54,10 +54,8 @@ function readEnvFile(string $filePath): array
 $env = readEnvFile($basePath.'/.env');
 $expectedToken = $env['DEPLOY_TOKEN'] ?? '';
 $providedToken = (string) ($_GET['token'] ?? $_POST['token'] ?? '');
-$oneTimeTokenHash = 'b4826f9b1f46f52ec24e7b950684245d77f889bcfbd074ffc002b9e17ba4467d';
-$hasValidOneTimeToken = hash_equals($oneTimeTokenHash, hash('sha256', $providedToken));
 
-if (! $hasValidOneTimeToken && ($expectedToken === '' || ! hash_equals($expectedToken, $providedToken))) {
+if ($expectedToken === '' || ! hash_equals($expectedToken, $providedToken)) {
     http_response_code(403);
     echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">'
         .'<meta name="viewport" content="width=device-width, initial-scale=1.0">'
@@ -117,13 +115,8 @@ if ($action === 'reset') {
                     $messages[] = ['type' => 'error', 'text' => "No user found with email {$email}."];
                 } else {
                     // User model casts 'password' => 'hashed', so assigning plain text hashes it.
-                    $user->forceFill([
-                        'username' => 'superadmin',
-                        'password' => $password,
-                        'status' => 'active',
-                    ]);
+                    $user->password = $password;
                     $user->save();
-                    $user->syncRoles(['super_admin']);
                     $done = true;
                     $messages[] = ['type' => 'success', 'text' => "Password updated for {$email}. You can now sign in at /admin/login."];
                 }
