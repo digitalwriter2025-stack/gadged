@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Menus\Schemas;
 
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class MenuForm
@@ -62,10 +64,13 @@ class MenuForm
                                         ->placeholder('যেমন: আমাদের সম্পর্কে, গোপনীয়তা নীতি'),
                                 ])->columns(2),
 
+                                Hidden::make('linkable_id'),
+
                                 TextInput::make('url')
                                     ->label('Destination URL')
                                     ->placeholder('e.g. /page/about-us or https://...')
-                                    ->required(),
+                                    ->helperText(fn (Get $get): ?string => filled($get('linkable_id')) ? 'Linked to a page; leave blank to keep that link.' : null)
+                                    ->required(fn (Get $get): bool => blank($get('linkable_id'))),
 
                                 Group::make([
                                     Toggle::make('open_in_new_tab')

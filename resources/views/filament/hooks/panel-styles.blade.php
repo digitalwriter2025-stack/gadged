@@ -1533,6 +1533,25 @@
         background-color: var(--gray-800);
     }
 
+    /* Page editor: a large title and a writing area tall enough for a full policy. */
+    .gx-page-form .gx-page-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+    .gx-page-form .fi-fo-rich-editor .tiptap {
+        font-size: 0.9375rem;
+        line-height: 1.7;
+    }
+
+    .gx-page-form .fi-fo-rich-editor-toolbar {
+        background-color: var(--gray-50);
+    }
+
+    .dark .gx-page-form .fi-fo-rich-editor-toolbar {
+        background-color: var(--gray-900);
+    }
+
     /* Choice cards: radio options (home block type, product source, panel colour) as tappable cards. */
     .fi-fo-radio.gx-choice-cards {
         gap: 0.75rem;
