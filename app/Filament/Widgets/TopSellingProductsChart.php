@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Widgets;
 
 use App\Filament\Widgets\Concerns\ChecksDashboardAccess;
+use App\Filament\Widgets\Concerns\UsesChartPalette;
 use App\Models\Product;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Str;
@@ -12,6 +13,7 @@ use Illuminate\Support\Str;
 class TopSellingProductsChart extends ChartWidget
 {
     use ChecksDashboardAccess;
+    use UsesChartPalette;
 
     protected static ?int $sort = 6;
 
@@ -49,7 +51,7 @@ class TopSellingProductsChart extends ChartWidget
                 [
                     'label' => 'Units sold',
                     'data' => $products->pluck('sales_count')->all(),
-                    'backgroundColor' => 'rgba(16, 185, 129, 0.8)',
+                    'backgroundColor' => $this->barColors($products->count()),
                     'borderRadius' => 6,
                     'maxBarThickness' => 22,
                 ],

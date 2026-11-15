@@ -6,12 +6,14 @@ namespace App\Filament\Widgets;
 
 use App\Enums\ProductStatus;
 use App\Filament\Widgets\Concerns\ChecksDashboardAccess;
+use App\Filament\Widgets\Concerns\UsesChartPalette;
 use App\Models\Category;
 use Filament\Widgets\ChartWidget;
 
 class ProductsByCategoryChart extends ChartWidget
 {
     use ChecksDashboardAccess;
+    use UsesChartPalette;
 
     protected static ?int $sort = 5;
 
@@ -50,7 +52,7 @@ class ProductsByCategoryChart extends ChartWidget
                 [
                     'label' => 'Active products',
                     'data' => $categories->pluck('products_count')->all(),
-                    'backgroundColor' => 'rgba(59, 130, 246, 0.8)',
+                    'backgroundColor' => $this->barColors($categories->count()),
                     'borderRadius' => 6,
                     'maxBarThickness' => 22,
                 ],

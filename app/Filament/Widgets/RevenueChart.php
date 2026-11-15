@@ -62,9 +62,10 @@ class RevenueChart extends ChartWidget
                     'label' => 'Revenue',
                     'data' => $trend['revenue'],
                     'yAxisID' => 'y',
-                    'borderColor' => '#f97316',
-                    'backgroundColor' => 'rgba(249, 115, 22, 0.12)',
-                    'pointBackgroundColor' => '#f97316',
+                    'borderColor' => '#ff5a36',
+                    'pointBackgroundColor' => '#ff5a36',
+                    'pointBorderColor' => '#fff',
+                    'pointBorderWidth' => 1.5,
                     'pointRadius' => 3,
                     'pointHoverRadius' => 6,
                     'borderWidth' => 2.5,
@@ -77,9 +78,9 @@ class RevenueChart extends ChartWidget
                     'label' => 'Orders',
                     'data' => $trend['orders'],
                     'yAxisID' => 'y1',
-                    'backgroundColor' => 'rgba(100, 116, 139, 0.25)',
-                    'borderColor' => 'rgba(100, 116, 139, 0.45)',
-                    'borderWidth' => 1,
+                    'backgroundColor' => 'rgba(139, 92, 246, 0.35)',
+                    'hoverBackgroundColor' => 'rgba(139, 92, 246, 0.6)',
+                    'borderWidth' => 0,
                     'borderRadius' => 6,
                     'maxBarThickness' => 28,
                     'order' => 2,
@@ -100,6 +101,24 @@ class RevenueChart extends ChartWidget
         return RawJs::make(<<<JS
             {
                 interaction: { mode: 'index', intersect: false },
+                datasets: {
+                    line: {
+                        backgroundColor: ({ chart }) => {
+                            const { ctx, chartArea } = chart;
+
+                            if (! chartArea) {
+                                return 'rgba(255, 90, 54, 0.15)';
+                            }
+
+                            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                            gradient.addColorStop(0, 'rgba(255, 90, 54, 0.35)');
+                            gradient.addColorStop(0.6, 'rgba(217, 70, 239, 0.08)');
+                            gradient.addColorStop(1, 'rgba(217, 70, 239, 0)');
+
+                            return gradient;
+                        },
+                    },
+                },
                 plugins: {
                     legend: { display: true, position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } },
                     tooltip: {

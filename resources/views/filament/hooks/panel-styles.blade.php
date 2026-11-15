@@ -26,14 +26,17 @@
     /* ---------- Canvas ---------- */
     .fi-body:has(.fi-layout) {
         background:
-            radial-gradient(70rem 26rem at 100% -8rem, color-mix(in oklab, var(--primary-500) 7%, transparent), transparent 70%),
+            radial-gradient(60rem 26rem at 100% -8rem, color-mix(in oklab, var(--primary-500) 9%, transparent), transparent 70%),
+            radial-gradient(50rem 30rem at 0% 100%, rgb(139 92 246 / 0.07), transparent 70%),
+            radial-gradient(40rem 24rem at 60% 40%, rgb(14 165 233 / 0.05), transparent 70%),
             var(--gray-50);
         background-attachment: fixed;
     }
 
     .dark .fi-body:has(.fi-layout) {
         background:
-            radial-gradient(70rem 26rem at 100% -8rem, color-mix(in oklab, var(--primary-500) 9%, transparent), transparent 70%),
+            radial-gradient(60rem 26rem at 100% -8rem, color-mix(in oklab, var(--primary-500) 12%, transparent), transparent 70%),
+            radial-gradient(50rem 30rem at 0% 100%, rgb(139 92 246 / 0.1), transparent 70%),
             var(--gray-950);
         background-attachment: fixed;
     }
@@ -171,10 +174,46 @@
         font-weight: 500;
     }
 
+    /* Each navigation group gets its own icon colour, so sections are easy to tell apart at a glance. */
+    .fi-sidebar-group { --gx-nav: var(--gray-400); }
+    .fi-sidebar-group[data-group-label='Sales'] { --gx-nav: #f97316; }
+    .fi-sidebar-group[data-group-label='Accounts'] { --gx-nav: #10b981; }
+    .fi-sidebar-group[data-group-label='Catalog'] { --gx-nav: #3b82f6; }
+    .fi-sidebar-group[data-group-label='Inventory'] { --gx-nav: #14b8a6; }
+    .fi-sidebar-group[data-group-label='Marketing'] { --gx-nav: #d946ef; }
+    .fi-sidebar-group[data-group-label='Customers'] { --gx-nav: #8b5cf6; }
+    .fi-sidebar-group[data-group-label='Content'] { --gx-nav: #f59e0b; }
+    .fi-sidebar-group[data-group-label='Settings'] { --gx-nav: #64748b; }
+    .fi-sidebar-group[data-group-label='Access Control'] { --gx-nav: #e11d48; }
+
+    .fi-sidebar-group .fi-sidebar-item:not(.fi-active) .fi-sidebar-item-icon,
+    .fi-sidebar-group .fi-sidebar-item:not(.fi-active) .fi-sidebar-item-btn:hover .fi-sidebar-item-icon,
+    .dark .fi-sidebar-group .fi-sidebar-item:not(.fi-active) .fi-sidebar-item-btn:hover .fi-sidebar-item-icon {
+        color: var(--gx-nav);
+    }
+
+    .fi-sidebar-group .fi-sidebar-item:not(.fi-active) .fi-sidebar-item-btn:hover {
+        background-color: color-mix(in oklab, var(--gx-nav) 10%, transparent);
+    }
+
+    .fi-sidebar-group .fi-sidebar-group-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .fi-sidebar-group .fi-sidebar-group-label::before {
+        content: '';
+        width: 0.4375rem;
+        height: 0.4375rem;
+        border-radius: 9999px;
+        background: var(--gx-nav);
+    }
+
     .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
     .dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        box-shadow: 0 6px 16px -6px color-mix(in oklab, var(--primary-600) 70%, transparent);
+        background: linear-gradient(120deg, #ff5a36, var(--primary-600) 55%, #c026d3);
+        box-shadow: 0 8px 18px -8px color-mix(in oklab, var(--primary-600) 75%, transparent);
     }
 
     .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label,
@@ -229,38 +268,54 @@
         box-shadow: 0 0 0 1px var(--gx-card-ring), var(--gx-card-shadow-hover);
     }
 
-    /* ---------- Stat cards ---------- */
-    .fi-wi-stats-overview-stat {
-        --gx-accent: var(--primary-500);
+    /* ---------- Stat cards: solid gradient tiles, one hue per metric ---------- */
+    .fi-wi-stats-overview-stat,
+    .dark .fi-wi-stats-overview-stat {
+        --gx-from: var(--primary-500);
+        --gx-to: var(--primary-700);
         overflow: hidden;
+        isolation: isolate;
         padding: 1.25rem 1.375rem 1.5rem;
+        color: #fff;
         background:
-            radial-gradient(14rem 9rem at 100% 0%, color-mix(in oklab, var(--gx-accent) 10%, transparent), transparent 70%),
-            var(--gx-card-bg);
+            radial-gradient(18rem 10rem at 110% -20%, rgb(255 255 255 / 0.28), transparent 60%),
+            linear-gradient(135deg, var(--gx-from), var(--gx-to));
+        box-shadow:
+            inset 0 0 0 1px rgb(255 255 255 / 0.14),
+            0 14px 28px -16px color-mix(in oklab, var(--gx-to) 85%, transparent);
         transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
     }
 
+    /* Two soft rings in the corner, like a speaker grille, so tiles don't read as flat swatches. */
     .fi-wi-stats-overview-stat::before {
         content: '';
         position: absolute;
-        inset: 0 auto 0 0;
-        width: 3px;
-        background: linear-gradient(180deg, var(--gx-accent), color-mix(in oklab, var(--gx-accent) 20%, transparent));
-        opacity: 0.85;
+        z-index: -1;
+        right: -3.5rem;
+        bottom: -4.5rem;
+        width: 11rem;
+        height: 11rem;
+        border-radius: 9999px;
+        box-shadow:
+            0 0 0 1.5rem rgb(255 255 255 / 0.07),
+            0 0 0 3rem rgb(255 255 255 / 0.04);
+        pointer-events: none;
     }
 
     .fi-wi-stats-overview-stat:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 0 0 1px var(--gx-card-ring), var(--gx-card-shadow-hover);
+        transform: translateY(-3px);
+        box-shadow:
+            inset 0 0 0 1px rgb(255 255 255 / 0.2),
+            0 22px 36px -16px color-mix(in oklab, var(--gx-to) 95%, transparent);
     }
 
-    .fi-wi-stats-overview-stat[data-accent='orange'] { --gx-accent: #f97316; }
-    .fi-wi-stats-overview-stat[data-accent='blue'] { --gx-accent: #3b82f6; }
-    .fi-wi-stats-overview-stat[data-accent='amber'] { --gx-accent: #f59e0b; }
-    .fi-wi-stats-overview-stat[data-accent='emerald'] { --gx-accent: #10b981; }
-    .fi-wi-stats-overview-stat[data-accent='violet'] { --gx-accent: #8b5cf6; }
-    .fi-wi-stats-overview-stat[data-accent='teal'] { --gx-accent: #14b8a6; }
-    .fi-wi-stats-overview-stat[data-accent='rose'] { --gx-accent: #f43f5e; }
+    .fi-wi-stats-overview-stat[data-accent='orange'] { --gx-from: #ff7a45; --gx-to: #df0100; }
+    .fi-wi-stats-overview-stat[data-accent='blue'] { --gx-from: #3b82f6; --gx-to: #6d28d9; }
+    .fi-wi-stats-overview-stat[data-accent='amber'] { --gx-from: #fbbf24; --gx-to: #ea580c; }
+    .fi-wi-stats-overview-stat[data-accent='emerald'] { --gx-from: #34d399; --gx-to: #047857; }
+    .fi-wi-stats-overview-stat[data-accent='violet'] { --gx-from: #a855f7; --gx-to: #db2777; }
+    .fi-wi-stats-overview-stat[data-accent='teal'] { --gx-from: #2dd4bf; --gx-to: #0369a1; }
+    .fi-wi-stats-overview-stat[data-accent='rose'] { --gx-from: #fb7185; --gx-to: #be123c; }
 
     .fi-wi-stats-overview-stat-content {
         row-gap: 0.625rem;
@@ -278,32 +333,64 @@
         height: 2.75rem;
         padding: 0.6875rem;
         border-radius: 0.875rem;
-        color: var(--gx-accent);
-        background: color-mix(in oklab, var(--gx-accent) 13%, transparent);
-        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--gx-accent) 18%, transparent);
+        color: #fff;
+        background: rgb(255 255 255 / 0.2);
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25);
+        backdrop-filter: blur(4px);
     }
 
-    .fi-wi-stats-overview-stat-label {
+    .fi-wi-stats-overview-stat-label,
+    .dark .fi-wi-stats-overview-stat-label {
         padding-top: 0.25rem;
         font-size: 0.8125rem;
         font-weight: 500;
-        color: var(--gray-500);
+        color: rgb(255 255 255 / 0.85);
     }
 
-    .dark .fi-wi-stats-overview-stat-label {
-        color: var(--gray-400);
-    }
-
-    .fi-wi-stats-overview-stat-value {
+    .fi-wi-stats-overview-stat-value,
+    .dark .fi-wi-stats-overview-stat-value {
         margin-top: -0.5rem;
-        font-size: 1.875rem;
+        font-size: 2rem;
         font-weight: 700;
         letter-spacing: -0.03em;
+        color: #fff;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
     }
 
-    .fi-wi-stats-overview-stat-description {
-        font-size: 0.8125rem;
-        font-weight: 500;
+    /* The trend colour (green/red) is carried by the arrow icon in a white chip, which stays legible on every hue. */
+    .fi-wi-stats-overview-stat-description,
+    .dark .fi-wi-stats-overview-stat-description {
+        display: inline-flex;
+        align-self: flex-start;
+        align-items: center;
+        gap: 0.375rem;
+        width: fit-content;
+        max-width: 100%;
+        padding: 0.25rem 0.625rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fff;
+        background: rgb(0 0 0 / 0.14);
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+    }
+
+    .fi-wi-stats-overview-stat-description .fi-icon,
+    .dark .fi-wi-stats-overview-stat-description .fi-icon {
+        color: #fff;
+    }
+
+    .fi-wi-stats-overview-stat-chart-border-color {
+        color: rgb(255 255 255 / 0.9);
+    }
+
+    .fi-wi-stats-overview-stat-chart-bg-color {
+        color: rgb(255 255 255 / 0.18);
+    }
+
+    .fi-wi-stats-overview-stat:focus-visible {
+        outline: 3px solid color-mix(in oklab, var(--gx-to) 60%, #fff);
+        outline-offset: 3px;
     }
 
     /* ---------- Tables ---------- */
@@ -725,10 +812,10 @@
         border-radius: 1.25rem;
         color: #fff;
         background:
-            radial-gradient(32rem 18rem at 100% 0%, color-mix(in oklab, var(--primary-500) 45%, transparent), transparent 65%),
-            radial-gradient(24rem 14rem at 0% 120%, color-mix(in oklab, var(--primary-400) 22%, transparent), transparent 60%),
-            linear-gradient(135deg, #0f172a, #1e293b);
-        box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 18px 40px -18px rgb(15 23 42 / 0.6);
+            radial-gradient(30rem 20rem at 100% 0%, rgb(251 146 60 / 0.55), transparent 60%),
+            radial-gradient(28rem 18rem at 0% 120%, rgb(56 189 248 / 0.35), transparent 60%),
+            linear-gradient(120deg, #7a0000 0%, #c0001a 30%, #a3168f 65%, #4338ca 100%);
+        box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 22px 44px -20px rgb(163 22 143 / 0.65);
     }
 
     .gx-welcome-glow {
@@ -751,15 +838,15 @@
         border-radius: 9999px;
         font-size: 0.75rem;
         font-weight: 500;
-        color: rgb(255 255 255 / 0.75);
-        background: rgb(255 255 255 / 0.08);
-        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+        color: rgb(255 255 255 / 0.9);
+        background: rgb(255 255 255 / 0.14);
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
     }
 
     .gx-welcome-date .fi-icon {
         width: 0.875rem;
         height: 0.875rem;
-        color: var(--primary-300);
+        color: #fde68a;
     }
 
     .gx-welcome-title {
@@ -771,7 +858,7 @@
     }
 
     .gx-welcome-title span {
-        background: linear-gradient(90deg, var(--primary-300), var(--primary-500));
+        background: linear-gradient(90deg, #fde68a, #fdba74);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -780,7 +867,7 @@
     .gx-welcome-text {
         margin-top: 0.375rem;
         font-size: 0.9375rem;
-        color: rgb(255 255 255 / 0.65);
+        color: rgb(255 255 255 / 0.8);
     }
 
     .gx-welcome-actions {
@@ -816,12 +903,17 @@
     }
 
     .gx-welcome-action-primary {
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        box-shadow: 0 8px 20px -8px color-mix(in oklab, var(--primary-500) 80%, transparent);
+        color: #9f0012;
+        background: #fff;
+        box-shadow: 0 8px 20px -8px rgb(0 0 0 / 0.45);
     }
 
     .gx-welcome-action-primary:hover {
-        background: linear-gradient(135deg, var(--primary-400), var(--primary-500));
+        background: #fff7ed;
+    }
+
+    .gx-welcome-action-primary .fi-icon {
+        opacity: 1;
     }
 
     .gx-welcome-action:focus-visible,

@@ -66,6 +66,8 @@ class StockStatusChart extends ChartWidget
                     'backgroundColor' => array_map(fn (StockStatus $status): string => self::STATUS_COLORS[$status->value], $statuses),
                     'borderWidth' => 0,
                     'hoverOffset' => 8,
+                    'borderRadius' => 6,
+                    'spacing' => count($statuses) > 1 ? 3 : 0,
                 ],
             ],
         ];
@@ -82,7 +84,7 @@ class StockStatusChart extends ChartWidget
     protected function getOptions(): array
     {
         return [
-            'cutout' => '68%',
+            'cutout' => '74%',
             'plugins' => [
                 'legend' => ['position' => 'right', 'labels' => ['usePointStyle' => true, 'boxWidth' => 8]],
             ],
