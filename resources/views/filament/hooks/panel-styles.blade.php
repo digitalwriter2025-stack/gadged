@@ -1646,23 +1646,380 @@
     }
 
     /* ---------- Order detail ---------- */
+    .gx-order-summary {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+
+    @media (min-width: 640px) {
+        .gx-order-summary {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .gx-order-summary {
+            grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+    }
+
+    .gx-order-stat {
+        --gx-accent: var(--gray-400);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        min-width: 0;
+        padding: 1rem 1.125rem;
+        overflow: hidden;
+        border-radius: var(--gx-radius-xl);
+        background-color: var(--gx-card-bg);
+        box-shadow: 0 0 0 1px var(--gx-card-ring), var(--gx-card-shadow);
+    }
+
+    .gx-order-stat::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3px;
+        background: var(--gx-accent);
+    }
+
+    .gx-order-stat[data-color='warning'] { --gx-accent: var(--warning-500); }
+    .gx-order-stat[data-color='info'] { --gx-accent: var(--info-500); }
+    .gx-order-stat[data-color='primary'] { --gx-accent: var(--primary-500); }
+    .gx-order-stat[data-color='success'] { --gx-accent: var(--success-500); }
+    .gx-order-stat[data-color='danger'] { --gx-accent: var(--danger-500); }
+
+    .gx-order-stat-label {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--gray-500);
+    }
+
+    .gx-order-stat-value {
+        display: flex;
+        align-items: center;
+        min-height: 1.75rem;
+        font-size: 1.125rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-order-stat-value {
+        color: #fff;
+    }
+
+    .gx-order-stat-text {
+        display: block;
+        overflow: hidden;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        line-height: 1.75rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .gx-order-stat-meta {
+        overflow: hidden;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .gx-order-stat-total {
+        grid-column: 1 / -1;
+        background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+        box-shadow: 0 10px 28px -12px color-mix(in oklab, var(--primary-600) 70%, transparent);
+    }
+
+    .gx-order-stat-total::before {
+        display: none;
+    }
+
+    .gx-order-stat-total .gx-order-stat-label,
+    .gx-order-stat-total .gx-order-stat-meta {
+        color: rgb(255 255 255 / 0.82);
+    }
+
+    .gx-order-stat-total .gx-order-stat-value,
+    .dark .gx-order-stat-total .gx-order-stat-value {
+        font-size: 1.625rem;
+        color: #fff;
+    }
+
+    @media (min-width: 1024px) {
+        .gx-order-stat-total {
+            grid-column: auto;
+        }
+    }
+
+    /* Item list: a table on wide screens, stacked rows on phones. */
+    .gx-order-items {
+        overflow: hidden;
+        border-radius: var(--gx-radius-lg);
+        box-shadow: inset 0 0 0 1px var(--gx-card-ring);
+    }
+
+    .gx-order-items-head {
+        display: none;
+    }
+
+    .gx-order-items-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .gx-order-item {
+        display: grid;
+        grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+        grid-template-areas:
+            'thumb info info'
+            'price price total';
+        column-gap: 0.875rem;
+        row-gap: 0.375rem;
+        align-items: center;
+        padding: 0.875rem 1rem;
+    }
+
+    .gx-order-item + .gx-order-item {
+        border-top: 1px solid var(--gx-card-ring);
+    }
+
+    .gx-order-item-thumb {
+        grid-area: thumb;
+        width: 3.5rem;
+        height: 3.5rem;
+        padding: 0.25rem;
+        object-fit: contain;
+        border-radius: 0.625rem;
+        background: #fff;
+        box-shadow: inset 0 0 0 1px var(--gx-card-ring);
+    }
+
+    .gx-order-item-info {
+        grid-area: info;
+        min-width: 0;
+    }
+
+    .gx-order-item-name {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.35;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-order-item-name {
+        color: #fff;
+    }
+
+    .gx-order-item-meta {
+        display: block;
+        margin-top: 0.125rem;
+        font-size: 0.75rem;
+        color: var(--gray-500);
+        overflow-wrap: anywhere;
+    }
+
+    .gx-order-item-price {
+        grid-area: price;
+        font-size: 0.8125rem;
+        color: var(--gray-600);
+    }
+
+    .dark .gx-order-item-price {
+        color: var(--gray-400);
+    }
+
+    .gx-order-item-qty {
+        display: none;
+    }
+
+    .gx-order-item-total {
+        grid-area: total;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-align: end;
+        white-space: nowrap;
+        color: var(--gray-950);
+    }
+
+    .dark .gx-order-item-total {
+        color: #fff;
+    }
+
+    @media (min-width: 640px) {
+        .gx-order-items-head,
+        .gx-order-item {
+            display: grid;
+            grid-template-columns: 3.5rem minmax(0, 1fr) 7.5rem 3.5rem 8rem;
+            grid-template-areas: 'thumb info price qty total';
+            column-gap: 1rem;
+        }
+
+        .gx-order-items-head {
+            padding: 0.625rem 1rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            background: color-mix(in oklab, var(--gray-50) 80%, transparent);
+            border-bottom: 1px solid var(--gx-card-ring);
+        }
+
+        .dark .gx-order-items-head {
+            background: rgb(255 255 255 / 0.03);
+        }
+
+        .gx-order-items-head > :first-child {
+            grid-column: 1 / 3;
+        }
+
+        .gx-order-items-head > :nth-child(2),
+        .gx-order-items-head > :nth-child(4),
+        .gx-order-item-price {
+            text-align: end;
+        }
+
+        .gx-order-items-head > :nth-child(3) {
+            text-align: center;
+        }
+
+        .gx-order-item-price-qty {
+            display: none;
+        }
+
+        .gx-order-item-qty {
+            display: block;
+            grid-area: qty;
+            justify-self: center;
+            min-width: 2rem;
+            padding: 0.125rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 9999px;
+            color: var(--gray-700);
+            background: var(--gray-100);
+        }
+
+        .dark .gx-order-item-qty {
+            color: var(--gray-200);
+            background: rgb(255 255 255 / 0.08);
+        }
+    }
+
     .gx-order-totals {
         margin-top: 1rem;
-        margin-inline-start: auto;
-        max-width: 22rem;
-        padding: 1rem 1.125rem;
+        padding: 0.5rem 1.125rem;
         border-radius: var(--gx-radius-lg);
         background-color: color-mix(in oklab, var(--gray-50) 80%, transparent);
         box-shadow: inset 0 0 0 1px var(--gx-card-ring);
+    }
+
+    @media (min-width: 640px) {
+        .gx-order-totals {
+            margin-inline-start: auto;
+            max-width: 22rem;
+        }
     }
 
     .dark .gx-order-totals {
         background-color: rgb(255 255 255 / 0.03);
     }
 
+    .gx-order-totals .fi-sc {
+        gap: 0.625rem;
+    }
+
+    .gx-order-totals .gx-order-grand-total {
+        margin-top: 0.25rem;
+        padding-top: 0.875rem;
+        border-top: 1px dashed var(--gray-300);
+    }
+
+    .dark .gx-order-totals .gx-order-grand-total {
+        border-top-color: rgb(255 255 255 / 0.12);
+    }
+
+    /* Short labels stay beside their values on phones too, instead of stacking. */
+    .gx-order-totals .fi-in-entry.fi-in-entry-has-inline-label,
+    .gx-order-side .fi-in-entry.fi-in-entry-has-inline-label {
+        display: grid;
+        grid-template-columns: 5.5rem minmax(0, 1fr);
+        align-items: flex-start;
+        column-gap: 1rem;
+    }
+
+    .gx-order-totals .fi-in-entry.fi-in-entry-has-inline-label {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .gx-order-totals .fi-in-entry.fi-in-entry-has-inline-label .fi-in-entry-content-col,
+    .gx-order-side .fi-in-entry.fi-in-entry-has-inline-label .fi-in-entry-content-col {
+        grid-column: auto;
+    }
+
+    .gx-order-totals .fi-in-entry-label {
+        white-space: nowrap;
+    }
+
     .gx-order-totals .fi-in-text {
         justify-content: flex-end;
         text-align: end;
+    }
+
+    .gx-order-side .fi-in-entry-label {
+        color: var(--gray-500);
+        font-weight: 500;
+    }
+
+    .gx-order-side .fi-in-text {
+        overflow-wrap: anywhere;
+    }
+
+    .gx-order-item-price-qty,
+    .gx-order-item-total {
+        white-space: nowrap;
+    }
+
+    @media (max-width: 639px) {
+        /* The courier tile would otherwise sit alone on a half-empty row. */
+        .gx-order-summary > :last-child {
+            grid-column: 1 / -1;
+        }
+
+        /* Header actions: secondary buttons share a row, the status update spans below. */
+        .fi-resource-orders.fi-resource-view-record-page .fi-header-actions-ctn {
+            width: 100%;
+        }
+
+        .fi-resource-orders.fi-resource-view-record-page .fi-header-actions-ctn > .fi-ac {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .fi-resource-orders.fi-resource-view-record-page .fi-header-actions-ctn > .fi-ac > :last-child:nth-child(odd) {
+            grid-column: 1 / -1;
+        }
+
+        .fi-resource-orders.fi-resource-view-record-page .fi-header-actions-ctn > .fi-ac .fi-btn {
+            width: 100%;
+            justify-content: center;
+            padding-inline: 0.5rem;
+            white-space: nowrap;
+        }
     }
 
     .gx-timeline {

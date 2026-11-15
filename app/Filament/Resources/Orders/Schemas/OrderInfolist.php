@@ -5,21 +5,16 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Models\Order;
-use App\Models\OrderItem;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\FontWeight;
-use Illuminate\Support\HtmlString;
 
 /**
- * Order detail: items, totals and timeline on the left; status, customer and
- * delivery details on the right.
+ * Order detail: a summary strip on top, items, totals and timeline on the left;
+ * customer and delivery details on the right.
  */
 class OrderInfolist
 {
@@ -28,38 +23,18 @@ class OrderInfolist
         return $schema
             ->columns(['default' => 1, 'lg' => 3])
             ->components([
+                ViewEntry::make('summary')
+                    ->hiddenLabel()
+                    ->view('filament.orders.summary')
+                    ->columnSpanFull(),
+
                 Group::make([
                     Section::make('Items')
                         ->icon('heroicon-o-shopping-bag')
                         ->schema([
-                            RepeatableEntry::make('items')
+                            ViewEntry::make('items')
                                 ->hiddenLabel()
-                                ->table([
-                                    TableColumn::make('Product'),
-                                    TableColumn::make('Unit price')->alignment(Alignment::End),
-                                    TableColumn::make('Qty')->alignment(Alignment::Center),
-                                    TableColumn::make('Total')->alignment(Alignment::End),
-                                ])
-                                ->schema([
-                                    TextEntry::make('product_name')
-                                        ->formatStateUsing(fn (string $state, OrderItem $record): HtmlString => new HtmlString(
-                                            '<span class="gx-cell-title">'.e($state).'</span>'
-                                            .'<span class="gx-cell-meta">'
-                                            .e(collect(['SKU: '.$record->sku, $record->variant_name])->filter()->implode(' · '))
-                                            .'</span>'
-                                        )),
-                                    TextEntry::make('unit_price')
-                                        ->money('BDT')
-                                        ->alignment(Alignment::End),
-                                    TextEntry::make('quantity')
-                                        ->badge()
-                                        ->color('gray')
-                                        ->alignment(Alignment::Center),
-                                    TextEntry::make('line_total')
-                                        ->money('BDT')
-                                        ->weight(FontWeight::SemiBold)
-                                        ->alignment(Alignment::End),
-                                ]),
+                                ->view('filament.orders.items'),
 
                             Group::make([
                                 TextEntry::make('subtotal')
@@ -81,6 +56,7 @@ class OrderInfolist
                                     ->size('lg')
                                     ->weight(FontWeight::Bold)
                                     ->color('primary')
+                                    ->extraEntryWrapperAttributes(['class' => 'gx-order-grand-total'])
                                     ->inlineLabel(),
                             ])->extraAttributes(['class' => 'gx-order-totals']),
                         ]),
@@ -95,18 +71,6 @@ class OrderInfolist
                 ])->columnSpan(['lg' => 2]),
 
                 Group::make([
-                    Section::make('Order')
-                        ->icon('heroicon-o-clipboard-document-check')
-                        ->schema([
-                            TextEntry::make('status')->badge()->inlineLabel(),
-                            TextEntry::make('payment_status')->label('Payment')->badge()->inlineLabel(),
-                            TextEntry::make('payment_method')->label('Method')->badge()->inlineLabel(),
-                            TextEntry::make('confirmed_at')->label('Confirmed')->since()->inlineLabel()->visible(fn ($state): bool => filled($state)),
-                            TextEntry::make('shipped_at')->label('Shipped')->since()->inlineLabel()->visible(fn ($state): bool => filled($state)),
-                            TextEntry::make('delivered_at')->label('Delivered')->since()->inlineLabel()->visible(fn ($state): bool => filled($state)),
-                            TextEntry::make('cancelled_at')->label('Cancelled')->since()->inlineLabel()->visible(fn ($state): bool => filled($state)),
-                        ]),
-
                     Section::make('Customer')
                         ->icon('heroicon-o-user')
                         ->schema([
@@ -133,7 +97,7 @@ class OrderInfolist
                         ->schema([
                             TextEntry::make('customer_note')->hiddenLabel(),
                         ]),
-                ]),
+                ])->extraAttributes(['class' => 'gx-order-side']),
             ]);
     }
 }
